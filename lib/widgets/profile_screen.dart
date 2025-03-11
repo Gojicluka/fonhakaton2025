@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../achievement.dart';
+import '../achievement.dart'; // Uverite se da je putanja ispravna
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -102,40 +102,16 @@ class ProfileAchievements extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
-        children: [
-          _buildAchievementCard(
+        children: allAchievements.map((achievement) { // Koristimo map da generišemo widget-e za svaki achievement
+          return _buildAchievementCard(
             context,
-            "First Steps",
-            "Completed the tutorial.",
-            Icons.directions_walk,
-            const Color(0xFF90EE90),
-            DateTime(2025, 3, 10),
-          ),
-          _buildAchievementCard(
-            context,
-            "Puzzle Master",
-            "Solved 10 puzzles.",
-            Icons.lightbulb_outline,
-            const Color(0xFFADD8E6),
-            DateTime(2025, 3, 11),
-          ),
-          _buildAchievementCard(
-            context,
-            "Social Butterfly",
-            "Made 5 new friends.",
-            Icons.people,
-            const Color(0xFFF08080),
-            DateTime(2025, 3, 12),
-          ),
-          _buildAchievementCard(
-            context,
-            "Treasure Hunter",
-            "Found a hidden item.",
-            Icons.diamond,
-            const Color(0xFFBA55D3), // Changed to a more distinct pastel color
-            DateTime(2025, 3, 13),
-          ),
-        ],
+            achievement.name,
+            achievement.description,
+            achievement.icon,
+            achievement.color,
+            achievement.dateAchieved ?? DateTime.now(), // Koristimo trenutni datum ako nije postavljen dateAchieved
+          );
+        }).toList(),
       ),
     );
   }
@@ -205,14 +181,14 @@ List<Achievement> allAchievements = [
   Achievement(
     name: "Zlatni Moderator",
     description: "Dostignuće za 5 uspešnih moderiranja. Hvala vam na posvećenosti!",
-    icon: Icons.military_tech, // Ili neki drugi odgovarajući icon
-    color: Colors.amber, // Zlatna boja
+    icon: Icons.military_tech,
+    color: Colors.amber,
   ),
   Achievement(
     name: "Srebrni Moderator",
     description: "Dostignuće za 3 uspešna moderiranja. Nastavite sa dobrim radom!",
     icon: Icons.military_tech_outlined,
-    color: Colors.grey, // Srebrna boja
+    color: Colors.grey,
   ),
   Achievement(
     name: "Moderator",
@@ -238,7 +214,7 @@ List<Achievement> allAchievements = [
     icon: Icons.security_outlined,
     color: Colors.grey,
   ),
-    Achievement(
+  Achievement(
     name: "Čuvar Fakulteta",
     description: "Dostignuće za čuvanje fakulteta. Hvala Vam na pomoći!",
     icon: Icons.security,
@@ -250,5 +226,4 @@ List<Achievement> allAchievements = [
     icon: Icons.accessibility_new,
     color: Colors.orange,
   ),
-  // Dodajte ostale achievement-e ovde
 ];
