@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; // Import google_fonts
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -6,12 +7,13 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5), // Nicer off-white background
       appBar: AppBar(
         title: const Text('Profile Page'),
       ),
       body: Column(
         children: [
-          const ProfileHeader(), // Modified ProfileHeader
+          const ProfileHeader(),
           const SizedBox(height: 20),
           const ProfileStats(),
           const SizedBox(height: 20),
@@ -22,7 +24,6 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-// 🔹 Profile Header (Image + Name + Level + HP)
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});
 
@@ -35,17 +36,17 @@ class ProfileHeader extends StatelessWidget {
           backgroundImage: AssetImage('assets/image.png'),
         ),
         const SizedBox(width: 16),
-        Expanded( // Added Expanded to allow the Column to take available space
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Player Name", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8), // Added some spacing
-              Row( // Added a Row to align Level and HP horizontally
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribute space between
-                children: const [
-                  Text("Level: 3", style: TextStyle(fontSize: 18, color: Colors.grey)),
-                  Text("HP: 100", style: TextStyle(fontSize: 18, color: Colors.grey)),
+              Text("Player Name", style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold)), // Nicer font
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Level: 3", style: GoogleFonts.lato(fontSize: 18, color: Colors.blue)), // Nicer font
+                  Text("XP: 1000", style: GoogleFonts.lato(fontSize: 18, color: Colors.blue)), // Nicer font
                 ],
               ),
             ],
@@ -56,7 +57,6 @@ class ProfileHeader extends StatelessWidget {
   }
 }
 
-// 🔹 Profile Stats (HP, XP, Strength)
 class ProfileStats extends StatelessWidget {
   const ProfileStats({super.key});
 
@@ -69,8 +69,8 @@ class ProfileStats extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildStatRow("HP", "100"),
-            _buildStatRow("Level", "3"),
+            _buildStatRow("XP", "1200/1500"),
+            _buildStatRow("Strength", "85"),
           ],
         ),
       ),
@@ -81,14 +81,13 @@ class ProfileStats extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        Text(value, style: const TextStyle(fontSize: 18, color: Colors.blue)),
+        Text(label, style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold)), // Nicer font
+        Text(value, style: GoogleFonts.lato(fontSize: 18, color: Colors.blue)), // Nicer font
       ],
     );
   }
 }
 
-// 🔹 Profile Achievements (List of Achievements)
 class ProfileAchievements extends StatelessWidget {
   const ProfileAchievements({super.key});
 
@@ -97,33 +96,25 @@ class ProfileAchievements extends StatelessWidget {
     return Expanded(
       child: SingleChildScrollView(
         child: Column(
-          children: const [
-            Card(
-              color: Colors.blueGrey, // Example styling
-              margin: EdgeInsets.all(10),
-              child: ListTile(
-                leading: Icon(Icons.star, color: Colors.amber), 
-                title: Text("First Achievement"),
-              ),
-            ),
-            Card(
-              color: Colors.blueGrey, // Example styling
-              margin: EdgeInsets.all(10),
-              child: ListTile(
-                leading: Icon(Icons.star, color: Colors.amber), 
-                title: Text("Second Achievement"),
-              ),
-            ),
-            // Wrapped last tile
-            Card(
-              color: Colors.blueGrey, // Example styling
-              margin: EdgeInsets.all(10),
-              child: ListTile(
-                leading: Icon(Icons.star, color: Colors.amber), 
-                title: Text("Third Achievement"),
-              ),
-            ),
+          children: [
+            _buildAchievementCard("First Achievement"),
+            _buildAchievementCard("Second Achievement"),
+            _buildAchievementCard("Third Achievement"),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAchievementCard(String achievement) {
+    return Card(
+      color: Colors.blueGrey,
+      margin: const EdgeInsets.all(10),
+      child: ListTile(
+        leading: const Icon(Icons.star, color: Colors.amber),
+        title: Text(
+          achievement,
+          style: GoogleFonts.lato(fontSize: 16, color: Colors.yellow), // Yellow text, nicer font
         ),
       ),
     );
