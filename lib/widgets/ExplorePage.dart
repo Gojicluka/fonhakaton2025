@@ -19,39 +19,16 @@ class ExplorePage extends StatelessWidget {
       body: ListView.builder(
         itemCount: groups.length,
         itemBuilder: (context, index) {
-          final group = groups[index];
-          return GestureDetector(
+          return GroupTile(
+            group: groups[index],
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DetailPage(group: group),
+                  builder: (context) => DetailPage(group: groups[index]),
                 ),
               );
             },
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: group.color,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(group.icon, color: Colors.white, size: 30),
-                  Text(
-                    group.name,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Icon(group.icon, color: Colors.white, size: 30),
-                ],
-              ),
-            ),
           );
         },
       ),
@@ -66,6 +43,43 @@ class Group {
   final String description;
 
   Group(this.name, this.icon, this.color, this.description);
+}
+
+class GroupTile extends StatelessWidget {
+  final Group group;
+  final VoidCallback onTap;
+
+  const GroupTile({super.key, required this.group, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: group.color,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(group.icon, color: Colors.white, size: 30),
+            Text(
+              group.name,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Icon(group.icon, color: Colors.white, size: 30),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class DetailPage extends StatelessWidget {
