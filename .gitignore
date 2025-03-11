@@ -48,3 +48,6 @@ app.*.map.json
 # FVM Version Cache
 .fvm/
 .env
+windows/flutter/
+macos/flutter/
+linux/flutter/

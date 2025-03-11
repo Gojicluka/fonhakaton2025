@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:fonhakaton2025/theme/custom_colors_theme.dart';
+import 'package:fonhakaton2025/widgets/CameraWidget.dart';
 import 'package:fonhakaton2025/widgets/ExplorePage.dart';
 import 'package:fonhakaton2025/widgets/PublicTaskPage.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
@@ -117,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   final List<Widget> _screens = [
     PublicTaskPage(),
     ExplorePage(),
-    Center(child: Text('Text2')),
+    CameraScreen(),
     Center(child: Text('Text4')),
   ];
 
