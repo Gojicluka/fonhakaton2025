@@ -6,104 +6,130 @@ import 'Task.dart';
 import '../achievement.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8FF),
-      appBar: AppBar(
-        title: const SizedBox.shrink(),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: SafeArea( // Wrap with SafeArea
+      appBar: AppBar(title: Text('Profil')),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const ProfileHeader(),
-            const SizedBox(height: 10),
-            Expanded(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 200, // Adjust height as needed
-                    child: XPChart(), // XP Chart widget
-                  ),
-                  const SizedBox(height: 20),
-                  const Expanded(
-                    child: AchievementIcons(), // Achievement icons widget
-                  ),
-                ],
+            // ... (profile picture, name, XP progress, buttons) ...
+            Center(
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage('../../assets/nanana.png'),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 16),
+            Center(
+              child: Text(
+                'myusername',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(height: 16),
+            Text('XP Progress:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            SizedBox(
+              height: 200,
+              child: BarChart(
+                // ... (BarChart code) ...
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                          return Text(days[value.toInt()]);
+                        },
+                      ),
+                    ),
+                  ),
+                  borderData: FlBorderData(show: true),
+                  barGroups: List.generate(7, (index) =>
+                      BarChartGroupData(
+                        x: index,
+                        barRods: [
+                          BarChartRodData(toY: (index + 1) * 10.0, color: Colors.blue, width: 16),
+                        ],
+                      ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    _showAchievementsPopup(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('My Achievements'),
+                          content: Container(
+                            width: double.maxFinite,
+                            child: ProfileAchievements(),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('Close'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
-                  child: const Text("Achievements"),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  ),
+                  child: Text('Achievements'),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    _showTasksPopup(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Done Tasks'),
+                          content: Container(
+                            width: double.maxFinite,
+                            child: ProfileTasks(),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('Close'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
-                  child: const Text("Tasks"),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  ),
+                  child: Text('Tasks'),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 16),
+            Text('Achievements:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            AchievementIcons(), // Use AchievementIcons here
           ],
         ),
       ),
-    );
-  }
-
-  void _showAchievementsPopup(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Achievements", style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
-          content: const SizedBox(
-            width: double.maxFinite, // Make the popup wider
-            child: ProfileAchievements(),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showTasksPopup(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Tasks", style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
-          content: const SizedBox(
-            width: double.maxFinite, // Make the popup wider
-            child: ProfileTasks(),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }

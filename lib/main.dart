@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ProfilePage(),  // 👈 Use ProfilePage as home
+      home:  ProfilePage(),  // 👈 Use ProfilePage as home // removed const
     );
   }
 
