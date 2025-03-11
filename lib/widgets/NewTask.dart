@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'task.dart'; // Import your Task model
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class NewTask extends StatefulWidget {
   const NewTask({super.key});
@@ -11,71 +12,84 @@ class NewTask extends StatefulWidget {
 class _NewTaskState extends State<NewTask> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for input fields
+  // Controllers
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _xpController = TextEditingController();
+  final TextEditingController _durationController = TextEditingController();
+  final TextEditingController _peopleController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _hoursController = TextEditingController();
-  final TextEditingController _minutesController = TextEditingController();
 
-  int _charCount = 0;
-  String _selectedPeople = "1";
-  String _selectedFaculty = "ETF";
-  String _selectedLocation = "Main Hall";
-  String _selectedGroup = currentUser.activeGroups.isNotEmpty
-      ? currentUser.activeGroups.first
-      : "None";
+  Task? _selectedPredefinedTask;
+  Color _selectedColor = Colors.blue;
+  bool _showAdditionalOptions = false;
 
-  final List<String> faculties = ["ETF", "FON", "MATF"];
-  final List<String> locations = [
-    "Main Hall",
-    "Library",
-    "Lab 3",
-    "Classroom 101"
+  final List<Task> predefinedTasks = [
+    Task("None", 0, 0, "", "", "", 0, 0, false, "", "", Colors.grey),
+    Task("Distribute Flyers", 50, 60, "Marketing", "Main Hall", "ETF", 0, 3,
+        true, "Hand out flyers at key locations.", "Admin", Colors.blue),
+    Task("Help at Registration", 100, 120, "Logistics", "Front Desk", "ETF", 0,
+        5, true, "Assist in checking in attendees.", "Admin", Colors.green),
+    Task("Organize Equipment", 80, 90, "Logistics", "Storage Room", "ETF", 0, 2,
+        true, "Sort and distribute equipment.", "Admin", Colors.orange),
+    Task("Guide Visitors", 60, 75, "Public Relations", "Lobby", "ETF", 0, 4,
+        true, "Help visitors find their way.", "Admin", Colors.purple),
   ];
-  final List<String> peopleOptions = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10+"
-  ];
+
+  void _pickColor() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Select Task Color"),
+        content: SingleChildScrollView(
+          child: BlockPicker(
+            pickerColor: _selectedColor,
+            onColorChanged: (color) {
+              setState(() {
+                _selectedColor = color;
+              });
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _setTaskFields(Task task) {
+    setState(() {
+      _titleController.text = task.title;
+      _xpController.text = task.xp.toString();
+      _durationController.text =
+          (task.durationMinutes ~/ 60).toString(); // Convert to hours
+      _peopleController.text = task.neededPeople.toString();
+      _locationController.text = task.location;
+    });
+  }
 
   void _createTask() {
     if (_formKey.currentState!.validate()) {
-      int hours = int.tryParse(_hoursController.text) ?? 0;
-      int minutes = int.tryParse(_minutesController.text) ?? 0;
-      int totalMinutes = (hours * 60) + minutes;
-
+      final int duration = int.parse(_durationController.text) * 60;
       final newTask = Task(
         _titleController.text,
         int.parse(_xpController.text),
-        totalMinutes,
-        _selectedGroup,
-        _selectedLocation,
-        _selectedFaculty,
+        duration,
+        "Custom", // todo GROUP NAME
+        _locationController.text.isEmpty ? "ETF" : _locationController.text,
+        "ETF", // todo SHOULD READ FROM USER
         0,
-        _selectedPeople == "10+" ? 10 : int.parse(_selectedPeople),
-        _selectedGroup == "None" || _isColorGroup(_selectedGroup),
+        _peopleController.text.isEmpty ? 1 : int.parse(_peopleController.text),
+        false, // if group exists
         _descriptionController.text,
-        currentUser.nickname,
+        "User",
+        _selectedColor, // Read selected color
       );
-
       setState(() {
         tasks.add(newTask);
       });
 
-      Navigator.pop(context); // Go back after adding the task
+      Navigator.pop(context);
     }
-  }
-
-  bool _isColorGroup(String group) {
-    return ["Logistika", "Dnevni red", "Mediji", "Red"].contains(group);
   }
 
   @override
@@ -90,49 +104,182 @@ class _NewTaskState extends State<NewTask> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildTextField(_titleController, "Task Name", maxLength: 30),
-                Row(
-                  children: [
-                    Expanded(
-                        child: _buildTextField(_xpController, "XP Reward",
-                            isNumber: true)),
-                    const SizedBox(width: 10),
-                    Expanded(child: _buildTimeInput()), // HH:MM input
-                  ],
+                // Predefined Task Selection
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text("Select from predefined tasks",
+                          style: TextStyle(fontSize: 18)),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<Task>(
+                        value: _selectedPredefinedTask,
+                        items: predefinedTasks
+                            .map((task) => DropdownMenuItem(
+                                  value: task,
+                                  child: Text(task.title),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            _setTaskFields(value);
+                            setState(() => _selectedPredefinedTask = value);
+                          }
+                        },
+                        decoration: const InputDecoration(labelText: "Task"),
+                      ),
+                    ],
+                  ),
                 ),
-                _buildDropdown("People Needed", peopleOptions, _selectedPeople,
-                    (value) {
-                  setState(() => _selectedPeople = value!);
-                }),
-                Row(
-                  children: [
-                    Expanded(
-                        child: _buildDropdown(
-                            "Faculty", faculties, _selectedFaculty, (value) {
-                      setState(() => _selectedFaculty = value!);
-                    })),
-                    const SizedBox(width: 10),
-                    Expanded(
-                        child: _buildDropdown(
-                            "Location", locations, _selectedLocation, (value) {
-                      setState(() => _selectedLocation = value!);
-                    })),
-                  ],
-                ),
-                _buildDescriptionField(),
-                _buildDropdown(
-                    "Group", currentUser.activeGroups, _selectedGroup, (value) {
-                  setState(() => _selectedGroup = value!);
-                }),
-                const SizedBox(height: 30),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: _createTask,
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      textStyle: const TextStyle(fontSize: 18),
-                    ),
-                    child: const Text("Create Task"),
+                const SizedBox(height: 20),
+
+                // Custom Task Creation
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Or create a custom task:",
+                          style: TextStyle(fontSize: 18)),
+                      const SizedBox(height: 10),
+
+                      // Task Name & Color Picker
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _titleController,
+                              maxLength: 30,
+                              decoration:
+                                  const InputDecoration(labelText: "Task Name"),
+                              validator: (value) =>
+                                  value!.isEmpty ? "Enter Task Name" : null,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          GestureDetector(
+                            onTap: _pickColor,
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: _selectedColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.black),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      // Duration & XP Gain
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _durationController,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                  labelText: "Duration (hours)"),
+                              validator: (value) =>
+                                  value!.isEmpty ? "Enter duration" : null,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _xpController,
+                              keyboardType: TextInputType.number,
+                              decoration:
+                                  const InputDecoration(labelText: "XP Gain"),
+                              validator: (value) =>
+                                  value!.isEmpty ? "Enter XP" : null,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      // Expandable Additional Options
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() =>
+                              _showAdditionalOptions = !_showAdditionalOptions);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Additional options",
+                                style: TextStyle(fontSize: 18)),
+                            Icon(
+                              _showAdditionalOptions
+                                  ? Icons.expand_less
+                                  : Icons.expand_more,
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (_showAdditionalOptions)
+                        Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _peopleController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                        labelText: "People Needed"),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _locationController,
+                                    decoration: const InputDecoration(
+                                        labelText: "Location"),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: _descriptionController,
+                              maxLength: 80,
+                              decoration: const InputDecoration(
+                                labelText: "Description",
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) =>
+                                  value!.isEmpty ? "Enter a description" : null,
+                            ),
+                          ],
+                        ),
+
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(top: 20), // Adjust as needed
+                        child: Center(
+                          child: ElevatedButton(
+                            onPressed: _createTask,
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 50),
+                              textStyle: const TextStyle(fontSize: 18),
+                            ),
+                            child: const Text("Create Task"),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -142,123 +289,4 @@ class _NewTaskState extends State<NewTask> {
       ),
     );
   }
-
-  Widget _buildTextField(TextEditingController controller, String label,
-      {bool isNumber = false, int? maxLength}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(labelText: label),
-        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-        maxLength: maxLength,
-        validator: (value) => value!.isEmpty ? "Enter $label" : null,
-      ),
-    );
-  }
-
-  Widget _buildTimeInput() {
-    return Row(
-      children: [
-        Expanded(
-          child: TextFormField(
-            controller: _hoursController,
-            decoration: const InputDecoration(labelText: "HH"),
-            keyboardType: TextInputType.number,
-            maxLength: 2,
-            validator: (value) {
-              if (value!.isEmpty) return "Enter hours";
-              int? hours = int.tryParse(value);
-              if (hours == null || hours < 0 || hours > 99) {
-                return "Invalid hours";
-              }
-              return null;
-            },
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5),
-          child: Text(":"),
-        ),
-        Expanded(
-          child: TextFormField(
-            controller: _minutesController,
-            decoration: const InputDecoration(labelText: "MM"),
-            keyboardType: TextInputType.number,
-            maxLength: 2,
-            validator: (value) {
-              if (value!.isEmpty) return "Enter minutes";
-              int? minutes = int.tryParse(value);
-              if (minutes == null || minutes < 0 || minutes > 59) {
-                return "Invalid minutes";
-              }
-              return null;
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDropdown(String label, List<String> items, String selected,
-      ValueChanged<String?> onChanged) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
-      child: DropdownButtonFormField<String>(
-        value: selected,
-        items: items
-            .map((item) => DropdownMenuItem(value: item, child: Text(item)))
-            .toList(),
-        onChanged: onChanged,
-        decoration: InputDecoration(labelText: label),
-      ),
-    );
-  }
-
-  Widget _buildDescriptionField() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextFormField(
-            controller: _descriptionController,
-            decoration: const InputDecoration(labelText: "Description"),
-            maxLines: 3,
-            maxLength: 100,
-            onChanged: (text) {
-              setState(() {
-                _charCount = text.length;
-              });
-            },
-            validator: (value) {
-              if (value!.isEmpty) return "Enter description";
-              return null;
-            },
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              "$_charCount/100 characters",
-              style:
-                  TextStyle(color: _charCount > 100 ? Colors.red : Colors.grey),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
-
-// Updated User class
-class User {
-  final String nickname;
-  final String password;
-  final List<String> activeGroups;
-
-  User(this.nickname, this.password, this.activeGroups);
-}
-
-// Hardcoded current user
-final User currentUser = User(
-    "Irena", "securepassword", ["Global", "Logistika", "Dnevni red", "Mediji"]);

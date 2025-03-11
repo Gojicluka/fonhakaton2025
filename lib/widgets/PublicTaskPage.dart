@@ -45,7 +45,7 @@ class TaskWidget extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: group.color, // Background color = Group color
+            color: task.color, // Background color = Group color
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -146,7 +146,7 @@ class TaskWidget extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: group.color,
+          color: task.color, // todo pull color from task
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
