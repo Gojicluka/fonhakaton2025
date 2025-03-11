@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+class Group {
+  final String name;
+  final IconData icon;
+  final Color color;
+  final String description;
+
+  Group(this.name, this.icon, this.color, this.description);
+}
+
 class ExplorePage extends StatelessWidget {
   ExplorePage({super.key});
 
@@ -34,15 +43,6 @@ class ExplorePage extends StatelessWidget {
       ),
     );
   }
-}
-
-class Group {
-  final String name;
-  final IconData icon;
-  final Color color;
-  final String description;
-
-  Group(this.name, this.icon, this.color, this.description);
 }
 
 class GroupTile extends StatelessWidget {
