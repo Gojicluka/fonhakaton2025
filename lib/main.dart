@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:fonhakaton2025/theme/custom_colors_theme.dart';
+import 'package:fonhakaton2025/widgets/ExplorePage.dart';
+import 'package:fonhakaton2025/widgets/PublicTaskPage.dart';
 
 void main() => runApp(MyApp());
 
@@ -52,9 +54,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   ];
 
   final List<Widget> _screens = [
-    Center(child: Text('Text1')),
+    PublicTaskPage(),
+    ExplorePage(),
     Center(child: Text('Text2')),
-    Center(child: Text('Text3')),
     Center(child: Text('Text4')),
   ];
 

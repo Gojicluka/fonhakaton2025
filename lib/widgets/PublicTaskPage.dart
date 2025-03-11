@@ -16,7 +16,6 @@ class PublicTaskPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Public Tasks")),
       body: ListView.builder(
         itemCount: tasks.length,
         itemBuilder: (context, index) {
