@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../achievement.dart';
+import 'package:fl_chart/fl_chart.dart'; // Import fl_chart package
 import 'Task.dart';
-
-// ... (Task class and task list from task.dart)
+import '../achievement.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -22,50 +21,92 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           children: [
             const ProfileHeader(),
-            // Removed SizedBox(height: 10) here
+            const SizedBox(height: 10),
             Expanded(
               child: Column(
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        "Achievements:",
-                        style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ),
+                  const SizedBox(
+                    height: 200, // Adjust height as needed
+                    child: XPChart(), // XP Chart widget
                   ),
-                  const SizedBox(height: 10),
-                  const Expanded(child: ProfileAchievements()),
+                  const SizedBox(height: 20),
+                  const Expanded(
+                    child: AchievementIcons(), // Achievement icons widget
+                  ),
                 ],
               ),
             ),
-            Expanded(
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        "Tasks:",
-                        style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Expanded(child: ProfileTasks()),
-                ],
-              ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    _showAchievementsPopup(context);
+                  },
+                  child: const Text("Achievements"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _showTasksPopup(context);
+                  },
+                  child: const Text("Tasks"),
+                ),
+              ],
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
-}
 
+  void _showAchievementsPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Achievements", style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
+          content: const SizedBox(
+            width: double.maxFinite, // Make the popup wider
+            child: ProfileAchievements(),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showTasksPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Tasks", style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
+          content: const SizedBox(
+            width: double.maxFinite, // Make the popup wider
+            child: ProfileTasks(),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});
@@ -79,7 +120,7 @@ class ProfileHeader extends StatelessWidget {
         children: [
           const CircleAvatar(
             radius: 50,
-            backgroundImage: AssetImage('../../assets/nanana.png'),
+            backgroundImage: AssetImage('../../assets/image.png'),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -88,7 +129,7 @@ class ProfileHeader extends StatelessWidget {
               children: [
                 Text(
                   "Player Name",
-                  style: GoogleFonts.lato( // Use a more standard font
+                  style: GoogleFonts.lato(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                     color: const Color.fromARGB(255, 2, 1, 14),
@@ -103,7 +144,7 @@ class ProfileHeader extends StatelessWidget {
                       style: GoogleFonts.lato(
                         fontSize: 18,
                         color: const Color.fromARGB(255, 16, 1, 16),
-                        fontWeight: FontWeight.w600, // Slightly bolder
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
@@ -111,7 +152,7 @@ class ProfileHeader extends StatelessWidget {
                       style: GoogleFonts.lato(
                         fontSize: 18,
                         color: const Color(0xFFDDA0DD),
-                        fontWeight: FontWeight.w600, // Slightly bolder
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -125,6 +166,66 @@ class ProfileHeader extends StatelessWidget {
   }
 }
 
+class XPChart extends StatelessWidget {
+  const XPChart({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Generate random XP data for the past week
+    final List<int> xpData = List.generate(7, (index) => (50 + index * 30 + (index % 3) * 20));
+
+    return LineChart(
+      LineChartData(
+        gridData: FlGridData(show: false),
+        titlesData: FlTitlesData(show: false),
+        borderData: FlBorderData(show: false),
+        minX: 0,
+        maxX: 6,
+        minY: 0,
+        maxY: xpData.reduce((value, element) => value > element ? value : element).toDouble(),
+        lineBarsData: [
+          LineChartBarData(
+              spots: xpData.asMap().entries.map((entry) {
+               return FlSpot(entry.key.toDouble(), entry.value.toDouble());
+              }).toList(),
+              isCurved: true,
+              color: const Color(0xFF9C27B0), // Use a list of Color objects
+              barWidth: 5,
+              isStrokeCapRound: true,
+              dotData: FlDotData(show: false),
+              belowBarData: BarAreaData(
+                show: true,
+                color: const Color(0xFF9C27B0).withOpacity(0.3), // Corrected property name
+              ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AchievementIcons extends StatelessWidget {
+  const AchievementIcons({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal, // Horizontal scrolling
+      child: Row(
+        children: allAchievements.map((achievement) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: CircleAvatar(
+              backgroundColor: achievement.color,
+              child: Icon(achievement.icon, color: Colors.white),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
 class ProfileAchievements extends StatelessWidget {
   const ProfileAchievements({super.key});
 
@@ -132,14 +233,14 @@ class ProfileAchievements extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
-        children: allAchievements.map((achievement) { // Koristimo map da generišemo widget-e za svaki achievement
+        children: allAchievements.map((achievement) {
           return _buildAchievementCard(
             context,
             achievement.name,
             achievement.description,
             achievement.icon,
             achievement.color,
-            achievement.dateAchieved ?? DateTime.now(), // Koristimo trenutni datum ako nije postavljen dateAchieved
+            achievement.dateAchieved ?? DateTime.now(),
           );
         }).toList(),
       ),
@@ -226,17 +327,17 @@ class ProfileTasks extends StatelessWidget {
 
   Widget _buildTaskCard(BuildContext context, Task task) {
     return Card(
-      color: Colors.accents[tasks.indexOf(task) % Colors.accents.length], // Different color for each task
+      color: Colors.accents[tasks.indexOf(task) % Colors.accents.length],
       margin: const EdgeInsets.all(10),
       child: ListTile(
-        leading: const Icon(Icons.check, color: Colors.white), // Checked icon
+        leading: const Icon(Icons.check, color: Colors.white),
         title: Text(task.title, style: GoogleFonts.lato(color: Colors.white)),
-        // Add other task details here
       ),
     );
   }
 }
 
+// ... (allAchievements and tasks lists remain the same)
 List<Achievement> allAchievements = [
   Achievement(
     name: "Zlatni Moderator",
