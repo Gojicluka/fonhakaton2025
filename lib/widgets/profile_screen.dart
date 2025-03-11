@@ -283,51 +283,40 @@ class ProfileAchievements extends StatelessWidget {
     return Card(
       color: color,
       margin: const EdgeInsets.all(10),
-      child: InkWell(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text(title, style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
-                content: Text(description),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text('Close'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          child: Stack(
-            children: [
-              ListTile(
-                leading: Icon(icon, color: Colors.white, size: 36),
-                title: Text(
-                  title,
-                  style: GoogleFonts.lato(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        child: Stack(
+          children: [
+            ListTile(
+              leading: Icon(icon, color: Colors.white, size: 36),
+              title: Text(
+                title,
+                style: GoogleFonts.lato(
+                  fontSize: 18,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              Positioned(
-                bottom: 8,
-                right: 8,
+              subtitle: Padding( // Added subtitle for description
+                padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  DateFormat('yyyy-MM-dd').format(date),
-                  style: GoogleFonts.lato(fontSize: 12, color: Colors.white70),
+                  description,
+                  style: GoogleFonts.lato(
+                    fontSize: 14,
+                    color: Colors.white70,
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Text(
+                DateFormat('yyyy-MM-dd').format(date),
+                style: GoogleFonts.lato(fontSize: 12, color: Colors.white70),
+              ),
+            ),
+          ],
         ),
       ),
     );
