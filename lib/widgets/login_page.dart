@@ -67,7 +67,7 @@ class LoginPage extends StatelessWidget {
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => CreateProfilePage()));
                   },
                   child: Text(
-                    'Create Profile',
+                    'Napravi nalog',
                     style: GoogleFonts.lato(fontSize: 18, color: Colors.blue),
                   ),
                 ),
