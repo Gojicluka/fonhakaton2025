@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../achievement.dart'; // Uverite se da je putanja ispravna
+import '../achievement.dart';
+import 'Task.dart';
+
+// ... (Task class and task list from task.dart)
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -18,24 +21,49 @@ class ProfilePage extends StatelessWidget {
       body: Column(
         children: [
           const ProfileHeader(),
-          const SizedBox(height: 20),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                "Achievements:",
-                style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+          // Removed SizedBox(height: 10) here
+          Expanded(
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      "Achievements:",
+                      style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Expanded(child: ProfileAchievements()),
+              ],
             ),
           ),
-          const SizedBox(height: 10),
-          const Expanded(child: ProfileAchievements()),
+          Expanded(
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      "Tasks:",
+                      style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Expanded(child: ProfileTasks()),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 }
+
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});
@@ -43,7 +71,7 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -172,6 +200,36 @@ class ProfileAchievements extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ProfileTasks extends StatelessWidget {
+  const ProfileTasks({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: tasks.map((task) {
+          return _buildTaskCard(
+            context,
+            task,
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildTaskCard(BuildContext context, Task task) {
+    return Card(
+      color: Colors.accents[tasks.indexOf(task) % Colors.accents.length], // Different color for each task
+      margin: const EdgeInsets.all(10),
+      child: ListTile(
+        leading: const Icon(Icons.check, color: Colors.white), // Checked icon
+        title: Text(task.title, style: GoogleFonts.lato(color: Colors.white)),
+        // Add other task details here
       ),
     );
   }
