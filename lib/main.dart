@@ -9,8 +9,69 @@ import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:fonhakaton2025/theme/custom_colors_theme.dart';
 import 'package:fonhakaton2025/widgets/ExplorePage.dart';
 import 'package:fonhakaton2025/widgets/PublicTaskPage.dart';
+import 'package:fonhakaton2025/data/supabase_helper.dart';
+import "package:fonhakaton2025/data/models.dart";
+import "package:fonhakaton2025/data/global.dart";
 
-void main() => runApp(MyApp());
+void main() async {
+  await init_supabase();
+
+  Global.setUser(await SupabaseHelper.getUserByName("Bob Smith"));
+
+  runApp(MyApp());
+}
+
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  @override
+  final Size preferredSize;
+
+  CustomAppBar({Key? key})
+      : preferredSize = Size.fromHeight(kToolbarHeight),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CircleAvatar(
+            backgroundImage: Global.user?.avatarUrl != null
+                ? NetworkImage(Global.user!.avatarUrl!)
+                : null,
+            backgroundColor: Colors.grey[300],
+            child: Global.user?.avatarUrl == null
+                ? Icon(Icons.person, color: Colors.grey[700])
+                : null,
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                Global.user?.name ?? 'Guest',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              Text(
+                'XP: ${Global.user?.xp ?? 0}',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[500],
+                ),
+              ),
+            ],
+          ),
+          IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {},
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -125,19 +186,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     final colors = Theme.of(context).extension<CustomColorsTheme>()!;
     return Scaffold(
       extendBody: true,
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Luka Gojic', // Replace with actual user name
-            ),
-            Text(
-              'XP: 1000', // Replace with actual XP count
-            ),
-          ],
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: NotificationListener<ScrollNotification>(
         onNotification: onScrollNotification,
         child: _screens[_bottomNavIndex],
