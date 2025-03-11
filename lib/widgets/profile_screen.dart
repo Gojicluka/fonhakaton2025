@@ -72,7 +72,7 @@ class ProfileHeader extends StatelessWidget {
                       "Level: 3",
                       style: GoogleFonts.lato(
                         fontSize: 18,
-                        color: const Color(0xFFDDA0DD),
+                        color: const Color.fromARGB(255, 16, 1, 16),
                         fontWeight: FontWeight.w600, // Slightly bolder
                       ),
                     ),
@@ -182,19 +182,19 @@ List<Achievement> allAchievements = [
     name: "Zlatni Moderator",
     description: "Dostignuće za 5 uspešnih moderiranja. Hvala vam na posvećenosti!",
     icon: Icons.military_tech,
-    color: Colors.amber,
+    color: const Color.fromARGB(255, 110, 8, 86),
   ),
   Achievement(
     name: "Srebrni Moderator",
     description: "Dostignuće za 3 uspešna moderiranja. Nastavite sa dobrim radom!",
     icon: Icons.military_tech_outlined,
-    color: Colors.grey,
+    color: const Color.fromARGB(255, 48, 164, 104),
   ),
   Achievement(
     name: "Moderator",
     description: "Dostignuće za jedno uspešno moderiranje. Hvala vam što ste deo tima!",
     icon: Icons.people,
-    color: Colors.blue,
+    color: const Color.fromARGB(255, 2, 40, 71),
   ),
   Achievement(
     name: "Zapisničar",
@@ -206,13 +206,13 @@ List<Achievement> allAchievements = [
     name: "Zlatni Čuvar Fakulteta",
     description: "Dostignuće za 5 uspešnih čuvanja ulaza fakulteta. Hvala vam na posvećenosti i brizi!",
     icon: Icons.security,
-    color: Colors.amber,
+    color: const Color.fromARGB(255, 196, 101, 166),
   ),
   Achievement(
     name: "Srebrni Čuvar Fakulteta",
     description: "Dostignuće za 3 uspešna čuvanja ulaza fakulteta. Vaš rad je od velike pomoći!",
     icon: Icons.security_outlined,
-    color: Colors.grey,
+    color: const Color.fromARGB(255, 85, 24, 24),
   ),
   Achievement(
     name: "Čuvar Fakulteta",
@@ -224,6 +224,6 @@ List<Achievement> allAchievements = [
     name: "Redar",
     description: "Dostignuće za učešće u redarskoj službi na blokadama. Hvala vam na angažmanu!",
     icon: Icons.accessibility_new,
-    color: Colors.orange,
+    color: const Color.fromARGB(255, 175, 110, 14),
   ),
 ];
