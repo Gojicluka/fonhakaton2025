@@ -15,20 +15,30 @@ class ProfilePage extends StatelessWidget {
         children: [
           const ProfileHeader(),
           const SizedBox(height: 20),
+          Align( // Added Align widget
+            alignment: Alignment.centerLeft, // Align to the left
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                "Achievements:",
+                style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
           const ProfileAchievements(),
         ],
       ),
     );
   }
 }
-
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start, // Align items to the top
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const CircleAvatar(
           radius: 50,
@@ -40,21 +50,22 @@ class ProfileHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("Player Name", style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8), // Spacing between name and stats
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Level: 3", style: GoogleFonts.lato(fontSize: 18, color: Color(0xFFFFD700))),
+                  Text("XP: 1200/1500", style: GoogleFonts.lato(fontSize: 18, color: Color(0xFFFFD700))),
+                ],
+              ),
             ],
           ),
-        ),
-        const SizedBox(width: 16), // Add spacing between header and stats
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Align stats to the left
-          children: [
-            Text("Level: 3", style: GoogleFonts.lato(fontSize: 18, color: Colors.blue)),
-            Text("XP: 1200/1500", style: GoogleFonts.lato(fontSize: 18, color: Colors.blue)),
-          ],
         ),
       ],
     );
   }
 }
+
 
 class ProfileAchievements extends StatelessWidget {
   const ProfileAchievements({super.key});
