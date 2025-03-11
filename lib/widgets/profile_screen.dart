@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart'; // Import google_fonts
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -7,15 +7,13 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5), // Nicer off-white background
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         title: const Text('Profile Page'),
       ),
       body: Column(
         children: [
           const ProfileHeader(),
-          const SizedBox(height: 20),
-          const ProfileStats(),
           const SizedBox(height: 20),
           const ProfileAchievements(),
         ],
@@ -30,6 +28,7 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start, // Align items to the top
       children: [
         const CircleAvatar(
           radius: 50,
@@ -40,49 +39,18 @@ class ProfileHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Player Name", style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold)), // Nicer font
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Level: 3", style: GoogleFonts.lato(fontSize: 18, color: Colors.blue)), // Nicer font
-                  Text("XP: 1000", style: GoogleFonts.lato(fontSize: 18, color: Colors.blue)), // Nicer font
-                ],
-              ),
+              Text("Player Name", style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold)),
             ],
           ),
         ),
-      ],
-    );
-  }
-}
-
-class ProfileStats extends StatelessWidget {
-  const ProfileStats({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+        const SizedBox(width: 16), // Add spacing between header and stats
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start, // Align stats to the left
           children: [
-            _buildStatRow("XP", "1200/1500"),
-            _buildStatRow("Strength", "85"),
+            Text("Level: 3", style: GoogleFonts.lato(fontSize: 18, color: Colors.blue)),
+            Text("XP: 1200/1500", style: GoogleFonts.lato(fontSize: 18, color: Colors.blue)),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildStatRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold)), // Nicer font
-        Text(value, style: GoogleFonts.lato(fontSize: 18, color: Colors.blue)), // Nicer font
       ],
     );
   }
