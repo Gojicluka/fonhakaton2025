@@ -25,6 +25,10 @@
 - location at which the task needs to be done (visually represented with also a pin icon)
 - how many people are needed and how many people applied to finish it (this will visually be represented as needed/applied with a / in between the two numbers)
 
+### TASK todo
+
+- make functions that support working with database -> adding tasks, fetching tasks. put them in appropriate places!
+
 kako radi firebase??
 
 ## USER
@@ -38,8 +42,30 @@ kako radi firebase??
 
 # todo
 
-- odvoji task u zaseban task.dart fajl []
-- implementirati dugme za "dodaj novi task" u PublicTaskPage, i stranicu preko koje se dodaje novi task []
+- napraviti da quest ima vreme trajanja: kad se prijavis da ces da ga uradis, ako ga ne uradis do odredjenog trenutka, task je fejlovan? [] da ljudi ne bi trolovali i uzimali sve taskove, ili eventualno da ogranicimo broj questova koji mogu biti aktivni?
+
+- odvoji task u zaseban task.dart fajl [T]
+- implementirati stranicu preko koje se dodaje novi task []
 - implementirati sortiranje taskova -> po vremenu ili po lokaciji? []
 - implementirati "moji taskovi" stranicu []
 - implementirati korisnika koji ce imati niz id-eva svojih taskova. []
+
+- napraviti stranicu kojom korisnik kaze da je zavrsio task -> i slika sliku i salje na server
+- napraviti stranicu na kojoj korisnik gleda taskove koje je napravio, i za koji task je ko poslao da ga je zavrsio. korisnik moze da kaze da li je task izvrsen uspesno, ili da odbaci pokusaj izvrsavanja. o tome ce korisnik biti notifyovan u "moji taskovi" prozoru
+
+- "moji taskovi"
+    - ongoing
+    - updated (completed or failed -> notifications which dissapear after you open them up and accept them!)
+
+
+- napraviti stranicu kojom se pravi nalog
+- napraviti verifikaciju osobe
+- napraviti mogucnost da REPORTUJES OSOBU
+
+- napraviti DARK MODE []
+
+- napraviti lvl sistem i lvl up sistem []
+    - napraviti neki kul veliki broj za level !!!
+    - napraviti XP bar za osobu!!!
+
+

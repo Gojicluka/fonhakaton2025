@@ -126,6 +126,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:fonhakaton2025/widgets/ExplorePage.dart';
+import 'package:fonhakaton2025/widgets/NewTask.dart';
 import 'package:fonhakaton2025/widgets/PublicTaskPage.dart';
 
 void main() {
@@ -143,7 +144,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: PublicTaskPage(),
+      home: NewTask(),
     );
   }
 }
