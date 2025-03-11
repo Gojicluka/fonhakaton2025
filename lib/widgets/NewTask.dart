@@ -67,6 +67,50 @@ class _NewTaskState extends State<NewTask> {
     });
   }
 
+  // void _createTask() {
+  //   if (_formKey.currentState!.validate()) {
+  //     final int duration = int.parse(_durationController.text) * 60;
+  //     final newTask = Task(
+  //       _titleController.text,
+  //       int.parse(_xpController.text),
+  //       duration,
+  //       "Custom", // todo GROUP NAME
+  //       _locationController.text.isEmpty ? "ETF" : _locationController.text,
+  //       "ETF", // todo SHOULD READ FROM USER
+  //       0,
+  //       _peopleController.text.isEmpty ? 1 : int.parse(_peopleController.text),
+  //       false, // if group exists
+  //       _descriptionController.text,
+  //       "User",
+  //       _selectedColor, // Read selected color
+  //     );
+  //     setState(() {
+  //       tasks.add(newTask);
+  //     });
+
+  //     void _createTask() {
+  //       if (_formKey.currentState!.validate()) {
+  //         final int duration = int.parse(_durationController.text) * 60;
+  //         final newTask = Task(
+  //           _titleController.text,
+  //           int.parse(_xpController.text),
+  //           duration,
+  //           "Custom", // todo GROUP NAME
+  //           _locationController.text.isEmpty ? "ETF" : _locationController.text,
+  //           "ETF", // todo SHOULD READ FROM USER
+  //           0,
+  //           _peopleController.text.isEmpty
+  //               ? 1
+  //               : int.parse(_peopleController.text),
+  //           false, // if group exists
+  //           _descriptionController.text,
+  //           "User",
+  //           _selectedColor, // Read selected color
+  //         );
+
+  //         setState(() {
+  //           tasks.add(newTask);
+
   void _createTask() {
     if (_formKey.currentState!.validate()) {
       final int duration = int.parse(_durationController.text) * 60;
@@ -74,9 +118,9 @@ class _NewTaskState extends State<NewTask> {
         _titleController.text,
         int.parse(_xpController.text),
         duration,
-        "Custom", // todo GROUP NAME
+        "Custom", // TODO: GROUP NAME
         _locationController.text.isEmpty ? "ETF" : _locationController.text,
-        "ETF", // todo SHOULD READ FROM USER
+        "ETF", // TODO: SHOULD READ FROM USER
         0,
         _peopleController.text.isEmpty ? 1 : int.parse(_peopleController.text),
         false, // if group exists
@@ -84,11 +128,47 @@ class _NewTaskState extends State<NewTask> {
         "User",
         _selectedColor, // Read selected color
       );
+
       setState(() {
         tasks.add(newTask);
       });
 
-      Navigator.pop(context);
+      // Show alert dialog with task details
+      showDialog(
+        context: context, // Make sure context is correct
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Task Created"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Title: ${newTask.title}"),
+                Text("XP: ${newTask.xp}"),
+                Text("Duration: ${newTask.durationMinutes} min"),
+                Text("Group: ${newTask.groupName}"),
+                Text("Location: ${newTask.location}"),
+                Text("Faculty: ${newTask.faculty}"),
+                Text("Needed People: ${newTask.neededPeople}"),
+                Text("Public: ${newTask.isPublic ? "Yes" : "No"}"),
+                Text("Description: ${newTask.description}"),
+                Text("Created by: ${newTask.createdBy}"),
+                Container(
+                  width: 50,
+                  height: 20,
+                  color: newTask.color,
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
