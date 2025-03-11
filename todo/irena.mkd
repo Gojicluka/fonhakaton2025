@@ -15,3 +15,22 @@
 ## stranica za RG SEPECIFIC TASKOVE
 
 - 
+
+
+## TASK
+- unique ID -> globally assigned on creation
+- Public: bool
+- xp 
+- how long it takes to complete the task (visually presented in the format of hh:mm, remembered as number of minutes, when representing hours divide minutes by 60)
+- location at which the task needs to be done (visually represented with also a pin icon)
+- how many people are needed and how many people applied to finish it (this will visually be represented as needed/applied with a / in between the two numbers)
+
+kako radi firebase??
+
+## USER
+- has a list of task ID-s -> the firebase is searched for these tasks?
+- 
+
+
+## GROUP
+- either a group or a color, and depending on the type 
