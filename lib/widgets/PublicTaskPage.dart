@@ -1,20 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fonhakaton2025/widgets/Group.dart';
 
 class PublicTaskPage extends StatelessWidget {
   PublicTaskPage({super.key});
-
-  final List<Group> groups = [
-    Group("Logistika", Icons.shield, Colors.brown,
-        "A group responsible for managing supplies, routes, and resources."),
-    Group("Dnevni red", Icons.schedule, Colors.blueGrey,
-        "A group that organizes schedules, meetings, and plans."),
-    Group("Mediji", Icons.auto_awesome, Colors.deepPurple,
-        "A group handling magical broadcasts, announcements, and media."),
-    Group("Red", Icons.local_fire_department, Colors.red, "A fiery challenge."),
-    Group("Blue", Icons.water, Colors.blue, "A water-based mission."),
-    Group(
-        "Pink", Icons.local_florist, Colors.pink, "A soft and delicate task."),
-  ];
 
   final List<PublicTask> tasks = [
     PublicTask("Deliver Supplies", 50, "2h", "Logistika"),
@@ -42,15 +30,6 @@ class PublicTaskPage extends StatelessWidget {
       ),
     );
   }
-}
-
-class Group {
-  final String name;
-  final IconData icon;
-  final Color color;
-  final String description;
-
-  Group(this.name, this.icon, this.color, this.description);
 }
 
 class PublicTask {

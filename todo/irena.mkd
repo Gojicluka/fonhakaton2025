@@ -5,9 +5,13 @@
 - ** grupa moze imati listu clanova!
 
 
-## stranica za taskove - TASK
+## stranica za JAVNE taskove - PublicTask!!!
 
 - KO je napravio task (username)
 - kojoj grupi pripada task (ili ni jednoj, ili nekoj od grupa) => pojedinac ce isto pripadati grupi, NOGROUP
 - RG taskovi: imaju obelezje odgovarajuce grupe
+- 
+
+## stranica za RG SEPECIFIC TASKOVE
+
 - 
