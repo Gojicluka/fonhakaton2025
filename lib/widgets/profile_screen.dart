@@ -18,47 +18,49 @@ class ProfilePage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Column(
-        children: [
-          const ProfileHeader(),
-          // Removed SizedBox(height: 10) here
-          Expanded(
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      "Achievements:",
-                      style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
+      body: SafeArea( // Wrap with SafeArea
+        child: Column(
+          children: [
+            const ProfileHeader(),
+            // Removed SizedBox(height: 10) here
+            Expanded(
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        "Achievements:",
+                        style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                const Expanded(child: ProfileAchievements()),
-              ],
+                  const SizedBox(height: 10),
+                  const Expanded(child: ProfileAchievements()),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      "Tasks:",
-                      style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
+            Expanded(
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        "Tasks:",
+                        style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                const Expanded(child: ProfileTasks()),
-              ],
+                  const SizedBox(height: 10),
+                  const Expanded(child: ProfileTasks()),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -77,7 +79,7 @@ class ProfileHeader extends StatelessWidget {
         children: [
           const CircleAvatar(
             radius: 50,
-            backgroundImage: AssetImage('../../assets/image.png'),
+            backgroundImage: AssetImage('../../assets/nanana.png'),
           ),
           const SizedBox(width: 20),
           Expanded(
