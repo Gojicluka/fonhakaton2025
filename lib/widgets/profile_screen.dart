@@ -6,6 +6,12 @@ import 'Task.dart';
 import '../achievement.dart';
 
 class ProfilePage extends StatelessWidget {
+
+  //generic to be changed later
+  void handleLogout() {
+    // Currently, it does nothing
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,6 +21,22 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Positioned(
+            top: 8,
+            right: 8,
+            child: TextButton.icon(
+              onPressed: handleLogout, // Call the generic function
+              icon: Icon(
+                Icons.logout,
+                color: Colors.purple,
+                size: 18,
+              ),
+              label: Text(
+                'Logout',
+                style: TextStyle(color: Colors.purple),
+              ),
+            ),
+          ),
             // ... (profile picture, name, XP progress, buttons) ...
             Center(
               child: CircleAvatar(
