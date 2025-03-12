@@ -15,7 +15,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Profil')),
+      appBar: AppBar(title: Text('Moj nalog')),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
@@ -32,7 +32,7 @@ class ProfilePage extends StatelessWidget {
                 size: 18,
               ),
               label: Text(
-                'Logout',
+                'Odjava',
                 style: TextStyle(color: Colors.purple),
               ),
             ),
@@ -47,12 +47,12 @@ class ProfilePage extends StatelessWidget {
             SizedBox(height: 16),
             Center(
               child: Text(
-                'myusername',
+                'mimimi',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(height: 16),
-            Text('XP Progress:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Trenutni XP:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
             SizedBox(
               height: 200,
@@ -66,7 +66,7 @@ class ProfilePage extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                          final days = ['Pon', 'Uto', 'Sre', 'Cet', 'Pet', 'Sub', 'Ned'];
                           return Text(days[value.toInt()]);
                         },
                       ),
@@ -94,14 +94,14 @@ class ProfilePage extends StatelessWidget {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('My Achievements'),
+                          title: Text('Moja dostignuća'),
                           content: Container(
                             width: double.maxFinite,
                             child: ProfileAchievements(),
                           ),
                           actions: <Widget>[
                             TextButton(
-                              child: Text('Close'),
+                              child: Text('Nazad'),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
@@ -114,7 +114,7 @@ class ProfilePage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   ),
-                  child: Text('Achievements'),
+                  child: Text('Dostignuća'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -122,14 +122,14 @@ class ProfilePage extends StatelessWidget {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Done Tasks'),
+                          title: Text('Završeni kvestovi'),
                           content: Container(
                             width: double.maxFinite,
                             child: ProfileTasks(),
                           ),
                           actions: <Widget>[
                             TextButton(
-                              child: Text('Close'),
+                              child: Text('Nazad'),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
@@ -142,12 +142,12 @@ class ProfilePage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   ),
-                  child: Text('Tasks'),
+                  child: Text('Kvest'),
                 ),
               ],
             ),
             SizedBox(height: 16),
-            Text('Achievements:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Dostignuća:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             AchievementIcons(), // Use AchievementIcons here
           ],
         ),
@@ -176,7 +176,7 @@ class ProfileHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Player Name",
+                  "imee",
                   style: GoogleFonts.lato(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
@@ -188,7 +188,7 @@ class ProfileHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Level: 3",
+                      "Nivo: 3",
                       style: GoogleFonts.lato(
                         fontSize: 18,
                         color: const Color.fromARGB(255, 16, 1, 16),
@@ -225,7 +225,16 @@ class XPChart extends StatelessWidget {
     return LineChart(
       LineChartData(
         gridData: FlGridData(show: false),
-        titlesData: FlTitlesData(show: false),
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false), // Hide numbers on the left
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: false, // Hide numbers at the bottom
+            ),
+          ),
+        ),
         borderData: FlBorderData(show: false),
         minX: 0,
         maxX: 6,
@@ -233,18 +242,18 @@ class XPChart extends StatelessWidget {
         maxY: xpData.reduce((value, element) => value > element ? value : element).toDouble(),
         lineBarsData: [
           LineChartBarData(
-              spots: xpData.asMap().entries.map((entry) {
-               return FlSpot(entry.key.toDouble(), entry.value.toDouble());
-              }).toList(),
-              isCurved: true,
-              color: const Color(0xFF9C27B0), // Use a list of Color objects
-              barWidth: 5,
-              isStrokeCapRound: true,
-              dotData: FlDotData(show: false),
-              belowBarData: BarAreaData(
-                show: true,
-                color: const Color(0xFF9C27B0).withOpacity(0.3), // Corrected property name
-              ),
+            spots: xpData.asMap().entries.map((entry) {
+              return FlSpot(entry.key.toDouble(), entry.value.toDouble());
+            }).toList(),
+            isCurved: true,
+            color: const Color(0xFF9C27B0),
+            barWidth: 5,
+            isStrokeCapRound: true,
+            dotData: FlDotData(show: false),
+            belowBarData: BarAreaData(
+              show: true,
+              color: const Color(0xFF9C27B0).withOpacity(0.3),
+            ),
           ),
         ],
       ),
@@ -356,22 +365,35 @@ class ProfileTasks extends StatelessWidget {
           return _buildTaskCard(
             context,
             task,
+            DateTime.now()
           );
         }).toList(),
       ),
     );
   }
 
-  Widget _buildTaskCard(BuildContext context, Task task) {
-    return Card(
-      color: Colors.accents[tasks.indexOf(task) % Colors.accents.length],
-      margin: const EdgeInsets.all(10),
-      child: ListTile(
-        leading: const Icon(Icons.check, color: Colors.white),
-        title: Text(task.title, style: GoogleFonts.lato(color: Colors.white)),
-      ),
-    );
-  }
+  Widget _buildTaskCard(BuildContext context, Task task, DateTime date) {
+  return Card(
+    color: Colors.accents[tasks.indexOf(task) % Colors.accents.length],
+    margin: const EdgeInsets.all(10),
+    child: Stack( // Use Stack to overlay the date
+      children: [
+        ListTile(
+          leading: const Icon(Icons.check, color: Colors.white),
+          title: Text(task.title, style: GoogleFonts.lato(color: Colors.white)),
+        ),
+        Positioned( // Position the date at the top right
+          top: 8,
+          right: 8,
+          child: Text(
+            DateFormat('MMM dd, yyyy').format(date), // Format the date
+            style: GoogleFonts.lato(color: Colors.white, fontSize: 12),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 }
 
 // ... (allAchievements and tasks lists remain the same)
