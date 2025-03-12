@@ -14,6 +14,7 @@ import 'package:fonhakaton2025/widgets/PublicTaskPage.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
 import "package:fonhakaton2025/data/models.dart";
 import "package:fonhakaton2025/data/global.dart";
+import 'package:fonhakaton2025/widgets/TaskSelectionScreen.dart';
 import 'package:fonhakaton2025/widgets/profile_screen.dart';
 
 void main() async {
@@ -120,7 +121,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   final List<Widget> _screens = [
     PublicTaskPage(),
     ExplorePage(),
-    CameraScreen(),
+    // CameraScreen(),
+    TaskSelectionScreen(),
     ProfilePage(),
   ];
 
