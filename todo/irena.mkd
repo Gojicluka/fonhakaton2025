@@ -118,3 +118,10 @@ TODO:
 
 
 - izoluj prikaz taska kako bi mogla da ga koristis i kod prihvacenih taskova, samo ces tamo izmeniti dugme tako da kaze "Odustani".!!!!
+
+
+============
+final todo:
+
+- boje za backend za taskove, osmisli 8 boja koje su medjusobno skladne
+- priblizi im emoji kao sto je to luka mislio, uz boju bukvalno

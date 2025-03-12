@@ -17,6 +17,7 @@ import 'package:fonhakaton2025/data/supabase_helper.dart';
 import "package:fonhakaton2025/data/models.dart";
 import "package:fonhakaton2025/data/global.dart";
 import 'package:fonhakaton2025/widgets/TaskSelectionScreen.dart';
+import 'package:fonhakaton2025/widgets/leaderboard.dart';
 import 'package:fonhakaton2025/widgets/profile_screen.dart';
 
 void main() async {
@@ -91,8 +92,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Fonhakaton2025',
-      theme: AppTheme.get(isLight: true),
-      darkTheme: AppTheme.get(isLight: false),
+      theme: AppTheme.get(),
+      darkTheme:
+          AppTheme.get(), // Or remove this line since there's no dark theme
       home: MyHomePage(title: 'Animated Navigation Bottom Bar'),
     );
   }
@@ -130,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     PublicTaskPage(),
     MyTasks(),
     ProfilePage(),
-    TaskSelectionScreen(),
+    LeaderboardPage(),
     TaskSelectionScreen(), // Add this
   ];
 

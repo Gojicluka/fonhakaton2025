@@ -21,58 +21,65 @@ class LeaderboardPage extends StatelessWidget {
 
   LeaderboardPage({super.key});
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text(
-        "🏆 Leaderboard",
-        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 242, 38)),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "🏆 Leaderboard",
+          style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF6F4F37)),
+        ),
+        centerTitle: true,
+        backgroundColor: Color(
+            0xFFF6E6C2), // const Color.fromARGB(255, 78, 125, 234), // todo change
+        elevation: 0,
       ),
-      centerTitle: true,
-      backgroundColor: const Color.fromARGB(255, 78, 125, 234),
-      elevation: 0,
-    ),
-    body: Container(
-      color: Color(0xFF6F4F37) , // Light wood brown color
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          // Top 3 Players Podium
-          _buildPodium(),
+      body: Container(
+        color: Color(0xFF6F4F37), // Light wood brown color
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            // Top 3 Players Podium
+            _buildPodium(),
 
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          // Remaining Players List
-          Expanded(
-            child: ListView.builder(
-              itemCount: players.length - 3,
-              itemBuilder: (context, index) {
-                final player = players[index + 3];
-                return _buildPlayerTile(index + 4, player);
-              },
+            // Remaining Players List
+            Expanded(
+              child: ListView.builder(
+                itemCount: players.length - 3,
+                itemBuilder: (context, index) {
+                  final player = players[index + 3];
+                  return _buildPlayerTile(index + 4, player);
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   // Podium Design for Top 3
   Widget _buildPodium() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildPodiumPlayer(players[1], 2, 80, Colors.grey[400]!), // 2nd place (Silver)
-        _buildPodiumPlayer(players[0], 1, 100, Colors.yellow[700]!), // 1st place (Gold)
-        _buildPodiumPlayer(players[2], 3, 60, Colors.brown[400]!), // 3rd place (Bronze)
+        _buildPodiumPlayer(
+            players[1], 2, 80, Colors.grey[400]!), // 2nd place (Silver)
+        _buildPodiumPlayer(
+            players[0], 1, 100, Colors.yellow[700]!), // 1st place (Gold)
+        _buildPodiumPlayer(
+            players[2], 3, 60, Colors.brown[400]!), // 3rd place (Bronze)
       ],
     );
   }
 
-  Widget _buildPodiumPlayer(Player player, int rank, double height, Color color) {
+  Widget _buildPodiumPlayer(
+      Player player, int rank, double height, Color color) {
     return Column(
       children: [
         CircleAvatar(
@@ -80,7 +87,11 @@ Widget build(BuildContext context) {
           backgroundImage: NetworkImage(player.imageUrl),
         ),
         const SizedBox(height: 8),
-        Text(player.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 242, 38))),
+        Text(player.name,
+            style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 253, 242, 38))),
         Container(
           width: 70,
           height: height,
@@ -90,10 +101,13 @@ Widget build(BuildContext context) {
             borderRadius: BorderRadius.circular(8),
           ),
           child: rank == 1
-              ? const Icon(Icons.military_tech, color: Colors.yellow, size: 30) // Gold Medal
+              ? const Icon(Icons.military_tech,
+                  color: Colors.yellow, size: 30) // Gold Medal
               : rank == 2
-                  ? const Icon(Icons.military_tech, color: Colors.grey, size: 30) // Silver Medal
-                  : const Icon(Icons.military_tech, color: Colors.brown, size: 30), // Bronze Medal
+                  ? const Icon(Icons.military_tech,
+                      color: Colors.grey, size: 30) // Silver Medal
+                  : const Icon(Icons.military_tech,
+                      color: Colors.brown, size: 30), // Bronze Medal
         ),
       ],
     );
@@ -105,7 +119,7 @@ Widget build(BuildContext context) {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 78, 125, 234),
+        color: Colors.brown,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -120,7 +134,10 @@ Widget build(BuildContext context) {
           // For players ranked 4th and below, just display the rank as a number
           Text(
             "#$rank",
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 242, 38)),
+            style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 253, 242, 38)),
           ),
           const SizedBox(width: 12),
           CircleAvatar(
@@ -131,12 +148,18 @@ Widget build(BuildContext context) {
           Expanded(
             child: Text(
               player.name,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color.fromARGB(255, 253, 242, 38)),
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Color.fromARGB(255, 253, 242, 38)),
             ),
           ),
           Text(
             "${player.points} xp",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color:  Color.fromARGB(255, 253, 242, 38)),
+            style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 253, 242, 38)),
           ),
         ],
       ),

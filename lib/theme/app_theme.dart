@@ -3,50 +3,48 @@ import 'package:flutter/material.dart';
 import 'custom_colors_theme.dart';
 
 class AppTheme {
-  static HexColor colorOrange = HexColor('#FFA400');
-  static HexColor colorGray = HexColor('#373A36');
+  static const Color primaryColor = Color(0xFF007AFF); // Electric Blue
+  static const Color accentColor = Color(0xFFFFC107); // Gold
+  static const Color backgroundColor = Color(0xFFFFF8E1); // Soft Cream
+  static const Color surfaceColor = Color(0xFFF5F5F5); // Light Gray
+  static const Color textColor = Color(0xFF1A1A2E); // Deep Navy
 
-  static ThemeData get({required bool isLight}) {
-    final base = isLight ? ThemeData.light() : ThemeData.dark();
-    return base.copyWith(
-      extensions: [
-        CustomColorsTheme(
-          colorLabelColor: isLight ? Colors.grey : const Color(0xFF7A7FB0),
-          bottomNavigationBarBackgroundColor:
-              isLight ? Colors.white : colorGray,
-          activeNavigationBarColor: isLight ? Colors.black : colorOrange,
-          notActiveNavigationBarColor: Colors.grey,
-          shadowNavigationBarColor: isLight ? Colors.white : colorOrange,
-        )
-      ],
+  static ThemeData get() {
+    return ThemeData(
+      primaryColor: primaryColor,
+      scaffoldBackgroundColor: backgroundColor,
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: isLight ? Colors.brown : colorOrange,
+        backgroundColor: accentColor,
+        foregroundColor: Colors.black,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: isLight ? Colors.white : colorGray,
-        foregroundColor: isLight ? Colors.black : Colors.white,
+        backgroundColor: surfaceColor,
+        foregroundColor: textColor,
         titleTextStyle: TextStyle(
-          color: isLight ? Colors.black : Colors.white,
+          color: textColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
       ),
-      colorScheme: base.colorScheme.copyWith(
-        surface: isLight ? Colors.blue : colorGray,
-        background: isLight ? Colors.white : colorGray,
+      colorScheme: ColorScheme.light(
+        primary: primaryColor,
+        secondary: accentColor,
+        background: backgroundColor,
+        surface: surfaceColor,
+        onPrimary: Colors.white,
+        onSecondary: Colors.black,
+        onBackground: textColor,
+        onSurface: textColor,
       ),
+      extensions: [
+        CustomColorsTheme(
+          colorLabelColor: Colors.grey.shade700,
+          bottomNavigationBarBackgroundColor: Colors.white,
+          activeNavigationBarColor: primaryColor,
+          notActiveNavigationBarColor: Colors.grey,
+          shadowNavigationBarColor: Colors.black.withOpacity(0.1),
+        )
+      ],
     );
-  }
-}
-
-class HexColor extends Color {
-  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
-
-  static int _getColorFromHex(String hexColor) {
-    hexColor = hexColor.toUpperCase().replaceAll('#', '');
-    if (hexColor.length == 6) {
-      hexColor = 'FF' + hexColor;
-    }
-    return int.parse(hexColor, radix: 16);
   }
 }
