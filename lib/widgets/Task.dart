@@ -1,64 +1,76 @@
 import 'package:flutter/material.dart';
 // Generates a static task ID (will be dynamic later)
+import "package:fonhakaton2025/data/models/task.dart";
 
 int generateTaskId() {
   return 1001; // Placeholder, replace with backend logic later
 }
 
-class Task {
-  final String title;
-  final int xp;
-  int durationMinutes; // how long it lasts until it expires and gets deleted !!!, mutable field!
-  final String groupName;
-  final String location;
-  final String faculty; // Added faculty
-  int appliedPeople; // Mutable
-  final int neededPeople;
-  bool isPublic;
-  final String description;
-  final String createdBy; // Nickname of the creator
-  final int id;
-  final Color? color;
-  // todo remember color value, but how?
-
-  Task(
-      this.title,
-      this.xp,
-      this.durationMinutes,
-      this.groupName,
-      this.location,
-      this.faculty, // Added in constructor
-      this.appliedPeople,
-      this.neededPeople,
-      this.isPublic,
-      this.description,
-      this.createdBy,
-      this.color)
-      : id = generateTaskId();
-}
-
 final List<Task> tasks = [
   Task(
-      "Baci smeće",
-      20,
-      15,
-      "Logistika",
-      "Kontejner ispred zgrade",
-      "ETF",
-      1,
-      0,
-      true,
-      "Iznesi smeće do kontejnera ispred zgrade.",
-      "Milica",
-      Colors.brown),
-  Task("Operi sudove", 30, 30, "Dnevni red", "Kuhinja", "ETF", 1, 1, true,
-      "Očisti i operi sudove nakon doručka.", "Luka", Colors.blue),
-  Task("Čuvaj vrata", 50, 120, "Red", "Glavni ulaz", "ETF", 2, 1, true,
-      "Obezbeđuj glavni ulaz tokom događaja.", "Irena", Colors.red),
-  Task("Odnesi dušeke u 115", 40, 90, "Logistika", "Soba 115", "ETF", 2, 0,
-      false, "Prenesi rezervne dušeke u sobu 115.", "Vladana", Colors.green),
-  Task("Dočekuj donacije", 60, 180, "Mediji", "Skladište", "ETF", 3, 2, true,
-      "Pomozi u prijemu i sortiranju donacija.", "Milica", Colors.purple),
-  Task("Sortiraj opremu", 35, 60, "Logistika", "Magacin", "ETF", 2, 1, true,
-      "Razvrstaj i složi opremu u magacinu.", "Luka", Colors.orange),
+      id: generateTaskId(),
+      title: "Baci smeće",
+      durationMinutes: 20,
+      xpGain: 15,
+      location: "Kontejner ispred zgrade",
+      universityId: 1,
+      peopleNeeded: 1,
+      peopleApplied: 0,
+      description: "Iznesi smeće do kontejnera ispred zgrade.",
+      color: "#A52A2A"),
+  Task(
+      id: generateTaskId(),
+      title: "Operi sudove",
+      durationMinutes: 30,
+      xpGain: 30,
+      location: "Kuhinja",
+      universityId: 1,
+      peopleNeeded: 1,
+      peopleApplied: 1,
+      description: "Očisti i operi sudove nakon doručka.",
+      color: "#0000FF"),
+  Task(
+      id: generateTaskId(),
+      title: "Čuvaj vrata",
+      durationMinutes: 50,
+      xpGain: 120,
+      location: "Glavni ulaz",
+      universityId: 1,
+      peopleNeeded: 2,
+      peopleApplied: 1,
+      description: "Obezbeđuj glavni ulaz tokom događaja.",
+      color: "#FF0000"),
+  Task(
+      id: generateTaskId(),
+      title: "Odnesi dušeke u 115",
+      durationMinutes: 40,
+      xpGain: 90,
+      location: "Soba 115",
+      universityId: 1,
+      peopleNeeded: 2,
+      peopleApplied: 0,
+      description: "Prenesi rezervne dušeke u sobu 115.",
+      color: "#008000"),
+  Task(
+      id: generateTaskId(),
+      title: "Dočekuj donacije",
+      durationMinutes: 60,
+      xpGain: 180,
+      location: "Skladište",
+      universityId: 1,
+      peopleNeeded: 3,
+      peopleApplied: 2,
+      description: "Pomozi u prijemu i sortiranju donacija.",
+      color: "#800080"),
+  Task(
+      id: generateTaskId(),
+      title: "Sortiraj opremu",
+      durationMinutes: 35,
+      xpGain: 60,
+      location: "Magacin",
+      universityId: 1,
+      peopleNeeded: 2,
+      peopleApplied: 1,
+      description: "Razvrstaj i složi opremu u magacinu.",
+      color: "#FFA500")
 ];

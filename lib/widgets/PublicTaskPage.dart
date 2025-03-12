@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fonhakaton2025/widgets/Group.dart';
 import 'package:fonhakaton2025/widgets/Task.dart';
+import 'package:fonhakaton2025/data/models/task.dart';
+import 'package:fonhakaton2025/data/models/student_group.dart';
 
 class PublicTaskPage extends StatelessWidget {
   PublicTaskPage({super.key});
@@ -12,8 +14,7 @@ class PublicTaskPage extends StatelessWidget {
         itemCount: tasks.length,
         itemBuilder: (context, index) {
           final task = tasks[index];
-          final group = groups.firstWhere((g) => g.name == task.groupName);
-          return TaskWidget(task: task, group: group);
+          return TaskWidget(task: task);
         },
       ),
     );
@@ -22,9 +23,8 @@ class PublicTaskPage extends StatelessWidget {
 
 class TaskWidget extends StatelessWidget {
   final Task task;
-  final Group group;
 
-  const TaskWidget({super.key, required this.task, required this.group});
+  const TaskWidget({super.key, required this.task});
 
   String formatDuration(int minutes) {
     final int hours = minutes ~/ 60;
@@ -32,7 +32,7 @@ class TaskWidget extends StatelessWidget {
     return "${hours.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')}";
   }
 
-  void showTaskDialog(BuildContext context, Task task, Group group) {
+  void showTaskDialog(BuildContext context, Task task) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -44,7 +44,8 @@ class TaskWidget extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: task.color, // Background color = Group color
+            color: Color(int.parse(task.color
+                .replaceAll('#', '0xff'))), // Background color = Group color
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -64,7 +65,7 @@ class TaskWidget extends StatelessWidget {
 
               // Task Description
               Text(
-                task.description,
+                task.description ?? "",
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 18, color: Colors.white),
               ),
@@ -85,7 +86,7 @@ class TaskWidget extends StatelessWidget {
 
                   // XP
                   Text(
-                    "XP: ${task.xp}",
+                    "XP: ${task.xpGain}",
                     style: const TextStyle(
                       fontSize: 18,
                       // fontWeight: FontWeight.bold,
@@ -140,12 +141,13 @@ class TaskWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => showTaskDialog(context, task, group),
+      onTap: () => showTaskDialog(context, task),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: task.color, // todo pull color from task
+          color: Color(int.parse(
+              task.color.replaceAll('#', '0xff'))), // Convert hex to color
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -167,7 +169,7 @@ class TaskWidget extends StatelessWidget {
               children: [
                 const Icon(Icons.star, color: Colors.white, size: 22),
                 const SizedBox(width: 6),
-                Text("XP: ${task.xp}",
+                Text("XP: ${task.xpGain}",
                     style: const TextStyle(fontSize: 18, color: Colors.white)),
                 const SizedBox(width: 16),
                 const Icon(Icons.access_time, color: Colors.white, size: 22),
@@ -177,7 +179,7 @@ class TaskWidget extends StatelessWidget {
                 const SizedBox(width: 16),
                 const Icon(Icons.people, color: Colors.white, size: 22),
                 const SizedBox(width: 6),
-                Text("${task.appliedPeople}/${task.neededPeople}",
+                Text("${task.peopleApplied}/${task.peopleNeeded}",
                     style: const TextStyle(fontSize: 18, color: Colors.white)),
               ],
             ),

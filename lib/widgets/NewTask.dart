@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'task.dart'; // Import your Task model
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:fonhakaton2025/data/models/task.dart';
 
 class NewTask extends StatefulWidget {
   const NewTask({super.key});
@@ -30,15 +30,82 @@ class _NewTaskState extends State<NewTask> {
   bool _showAdditionalOptions = false;
 
   final List<Task> predefinedTasks = [
-    Task("None", 0, 0, "", "", "", 0, 0, false, "", "", Colors.grey),
-    Task("Distribute Flyers", 50, 60, "Marketing", "Main Hall", "ETF", 0, 3,
-        true, "Hand out flyers at key locations.", "Admin", Colors.blue),
-    Task("Help at Registration", 100, 120, "Logistics", "Front Desk", "ETF", 0,
-        5, true, "Assist in checking in attendees.", "Admin", Colors.green),
-    Task("Organize Equipment", 80, 90, "Logistics", "Storage Room", "ETF", 0, 2,
-        true, "Sort and distribute equipment.", "Admin", Colors.orange),
-    Task("Guide Visitors", 60, 75, "Public Relations", "Lobby", "ETF", 0, 4,
-        true, "Help visitors find their way.", "Admin", Colors.purple),
+    Task(
+      id: 0,
+      creatorId: null,
+      durationMinutes: 0,
+      xpGain: 0,
+      done: false,
+      studentGroupId: null,
+      universityId: 1,
+      location: "",
+      peopleNeeded: 0,
+      isPublic: false,
+      title: "None",
+      description: "",
+      peopleApplied: 0,
+      color: '#9E9E9E',
+    ),
+    Task(
+      id: 1,
+      creatorId: 1,
+      durationMinutes: 60,
+      xpGain: 50,
+      studentGroupId: 1,
+      universityId: 1,
+      location: "Main Hall",
+      peopleNeeded: 3,
+      isPublic: true,
+      title: "Distribute Flyers",
+      description: "Hand out flyers at key locations.",
+      peopleApplied: 0,
+      color: '#2196F3',
+    ),
+    Task(
+      id: 2,
+      creatorId: 1,
+      durationMinutes: 120,
+      xpGain: 100,
+      studentGroupId: 2,
+      universityId: 1,
+      location: "Front Desk",
+      peopleNeeded: 5,
+      isPublic: true,
+      title: "Help at Registration",
+      description: "Assist in checking in attendees.",
+      peopleApplied: 0,
+      color: '#4CAF50',
+    ),
+    Task(
+      id: 3,
+      creatorId: 1,
+      durationMinutes: 90,
+      xpGain: 80,
+      studentGroupId: 2,
+      universityId: 1,
+      location: "Storage Room",
+      peopleNeeded: 2,
+      isPublic: true,
+      title: "Organize Equipment",
+      description: "Sort and distribute equipment.",
+      peopleApplied: 0,
+      color: '#FF9800',
+    ),
+    Task(
+      id: 4,
+      creatorId: 1,
+      durationMinutes: 75,
+      xpGain: 60,
+      studentGroupId: 3,
+      universityId: 1,
+      location: "Lobby",
+      peopleNeeded: 4,
+      isPublic: true,
+      title: "Guide Visitors",
+      description: "Help visitors find their way.",
+      peopleApplied: 0,
+      color: '#9C27B0',
+    ),
   ];
 
   void _pickColor() {
@@ -64,13 +131,13 @@ class _NewTaskState extends State<NewTask> {
   void _setTaskFields(Task task) {
     setState(() {
       _titleController.text = task.title;
-      _xpController.text = task.xp.toString();
+      _xpController.text = task.xpGain.toString();
       // _durationController.text =
       //     (task.durationMinutes ~/ 60).toString(); // Convert to hours
 
       _hoursController.text = (task.durationMinutes ~/ 60).toString();
       _minutesController.text = (task.durationMinutes % 60).toString();
-      _peopleController.text = task.neededPeople.toString();
+      _peopleController.text = task.peopleNeeded.toString();
       _locationController.text = task.location;
     });
   }
@@ -125,22 +192,28 @@ class _NewTaskState extends State<NewTask> {
       final int minutes = int.tryParse(_minutesController.text) ?? 0;
       final int duration = (hours * 60) + minutes;
       final newTask = Task(
-        _titleController.text,
-        int.parse(_xpController.text),
-        duration,
-        "Custom", // TODO: GROUP NAME
-        _locationController.text.isEmpty ? "ETF" : _locationController.text,
-        "ETF", // TODO: SHOULD READ FROM USER
-        0,
-        _peopleController.text.isEmpty ? 1 : int.parse(_peopleController.text),
-        false, // if group exists
-        _descriptionController.text,
-        "User",
-        _selectedColor, // Read selected color
+        id: 0, // This should be handled by the backend
+        creatorId: null, // This should be set with actual user ID
+        durationMinutes: duration,
+        xpGain: int.parse(_xpController.text),
+        studentGroupId: null, // Optional student group ID
+        universityId: 1, // Should be set with actual university ID
+        location:
+            _locationController.text.isEmpty ? "ETF" : _locationController.text,
+        peopleNeeded: _peopleController.text.isEmpty
+            ? 1
+            : int.parse(_peopleController.text),
+        isPublic: false, // Set according to your needs
+        title: _titleController.text,
+        description: _descriptionController.text,
+        peopleApplied: 0, // Initially 0
+        color:
+            '#${_selectedColor.value.toRadixString(16).substring(2)}', // Convert Color to hex string
       );
 
       setState(() {
-        tasks.add(newTask);
+        //tasks.add(newTask);
+        //TODO
       });
 
       // Show alert dialog with task details
@@ -154,19 +227,20 @@ class _NewTaskState extends State<NewTask> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Title: ${newTask.title}"),
-                Text("XP: ${newTask.xp}"),
+                Text("XP: ${newTask.xpGain}"),
                 Text("Duration: ${newTask.durationMinutes} min"),
-                Text("Group: ${newTask.groupName}"),
+                Text("Group: ${newTask.studentGroupId}"),
                 Text("Location: ${newTask.location}"),
-                Text("Faculty: ${newTask.faculty}"),
-                Text("Needed People: ${newTask.neededPeople}"),
+                Text("Faculty: ${newTask.universityId}"),
+                Text("Needed People: ${newTask.peopleNeeded}"),
                 Text("Public: ${newTask.isPublic ? "Yes" : "No"}"),
                 Text("Description: ${newTask.description}"),
-                Text("Created by: ${newTask.createdBy}"),
+                Text("Created by: ${newTask.creatorId}"),
                 Container(
                   width: 50,
                   height: 20,
-                  color: newTask.color,
+                  color:
+                      Color(int.parse(newTask.color.replaceAll('#', '0xff'))),
                 ),
               ],
             ),

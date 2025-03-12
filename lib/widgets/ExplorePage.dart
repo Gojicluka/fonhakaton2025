@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fonhakaton2025/data/models/student_group.dart';
 import 'package:fonhakaton2025/widgets/Group.dart';
+import 'package:fonhakaton2025/widgets/icon_converter.dart';
 
 class ExplorePage extends StatelessWidget {
   ExplorePage({super.key});
@@ -29,7 +31,7 @@ class ExplorePage extends StatelessWidget {
 }
 
 class GroupTile extends StatelessWidget {
-  final Group group;
+  final StudentGroup group;
   final VoidCallback onTap;
 
   const GroupTile({super.key, required this.group, required this.onTap});
@@ -42,13 +44,14 @@ class GroupTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: group.color,
+          color: Color(int.parse(group.color.replaceAll('#', '0xff'))),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(group.icon, color: Colors.white, size: 30),
+            Icon(getIconFromString(group.iconName ?? 'Icons.help_outline'),
+                color: Colors.white, size: 30),
             Text(
               group.name,
               style: const TextStyle(
@@ -57,7 +60,8 @@ class GroupTile extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            Icon(group.icon, color: Colors.white, size: 30),
+            Icon(getIconFromString(group.iconName ?? 'Icons.help_outline'),
+                color: Colors.white, size: 30),
           ],
         ),
       ),
@@ -66,14 +70,14 @@ class GroupTile extends StatelessWidget {
 }
 
 class DetailPage extends StatelessWidget {
-  final Group group;
+  final StudentGroup group;
 
   const DetailPage({super.key, required this.group});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: group.color,
+      backgroundColor: Color(int.parse(group.color.replaceAll('#', '0xff'))),
       appBar: AppBar(title: Text(group.name)),
       body: Center(
         child: Container(
@@ -86,19 +90,21 @@ class DetailPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(group.icon, size: 80, color: group.color),
+              Icon(getIconFromString(group.iconName ?? 'Icons.help_outline'),
+                  size: 80,
+                  color: Color(int.parse(group.color.replaceAll('#', '0xff')))),
               const SizedBox(height: 16),
               Text(
                 group.name,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: group.color,
+                  color: Color(int.parse(group.color.replaceAll('#', '0xff'))),
                 ),
               ),
               const SizedBox(height: 16),
               Text(
-                group.description,
+                group.name,
                 style: const TextStyle(fontSize: 18),
                 textAlign: TextAlign.center,
               ),
