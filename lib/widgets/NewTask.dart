@@ -20,6 +20,11 @@ class _NewTaskState extends State<NewTask> {
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
+  // dodato
+
+  final TextEditingController _hoursController = TextEditingController();
+  final TextEditingController _minutesController = TextEditingController();
+
   Task? _selectedPredefinedTask;
   Color _selectedColor = Colors.blue;
   bool _showAdditionalOptions = false;
@@ -60,8 +65,11 @@ class _NewTaskState extends State<NewTask> {
     setState(() {
       _titleController.text = task.title;
       _xpController.text = task.xp.toString();
-      _durationController.text =
-          (task.durationMinutes ~/ 60).toString(); // Convert to hours
+      // _durationController.text =
+      //     (task.durationMinutes ~/ 60).toString(); // Convert to hours
+
+      _hoursController.text = (task.durationMinutes ~/ 60).toString();
+      _minutesController.text = (task.durationMinutes % 60).toString();
       _peopleController.text = task.neededPeople.toString();
       _locationController.text = task.location;
     });
@@ -113,7 +121,9 @@ class _NewTaskState extends State<NewTask> {
 
   void _createTask() {
     if (_formKey.currentState!.validate()) {
-      final int duration = int.parse(_durationController.text) * 60;
+      final int hours = int.tryParse(_hoursController.text) ?? 0;
+      final int minutes = int.tryParse(_minutesController.text) ?? 0;
+      final int duration = (hours * 60) + minutes;
       final newTask = Task(
         _titleController.text,
         int.parse(_xpController.text),
@@ -261,16 +271,24 @@ class _NewTaskState extends State<NewTask> {
                       ),
 
                       // Duration & XP Gain
+                      // Duration & XP Gain
                       Row(
                         children: [
                           Expanded(
                             child: TextFormField(
-                              controller: _durationController,
+                              controller: _hoursController,
                               keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                  labelText: "Duration (hours)"),
-                              validator: (value) =>
-                                  value!.isEmpty ? "Enter duration" : null,
+                              decoration:
+                                  const InputDecoration(labelText: "Hours"),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _minutesController,
+                              keyboardType: TextInputType.number,
+                              decoration:
+                                  const InputDecoration(labelText: "Minutes"),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -286,8 +304,6 @@ class _NewTaskState extends State<NewTask> {
                           ),
                         ],
                       ),
-
-                      // Expandable Additional Options
                       const SizedBox(height: 10),
                       GestureDetector(
                         onTap: () {
