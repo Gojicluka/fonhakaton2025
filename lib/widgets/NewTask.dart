@@ -6,7 +6,9 @@ import 'package:fonhakaton2025/data/supabase_helper.dart';
 import 'package:fonhakaton2025/widgets/icon_converter.dart';
 
 class NewTask extends StatefulWidget {
-  const NewTask({super.key});
+  final String group;
+
+  const NewTask({super.key, required this.group});
 
   @override
   _NewTaskState createState() => _NewTaskState();

@@ -18,6 +18,7 @@ import 'package:fonhakaton2025/widgets/PublicTaskPage.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
 import "package:fonhakaton2025/data/global.dart";
 import 'package:fonhakaton2025/widgets/TaskSelectionScreen.dart';
+import 'package:fonhakaton2025/widgets/leaderboard.dart';
 import 'package:fonhakaton2025/widgets/login_page.dart';
 import 'package:fonhakaton2025/widgets/profile_screen.dart';
 
@@ -77,7 +78,13 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           ),
           IconButton(
             icon: Icon(Icons.menu),
-            onPressed: () {},
+            // this is for group data
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ExplorePage()),
+              );
+            },
           ),
         ],
       ),
@@ -91,8 +98,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Fonhakaton2025',
-      theme: AppTheme.get(isLight: true),
-      darkTheme: AppTheme.get(isLight: false),
+      theme: AppTheme.get(),
+      darkTheme:
+          AppTheme.get(), // Or remove this line since there's no dark theme
       home: LoginPage(), // Start with the login page instead of MyHomePage
     );
   }
@@ -128,12 +136,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   final List<Widget> _screens = [
     PublicTaskPage(),
-    ExplorePage(),
-    // CameraScreen(),
-    // TaskSelectionScreen(),
-    // GroupTaskPage(),
     MyTasks(),
     ProfilePage(),
+    LeaderboardPage(),
+    TaskSelectionScreen(), // Add this
   ];
 
   @override
