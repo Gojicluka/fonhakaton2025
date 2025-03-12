@@ -26,7 +26,7 @@ Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
       title: const Text(
-        "🏆 Leaderboard",
+        "🏆 Rang lista",
         style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 242, 38)),
       ),
       centerTitle: true,

@@ -54,7 +54,7 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 16),
-              Text('XP Progress:',
+              Text('Trenutni XP:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
               SizedBox(
@@ -90,13 +90,13 @@ class ProfilePage extends StatelessWidget {
                           showTitles: true,
                           getTitlesWidget: (value, meta) {
                             final days = [
-                              'Mon',
-                              'Tue',
-                              'Wed',
-                              'Thu',
-                              'Fri',
-                              'Sat',
-                              'Sun'
+                              'Pon',
+                              'Uto',
+                              'Sre',
+                              'Cet',
+                              'Pet',
+                              'Sub',
+                              'Ned'
                             ];
                             return Text(days[value.toInt()]);
                           },
@@ -190,7 +190,7 @@ class ProfilePage extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 16),
-              Text('Achievements:',
+              Text('Dostignuća:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               AchievementIcons(), // Use AchievementIcons here
             ],

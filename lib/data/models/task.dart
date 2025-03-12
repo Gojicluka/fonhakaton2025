@@ -35,6 +35,79 @@ class Task {
     this.iconName = 'task', // Default icon
   });
 
+  Task t1 = Task(
+    id: 1,
+    creatorId: 1,
+    durationMinutes: 240,
+    xpGain: 100,
+    universityId: 102,
+    location: "Bulevar kralja Aleksandra 67, Beograd 11000",
+    peopleNeeded: 3,
+    title: "Redar na ulazu",
+    description: "Sedite u ulaznom hodniku fakulteta i proveravate ljudima indekse.",
+    peopleApplied: 0,
+    color: "Colors.teal.withOpacity(0.8)"
+  );
+
+  Task t2 = Task(
+    id: 2,
+    creatorId: 1,
+    durationMinutes: 15,
+    xpGain: 30,
+    universityId: 102,
+    location: "Bulevar kralja Aleksandra 67, Beograd 11000",
+    peopleNeeded: 5,
+    title: "Voda",
+    description:"Kada voda stigne danas treba nam 5 ljudi da unosi pakete na fakultet.",
+    peopleApplied: 0,
+    color: " Colors.red.withOpacity(0.8)"
+  );
+
+  Task t3 = Task(
+    id: 3,
+    creatorId: 2,
+    durationMinutes: 300,
+    xpGain: 100,
+    universityId: 102,
+    location: "Filozofski fakultet",
+    peopleNeeded: 2,
+    title:"KRGS",
+    description: "Trebaju nam jos 2 osobe za krgs veceras",
+    peopleApplied:0,
+    color: "Colors.indigo.withOpacity(0.8)"
+  );
+
+  Task t4 = Task(
+    id: 4,
+    creatorId: 7,
+    durationMinutes: 30,
+    xpGain: 30,
+    studentGroupId: 101,
+    universityId: 102,
+    location: "remote",
+    peopleNeeded: 1,
+    title: "Izvestaj",
+    description: "Neko treba da sastavi izvestaj iz danasnjeg zapisnika do veceras.",
+    peopleApplied: 0,
+    color: "Colors.orange.withOpacity(0.8)"
+  );
+/*
+  Task t5 = Task(
+    id: 4,
+    creatorId: 7,
+    durationMinutes: 30,
+    xpGain: 30,
+    studentGroupId: 101,
+    universityId: 102,
+    location: "remote",
+    peopleNeeded: 1,
+    title: "Izvestaj",
+    description: "Neko treba da sastavi izvestaj iz danasnjeg zapisnika do veceras.",
+    peopleApplied: 0,
+    color: "Colors.orange.withOpacity(0.8)"
+  );*/
+   
+
   /// Convert JSON to `Task`
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(

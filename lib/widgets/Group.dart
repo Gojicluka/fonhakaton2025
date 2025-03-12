@@ -42,5 +42,6 @@ final List<StudentGroup> groups = [
       name: "Bezbednost",
       iconName: "shield",
       color: "#795548",
-      description: """Radna grupa za bezbednost kljucna je u organizaciji svih akcija i blokada.\nZaduzenja bezbednosti:\n-Redarenje na blokadama\n-Sastavljanje bezbednosnog plana pred svaku akciju\n-Organizacija cuvara zgrade fakulteta\n-Odrzavanje reda i mira na fakultetu""".trimLeft()),
+      description: """Radna grupa za bezbednost kljucna je u organizaciji svih akcija i blokada.\nZaduzenja bezbednosti:\n-Redarenje na blokadama\n-Sastavljanje bezbednosnog plana pred svaku akciju\n-Organizacija cuvara zgrade fakulteta\n-Odrzavanje reda i mira na fakultetu""".trimLeft()
+      ),
 ];
