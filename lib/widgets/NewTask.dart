@@ -171,7 +171,7 @@ class _NewTaskState extends State<NewTask> {
         case '673AB7':
           iconData = Icons.auto_awesome;
           break;
-        case 'F44336':
+        case 'c':
           iconData = Icons.local_fire_department;
           break;
         case '2196F3':

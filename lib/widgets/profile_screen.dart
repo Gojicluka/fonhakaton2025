@@ -17,7 +17,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My account'),
+        title: Text('Moj nalog'),
         actions: [
           IconButton(
             icon: Icon(Icons.logout, color: Colors.purple),
@@ -49,7 +49,7 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 16),
-              Text('XP Progress:',
+              Text('XP tokom nedelje:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
               SizedBox(
@@ -167,7 +167,7 @@ class ProfilePage extends StatelessWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text('Moja dostignuća'),
+                            title: Text('Bedzevi'),
                             content: Container(
                               width: double.maxFinite,
                               child: ProfileAchievements(),
@@ -222,7 +222,7 @@ class ProfilePage extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 16),
-              Text('Achievements:',
+              Text('Bedzevi:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
               AchievementIcons(), // Use AchievementIcons here

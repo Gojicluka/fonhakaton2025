@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'custom_colors_theme.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF007AFF); // Electric Blue
+  static const Color primaryColor =
+      Color.fromARGB(255, 111, 113, 114); // Electric Blue
   static const Color accentColor = Color(0xFF795548); // Brown
   static const Color backgroundColor =
       Color.fromARGB(255, 255, 255, 255); // Soft Cream

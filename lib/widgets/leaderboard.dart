@@ -10,13 +10,14 @@ class Player {
 
 class LeaderboardPage extends StatelessWidget {
   final List<Player> players = [
-    Player(name: "cana", imageUrl: "../../assets/cana.jpg", points: 1500),
-    Player(name: "kekss", imageUrl: "../../assets/cute.jpg", points: 1400),
-    Player(name: "irkee", imageUrl: "../../assets/irke.jpg", points: 1300),
-    Player(name: "miksa99", imageUrl: "../../assets/marko99.jpg", points: 1100),
-    Player(name: "paki", imageUrl: "../../assets/paki.jpg", points: 1000),
-    Player(name: "marko3", imageUrl: "../../assets/marko3.jpg", points: 900),
-    Player(name: "cira", imageUrl: "../../assets/cira.jpg", points: 800),
+    Player(name: "cana", imageUrl: "https://picsum.photos/250", points: 1500),
+    Player(name: "kekss", imageUrl: "https://picsum.photos/251", points: 1400),
+    Player(name: "irkee", imageUrl: "https://picsum.photos/252", points: 1300),
+    Player(
+        name: "miksa99", imageUrl: "https://picsum.photos/253", points: 1100),
+    Player(name: "paki", imageUrl: "https://picsum.photos/254", points: 1000),
+    Player(name: "marko3", imageUrl: "https://picsum.photos/255", points: 900),
+    Player(name: "cira", imageUrl: "https://picsum.photos/256", points: 800),
   ];
 
   LeaderboardPage({super.key});
