@@ -66,22 +66,47 @@ class TaskWidget extends StatelessWidget {
                 style: const TextStyle(fontSize: 18, color: Colors.white),
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.location_on, color: Colors.white, size: 24),
-                  const SizedBox(width: 8),
-                  Text(
-                    task.location,
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                  const SizedBox(width: 20),
-                  Text(
-                    "XP: ${task.xp}",
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                ],
-              ),
+              if (task.location.length > 15) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.location_on,
+                        color: Colors.white, size: 24),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        task.location,
+                        textAlign: TextAlign.center,
+                        style:
+                            const TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "XP: ${task.xp}",
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ] else ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.location_on,
+                        color: Colors.white, size: 24),
+                    const SizedBox(width: 8),
+                    Text(
+                      task.location,
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                    const SizedBox(width: 20),
+                    Text(
+                      "XP: ${task.xp}",
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
