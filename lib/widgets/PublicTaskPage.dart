@@ -97,7 +97,7 @@ class TaskWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "XP: ${task.xp}",
+                  "XP: ${task.xpGain}",
                   style: const TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ] else ...[
@@ -113,7 +113,7 @@ class TaskWidget extends StatelessWidget {
                     ),
                     const SizedBox(width: 20),
                     Text(
-                      "XP: ${task.xp}",
+                      "XP: ${task.xpGain}",
                       style: const TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ],
@@ -173,7 +173,7 @@ class TaskWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(group.icon, color: Colors.white, size: 30),
+            Icon(Icons.block_rounded, color: Colors.white, size: 30),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -192,7 +192,7 @@ class TaskWidget extends StatelessWidget {
                     children: [
                       const Icon(Icons.star, color: Colors.white, size: 18),
                       const SizedBox(width: 4),
-                      Text("XP: ${task.xp}",
+                      Text("XP: ${task.xpGain}",
                           style: const TextStyle(color: Colors.white)),
                       const SizedBox(width: 12),
                       const Icon(Icons.access_time,
@@ -203,7 +203,7 @@ class TaskWidget extends StatelessWidget {
                       const SizedBox(width: 12),
                       const Icon(Icons.people, color: Colors.white, size: 18),
                       const SizedBox(width: 4),
-                      Text("${task.appliedPeople}/${task.neededPeople}",
+                      Text("${task.peopleApplied}/${task.peopleNeeded}",
                           style: const TextStyle(
                               fontSize: 18, color: Colors.white)),
                     ],

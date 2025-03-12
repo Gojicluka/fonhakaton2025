@@ -1,10 +1,12 @@
+import 'package:flutter/material.dart';
+
 class Task {
   final int id;
   final int? creatorId;
   final int durationMinutes;
   final int xpGain;
   final bool done;
-  final int? studentGroupId; // Now nullable
+  final int? studentGroupId; // Nullable
   final int universityId;
   final String location;
   final int peopleNeeded;
@@ -13,6 +15,7 @@ class Task {
   final String description;
   final int peopleApplied;
   final String color;
+  final String iconName; // New icon field
 
   Task({
     required this.id,
@@ -29,6 +32,7 @@ class Task {
     required this.description,
     required this.peopleApplied,
     required this.color,
+    this.iconName = 'task', // Default icon
   });
 
   /// Convert JSON to `Task`
@@ -48,6 +52,7 @@ class Task {
       description: json['description'],
       peopleApplied: json['people_applied'],
       color: json['color'],
+      iconName: json['icon'] ?? 'task', // Default icon
     );
   }
 
@@ -68,6 +73,7 @@ class Task {
       'description': description,
       'people_applied': peopleApplied,
       'color': color,
+      'icon': iconName,
     };
   }
 }

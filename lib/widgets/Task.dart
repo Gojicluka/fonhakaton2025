@@ -17,7 +17,8 @@ final List<Task> tasks = [
       peopleNeeded: 1,
       peopleApplied: 0,
       description: "Iznesi smeće do kontejnera ispred zgrade.",
-      color: "#A52A2A"),
+      color: "#A52A2A",
+      iconName: "local_fire_department"),
   Task(
       id: generateTaskId(),
       title: "Operi sudove",
@@ -28,7 +29,8 @@ final List<Task> tasks = [
       peopleNeeded: 1,
       peopleApplied: 1,
       description: "Očisti i operi sudove nakon doručka.",
-      color: "#0000FF"),
+      color: "#0000FF",
+      iconName: "water"),
   Task(
       id: generateTaskId(),
       title: "Čuvaj vrata",
@@ -39,7 +41,8 @@ final List<Task> tasks = [
       peopleNeeded: 2,
       peopleApplied: 1,
       description: "Obezbeđuj glavni ulaz tokom događaja.",
-      color: "#FF0000"),
+      color: "#FF0000",
+      iconName: "shield"),
   Task(
       id: generateTaskId(),
       title: "Odnesi dušeke u 115",
@@ -50,7 +53,8 @@ final List<Task> tasks = [
       peopleNeeded: 2,
       peopleApplied: 0,
       description: "Prenesi rezervne dušeke u sobu 115.",
-      color: "#008000"),
+      color: "#008000",
+      iconName: "shopping_cart"),
   Task(
       id: generateTaskId(),
       title: "Dočekuj donacije",
@@ -61,7 +65,8 @@ final List<Task> tasks = [
       peopleNeeded: 3,
       peopleApplied: 2,
       description: "Pomozi u prijemu i sortiranju donacija.",
-      color: "#800080"),
+      color: "#800080",
+      iconName: "favorite"),
   Task(
       id: generateTaskId(),
       title: "Sortiraj opremu",
@@ -72,5 +77,6 @@ final List<Task> tasks = [
       peopleNeeded: 2,
       peopleApplied: 1,
       description: "Razvrstaj i složi opremu u magacinu.",
-      color: "#FFA500")
+      color: "#FFA500",
+      iconName: "work")
 ];
