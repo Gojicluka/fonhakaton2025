@@ -1,248 +1,341 @@
-// import 'package:flutter/material.dart';
-// import 'package:fonhakaton2025/widgets/icon_converter.dart';
-// import 'package:fonhakaton2025/data/models/task.dart';
-// import 'package:fonhakaton2025/data/models/student_group.dart';
+import 'package:flutter/material.dart';
+import 'package:fonhakaton2025/data/models/task.dart';
+import 'package:fonhakaton2025/widgets/icon_converter.dart';
+import 'package:fonhakaton2025/data/models/task_users.dart';
 
-// class MyTasksPage extends StatelessWidget {
-//   const MyTasksPage({super.key});
+// Hardcoded lists
+final List<TaskUser> toApprove = [
+  TaskUser(
+      taskId: 1,
+      userId: 101,
+      photo: "user1.png",
+      description: "Wants to help with logistics."),
+  TaskUser(
+      taskId: 2,
+      userId: 102,
+      photo: "user2.png",
+      description: "Has experience with media tasks."),
+];
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("My Tasks"),
-//         backgroundColor: Colors.amber,
-//       ),
-//       body: ListView(
-//         children: [
-//           _buildCategory(
-//               "Approve Quests", _approveQuests, Colors.orange.shade300),
-//           _buildCategory(
-//               "Pending Quests", _pendingQuests, Colors.blue.shade300),
-//           _buildCategory("Current Quests - Global", _currentQuestsGlobal,
-//               Colors.green.shade300),
-//           _buildCategory("Current Quests - My University",
-//               _currentQuestsUniversity, Colors.purple.shade300),
-//           ..._groups
-//               .map((group) =>
-//                   _buildCategory(group.name, group.tasks, Colors.teal.shade300))
-//               .toList(),
-//         ],
-//       ),
-//     );
-//   }
+final List<Task> toCompleteGlobalFaculty = [
+  Task(
+    id: 3,
+    creatorId: 201,
+    durationMinutes: 90,
+    xpGain: 100,
+    done: false,
+    studentGroupId: null,
+    universityId: 1,
+    location: "Faculty Library",
+    peopleNeeded: 2,
+    isPublic: true,
+    title: "Organize Books",
+    description: "Help sort and organize the library books.",
+    peopleApplied: 1,
+    color: "#FF5733",
+    iconName: "book",
+  ),
+];
 
-//   Widget _buildCategory(String title, List<Task> tasks, Color backgroundColor) {
-//     return Container(
-//       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-//       padding: const EdgeInsets.all(12),
-//       decoration: BoxDecoration(
-//         color: backgroundColor,
-//         borderRadius: BorderRadius.circular(12),
-//       ),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text(
-//             title,
-//             style: const TextStyle(
-//               fontSize: 22,
-//               fontWeight: FontWeight.bold,
-//               color: Colors.white,
-//             ),
-//           ),
-//           const SizedBox(height: 10),
-//           ...tasks
-//               .map((task) => TaskWidget(task: task))
-//               .toList(), // overrideColor: task.overrideColor
-//         ],
-//       ),
-//     );
-//   }
-// }
+final List<Task> toCompleteGroup = [
+  Task(
+    id: 5,
+    creatorId: 203,
+    durationMinutes: 60,
+    xpGain: 80,
+    done: false,
+    studentGroupId: 2,
+    universityId: 1,
+    location: "Media Room",
+    peopleNeeded: 1,
+    isPublic: false,
+    title: "Edit Promotional Video",
+    description: "Edit a short promotional video for the faculty.",
+    peopleApplied: 0,
+    color: "#FFD700",
+    iconName: "video",
+  ),
+];
 
-// class TaskWidget extends StatelessWidget {
-//   final Task task;
-//   final Color? overrideColor;
+final List<Task> toCompleteMyFaculty = [
+  Task(
+    id: 7,
+    creatorId: 205,
+    durationMinutes: 30,
+    xpGain: 40,
+    done: false,
+    studentGroupId: null,
+    universityId: 1,
+    location: "Student Lounge",
+    peopleNeeded: 1,
+    isPublic: true,
+    title: "Clean Student Lounge",
+    description: "Help clean and organize the student lounge.",
+    peopleApplied: 1,
+    color: "#32CD32",
+    iconName: "cleaning",
+  ),
+];
 
-//   const TaskWidget({super.key, required this.task, this.overrideColor});
+class MyTasks extends StatelessWidget {
+  const MyTasks({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     Color taskColor =
-//         overrideColor ?? Color(int.parse(task.color.replaceAll('#', '0xff')));
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          TaskSegment(
+              title: "Moji izdati",
+              tasks: toCompleteGlobalFaculty,
+              backgroundColor: Colors.blue.shade100,
+              onTap: ShowToApproveOther),
+          TaskSegment(
+              title: "Zavrseni neocenjeni",
+              tasks: toCompleteMyFaculty,
+              backgroundColor: Colors.green.shade100,
+              onTap: ShowMyPending),
+          TaskSegment(
+              title: "Trenutni aktivni",
+              tasks: toCompleteGroup,
+              backgroundColor: Colors.purple.shade100,
+              onTap: ShowMyDoing),
+        ],
+      ),
+    );
+  }
+}
 
-//     return GestureDetector(
-//       onTap: () => _showTaskDialog(context, task, taskColor),
-//       child: Container(
-//         margin: const EdgeInsets.symmetric(vertical: 6),
-//         padding: const EdgeInsets.all(16),
-//         decoration: BoxDecoration(
-//           color: taskColor,
-//           borderRadius: BorderRadius.circular(12),
-//         ),
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: [
-//             Icon(getIconFromString(task.iconName),
-//                 color: Colors.white, size: 30),
-//             Expanded(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.center,
-//                 children: [
-//                   Text(
-//                     task.title,
-//                     style: const TextStyle(
-//                       fontSize: 18,
-//                       fontWeight: FontWeight.bold,
-//                       color: Colors.white,
-//                     ),
-//                   ),
-//                   const SizedBox(height: 4),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: [
-//                       const Icon(Icons.star, color: Colors.white, size: 18),
-//                       const SizedBox(width: 4),
-//                       Text("XP: ${task.xpGain}",
-//                           style: const TextStyle(color: Colors.white)),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+class TaskSegment extends StatelessWidget {
+  final String title;
+  final List<Task> tasks;
+  final Color backgroundColor;
+  final void Function(BuildContext, Task) onTap; // Updated type
 
-//   void _showTaskDialog(BuildContext context, Task task, Color taskColor) {
-//     showDialog(
-//       context: context,
-//       builder: (context) => Dialog(
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(16),
-//           side: const BorderSide(color: Colors.amber, width: 3),
-//         ),
-//         child: Container(
-//           padding: const EdgeInsets.all(20),
-//           decoration: BoxDecoration(
-//             color: taskColor,
-//             borderRadius: BorderRadius.circular(16),
-//           ),
-//           child: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               Text(
-//                 task.title,
-//                 textAlign: TextAlign.center,
-//                 style: const TextStyle(
-//                   fontSize: 22,
-//                   fontWeight: FontWeight.bold,
-//                   color: Colors.white,
-//                 ),
-//               ),
-//               const SizedBox(height: 12),
-//               Text(
-//                 task.description ?? "",
-//                 textAlign: TextAlign.center,
-//                 style: const TextStyle(fontSize: 18, color: Colors.white),
-//               ),
-//               const SizedBox(height: 20),
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                 children: [
-//                   TextButton(
-//                     onPressed: () => Navigator.pop(context),
-//                     style: TextButton.styleFrom(backgroundColor: Colors.white),
-//                     child: const Text("Close",
-//                         style: TextStyle(fontSize: 18, color: Colors.black)),
-//                   ),
-//                 ],
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+  const TaskSegment({
+    super.key,
+    required this.title,
+    required this.tasks,
+    required this.backgroundColor,
+    required this.onTap,
+  });
 
-// final List<Task> _approveQuests = [
-//   Task(
-//       id: 1,
-//       durationMinutes: 60,
-//       xpGain: 100,
-//       universityId: 1,
-//       location: "Library",
-//       peopleNeeded: 3,
-//       title: "Approve Research Paper",
-//       description: "Review and approve a research submission.",
-//       peopleApplied: 1,
-//       color: "#FF5722"),
-// ];
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 160,
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const ClampingScrollPhysics(),
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                return TaskWidget(
+                  task: tasks[index],
+                  onTap: () =>
+                      onTap(context, tasks[index]), // Pass the Task object
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-// final List<Task> _pendingQuests = [
-//   Task(
-//       id: 2,
-//       durationMinutes: 30,
-//       xpGain: 50,
-//       universityId: 1,
-//       location: "Lab",
-//       peopleNeeded: 2,
-//       title: "Pending Experiment Approval",
-//       description: "Wait for professor approval.",
-//       peopleApplied: 1,
-//       color: "#2196F3"),
-// ];
+class TaskWidget extends StatelessWidget {
+  final Task task;
+  final VoidCallback onTap;
 
-// final List<Task> _currentQuestsGlobal = [
-//   Task(
-//       id: 3,
-//       durationMinutes: 45,
-//       xpGain: 75,
-//       universityId: 2,
-//       location: "Online",
-//       peopleNeeded: 4,
-//       title: "Global Coding Challenge",
-//       description: "Compete in an online hackathon.",
-//       peopleApplied: 2,
-//       color: "#4CAF50"),
-// ];
+  const TaskWidget({super.key, required this.task, required this.onTap});
 
-// final List<Task> _currentQuestsUniversity = [
-//   Task(
-//       id: 4,
-//       durationMinutes: 60,
-//       xpGain: 90,
-//       universityId: 1,
-//       location: "Auditorium",
-//       peopleNeeded: 5,
-//       title: "University Debate",
-//       description: "Participate in an inter-university debate.",
-//       peopleApplied: 3,
-//       color: "#9C27B0"),
-// ];
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap, // Calls the function passed as a parameter
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: _parseColor(task.color),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(getIconFromString(task.iconName),
+                    color: Colors.white, size: 30),
+                const SizedBox(width: 10),
+                Text(task.title,
+                    style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
+              ],
+            ),
+            Text("XP: ${task.xpGain}",
+                style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-// final List<StudentGroup> _groups = [
-//   StudentGroup(
-//       id: 1,
-//       name: "Logistika",
-//       iconName: "shield",
-//       color: "#795548",
-//       description: "Manage logistics tasks.",
-//       tasks: [
-//         Task(
-//             id: 5,
-//             durationMinutes: 90,
-//             xpGain: 120,
-//             universityId: 1,
-//             location: "Warehouse",
-//             peopleNeeded: 2,
-//             title: "Inventory Check",
-//             description: "Verify stock levels.",
-//             peopleApplied: 1,
-//             color: "#795548"),
-//       ]),
-// ];
+void ShowToApproveOther(BuildContext context, Task task) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: Colors.grey.shade200, // Lighter background
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            task.title, // Get the task name
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: 200,
+            height: 200,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: fetchUserImage("user1.png"), // Placeholder image
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () => DenyCompleted(context, task),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text("Odbij",
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
+              ),
+              ElevatedButton(
+                onPressed: () => AcceptCompleted(context, task),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text("Prihvati",
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+void ShowMyPending(BuildContext context, Task task) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: Colors.grey.shade200,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      title: Text(
+        task.title, // Show task name
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+      content: const Text("This is a placeholder for my pending tasks."),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(context), child: const Text("OK"))
+      ],
+    ),
+  );
+}
+
+void ShowMyDoing(BuildContext context, Task task) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: Colors.grey.shade200,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      title: Text(
+        task.title, // Show task name
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+      content: const Text("This is a placeholder for tasks I'm doing."),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(context), child: const Text("OK"))
+      ],
+    ),
+  );
+}
+
+Color _parseColor(String colorStr) {
+  try {
+    return Color(int.parse(colorStr.replaceAll('#', '0xff')));
+  } catch (e) {
+    return Colors.grey; // Default color if parsing fails
+  }
+}
+
+Widget fetchUserImage(String imageName) {
+  // TODO implement backend logic
+  return Image.asset(
+    'assets/images/$imageName',
+    fit: BoxFit.cover,
+    errorBuilder: (context, error, stackTrace) {
+      return const Icon(Icons.person, size: 200, color: Colors.grey);
+    },
+  );
+}
+
+void DenyCompleted(BuildContext context, Task task) {
+  // TODO: Send a request to the backend to mark the task as denied
+  // Example: api.denyTask(task.id);
+
+  Navigator.pop(context);
+}
+
+void AcceptCompleted(BuildContext context, Task task) {
+  // TODO: Send a request to the backend to mark the task as accepted
+  // Example: api.acceptTask(task.id);
+
+  Navigator.pop(context);
+}
