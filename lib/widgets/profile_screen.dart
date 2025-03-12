@@ -6,7 +6,6 @@ import 'Task.dart';
 import '../achievement.dart';
 
 class ProfilePage extends StatelessWidget {
-
   //generic to be changed later
   void handleLogout() {
     // Currently, it does nothing
@@ -22,21 +21,21 @@ class ProfilePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Positioned(
-            top: 8,
-            right: 8,
-            child: TextButton.icon(
-              onPressed: handleLogout, // Call the generic function
-              icon: Icon(
-                Icons.logout,
-                color: Colors.purple,
-                size: 18,
-              ),
-              label: Text(
-                'Logout',
-                style: TextStyle(color: Colors.purple),
+              top: 8,
+              right: 8,
+              child: TextButton.icon(
+                onPressed: handleLogout, // Call the generic function
+                icon: Icon(
+                  Icons.logout,
+                  color: Colors.purple,
+                  size: 18,
+                ),
+                label: Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.purple),
+                ),
               ),
             ),
-          ),
             // ... (profile picture, name, XP progress, buttons) ...
             Center(
               child: CircleAvatar(
@@ -52,38 +51,77 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16),
-            Text('XP Progress:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('XP Progress:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
             SizedBox(
               height: 200,
               child: BarChart(
-                // ... (BarChart code) ...
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
+                  gridData: FlGridData(show: false), // Disable grid lines
                   titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) =>
+                            const Text(''), // Empty string
+                      ),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) =>
+                            const Text(''), // Empty string
+                      ),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) =>
+                            const Text(''), // Empty string
+                      ),
+                    ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                          final days = [
+                            'Mon',
+                            'Tue',
+                            'Wed',
+                            'Thu',
+                            'Fri',
+                            'Sat',
+                            'Sun'
+                          ];
                           return Text(days[value.toInt()]);
                         },
                       ),
                     ),
                   ),
-                  borderData: FlBorderData(show: true),
-                  barGroups: List.generate(7, (index) =>
-                      BarChartGroupData(
-                        x: index,
-                        barRods: [
-                          BarChartRodData(toY: (index + 1) * 10.0, color: Colors.blue, width: 16),
-                        ],
-                      ),
+
+                  borderData: FlBorderData(
+                    show: false, // Remove all borders
+                  ),
+                  barGroups: List.generate(
+                    7,
+                    (index) => BarChartGroupData(
+                      x: index,
+                      barRods: [
+                        BarChartRodData(
+                          toY: (index + 1) * 10.0,
+                          color: Colors.blue,
+                          width: 16,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
+
             SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -147,7 +185,8 @@ class ProfilePage extends StatelessWidget {
               ],
             ),
             SizedBox(height: 16),
-            Text('Achievements:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Achievements:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             AchievementIcons(), // Use AchievementIcons here
           ],
         ),
@@ -219,34 +258,61 @@ class XPChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Generate random XP data for the past week
-    final List<int> xpData = List.generate(7, (index) => (50 + index * 30 + (index % 3) * 20));
+    final List<int> xpData =
+        List.generate(7, (index) => (50 + index * 30 + (index % 3) * 20));
 
     return LineChart(
       LineChartData(
-        gridData: FlGridData(show: false),
-        titlesData: FlTitlesData(show: false),
+        gridData: FlGridData(show: false), // Hide grid lines
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false), // Hide left numbers
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                return Text(days[value.toInt()],
+                    style: TextStyle(fontSize: 12));
+              },
+            ),
+          ),
+        ),
         borderData: FlBorderData(show: false),
         minX: 0,
         maxX: 6,
         minY: 0,
-        maxY: xpData.reduce((value, element) => value > element ? value : element).toDouble(),
+        maxY: xpData.reduce((a, b) => a > b ? a : b).toDouble(),
         lineBarsData: [
           LineChartBarData(
-              spots: xpData.asMap().entries.map((entry) {
-               return FlSpot(entry.key.toDouble(), entry.value.toDouble());
-              }).toList(),
-              isCurved: true,
-              color: const Color(0xFF9C27B0), // Use a list of Color objects
-              barWidth: 5,
-              isStrokeCapRound: true,
-              dotData: FlDotData(show: false),
-              belowBarData: BarAreaData(
-                show: true,
-                color: const Color(0xFF9C27B0).withOpacity(0.3), // Corrected property name
-              ),
+            spots: xpData.asMap().entries.map((entry) {
+              return FlSpot(entry.key.toDouble(), entry.value.toDouble());
+            }).toList(),
+            isCurved: true,
+            color: Color(0xFF9C27B0),
+            barWidth: 5,
+            isStrokeCapRound: true,
+            dotData: FlDotData(show: false),
+            belowBarData: BarAreaData(
+              show: true,
+              color: Color(0xFF9C27B0).withOpacity(0.3),
+            ),
           ),
         ],
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+            tooltipBgColor: Colors.black87,
+            getTooltipItems: (touchedSpots) {
+              return touchedSpots.map((spot) {
+                return LineTooltipItem(
+                  '${spot.y.toInt()} XP',
+                  TextStyle(color: Colors.white),
+                );
+              }).toList();
+            },
+          ),
+        ),
       ),
     );
   }
@@ -295,13 +361,8 @@ class ProfileAchievements extends StatelessWidget {
     );
   }
 
-  Widget _buildAchievementCard(
-      BuildContext context,
-      String title,
-      String description,
-      IconData icon,
-      Color color,
-      DateTime date) {
+  Widget _buildAchievementCard(BuildContext context, String title,
+      String description, IconData icon, Color color, DateTime date) {
     return Card(
       color: color,
       margin: const EdgeInsets.all(10),
@@ -319,7 +380,8 @@ class ProfileAchievements extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              subtitle: Padding( // Added subtitle for description
+              subtitle: Padding(
+                // Added subtitle for description
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   description,
@@ -378,37 +440,43 @@ class ProfileTasks extends StatelessWidget {
 List<Achievement> allAchievements = [
   Achievement(
     name: "Zlatni Moderator",
-    description: "Dostignuće za 5 uspešnih moderiranja. Hvala vam na posvećenosti!",
+    description:
+        "Dostignuće za 5 uspešnih moderiranja. Hvala vam na posvećenosti!",
     icon: Icons.military_tech,
     color: const Color.fromARGB(255, 110, 8, 86),
   ),
   Achievement(
     name: "Srebrni Moderator",
-    description: "Dostignuće za 3 uspešna moderiranja. Nastavite sa dobrim radom!",
+    description:
+        "Dostignuće za 3 uspešna moderiranja. Nastavite sa dobrim radom!",
     icon: Icons.military_tech_outlined,
     color: const Color.fromARGB(255, 48, 164, 104),
   ),
   Achievement(
     name: "Moderator",
-    description: "Dostignuće za jedno uspešno moderiranje. Hvala vam što ste deo tima!",
+    description:
+        "Dostignuće za jedno uspešno moderiranje. Hvala vam što ste deo tima!",
     icon: Icons.people,
     color: const Color.fromARGB(255, 2, 40, 71),
   ),
   Achievement(
     name: "Zapisničar",
-    description: "Dostignuće za uspešno vođenje zapisnika. Vaš doprinos je dragocen!",
+    description:
+        "Dostignuće za uspešno vođenje zapisnika. Vaš doprinos je dragocen!",
     icon: Icons.computer,
     color: Colors.green,
   ),
   Achievement(
     name: "Zlatni Čuvar Fakulteta",
-    description: "Dostignuće za 5 uspešnih čuvanja ulaza fakulteta. Hvala vam na posvećenosti i brizi!",
+    description:
+        "Dostignuće za 5 uspešnih čuvanja ulaza fakulteta. Hvala vam na posvećenosti i brizi!",
     icon: Icons.security,
     color: const Color.fromARGB(255, 196, 101, 166),
   ),
   Achievement(
     name: "Srebrni Čuvar Fakulteta",
-    description: "Dostignuće za 3 uspešna čuvanja ulaza fakulteta. Vaš rad je od velike pomoći!",
+    description:
+        "Dostignuće za 3 uspešna čuvanja ulaza fakulteta. Vaš rad je od velike pomoći!",
     icon: Icons.security_outlined,
     color: const Color.fromARGB(255, 85, 24, 24),
   ),
@@ -420,7 +488,8 @@ List<Achievement> allAchievements = [
   ),
   Achievement(
     name: "Redar",
-    description: "Dostignuće za učešće u redarskoj službi na blokadama. Hvala vam na angažmanu!",
+    description:
+        "Dostignuće za učešće u redarskoj službi na blokadama. Hvala vam na angažmanu!",
     icon: Icons.accessibility_new,
     color: const Color.fromARGB(255, 175, 110, 14),
   ),
