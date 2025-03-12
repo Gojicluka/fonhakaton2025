@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fonhakaton2025/widgets/NewTask.dart';
 
 class TaskSelectionScreen extends StatefulWidget {
   @override
@@ -25,8 +26,11 @@ class _TaskSelectionScreenState extends State<TaskSelectionScreen> {
               alignment: Alignment.center,
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle "Global" selection TODO
-                  // open PublicTaskPage.
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NewTask(group: "global")),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -96,10 +100,14 @@ class _TaskSelectionScreenState extends State<TaskSelectionScreen> {
                   ElevatedButton(
                     onPressed: selectedGroup != null
                         ? () {
-                            // Handle group selection TODO
-                            // remember group selected in a global variable, which you will use to display tasks in the GroupTaskPage.
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      NewTask(group: selectedGroup!)),
+                            );
                           }
-                        : null, // Disable button if no group is selected
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           selectedGroup != null ? Colors.white : Colors.grey,

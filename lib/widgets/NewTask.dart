@@ -3,7 +3,9 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 
 class NewTask extends StatefulWidget {
-  const NewTask({super.key});
+  final String group;
+
+  const NewTask({super.key, required this.group});
 
   @override
   _NewTaskState createState() => _NewTaskState();

@@ -71,7 +71,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           IconButton(
             icon: Icon(Icons.menu),
-            onPressed: () {},
+            // this is for group data
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ExplorePage()),
+              );
+            },
           ),
         ],
       ),
@@ -123,11 +129,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   final List<Widget> _screens = [
     PublicTaskPage(),
     ExplorePage(),
-    // CameraScreen(),
-    // TaskSelectionScreen(),
-    // GroupTaskPage(),
     MyTasks(),
     ProfilePage(),
+    TaskSelectionScreen(), // Add this
   ];
 
   @override
@@ -207,6 +211,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           color: Colors.white,
         ),
         onPressed: () {
+          setState(() {
+            _bottomNavIndex = 4; // Set the index of TaskSelectionScreen
+          });
+
           // _fabAnimationController.reset();
           // _borderRadiusAnimationController.reset();
           // _borderRadiusAnimationController.forward();
