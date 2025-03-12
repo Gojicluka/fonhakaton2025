@@ -3,7 +3,21 @@ import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/models/task_users.dart';
 import 'package:fonhakaton2025/data/models/task_with_user.dart';
 import 'package:fonhakaton2025/widgets/icon_converter.dart';
-
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fonhakaton2025/data/PendingTaskNotifier.dart';
+import 'package:fonhakaton2025/data/global.dart';
+import 'package:fonhakaton2025/data/models/task_with_user.dart';
+import 'package:fonhakaton2025/data/supabase_helper.dart';
+import 'package:fonhakaton2025/widgets/Task.dart';
+import 'package:fonhakaton2025/data/models/task.dart';
+import 'package:fonhakaton2025/data/TaskNotifier.dart';
+import 'package:fonhakaton2025/widgets/icon_converter.dart';
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import "package:fonhakaton2025/data/task_completion/task_completion.dart";
+import "package:fonhakaton2025/data/PendingTaskNotifier.dart";
 // Hardcoded lists
 // final List<TaskWithUser> toApprove = [
 //   TaskUser(
@@ -78,48 +92,48 @@ import 'package:fonhakaton2025/widgets/icon_converter.dart';
 //   ),
 // ];
 
-final List<TaskWithUser> toApprove = [
-  TaskWithUser(
-    taskId: 1,
-    creatorId: null,
-    durationMinutes: 0,
-    xpGain: 0,
-    done: false,
-    studentGroupId: null,
-    universityId: 0,
-    location: "",
-    peopleNeeded: 0,
-    isPublic: false,
-    title: "Nesto",
-    description: "",
-    peopleApplied: 0,
-    color: "#757575", // Dark gray
-    iconName: "user",
-    userId: 101,
-    photo: "user1.png",
-    userDescription: "Wants to help with logistics.",
-  ),
-  TaskWithUser(
-    taskId: 2,
-    creatorId: null,
-    durationMinutes: 0,
-    xpGain: 0,
-    done: false,
-    studentGroupId: null,
-    universityId: 0,
-    location: "",
-    peopleNeeded: 0,
-    isPublic: false,
-    title: "opet nesto",
-    description: "",
-    peopleApplied: 0,
-    color: "#1565C0", // Dark blue
-    iconName: "user",
-    userId: 102,
-    photo: "user2.png",
-    userDescription: "Has experience with media tasks.",
-  ),
-];
+// final List<TaskWithUser> toApprove = [
+//   TaskWithUser(
+//     taskId: 1,
+//     creatorId: null,
+//     durationMinutes: 0,
+//     xpGain: 0,
+//     done: false,
+//     studentGroupId: null,
+//     universityId: 0,
+//     location: "",
+//     peopleNeeded: 0,
+//     isPublic: false,
+//     title: "Nesto",
+//     description: "",
+//     peopleApplied: 0,
+//     color: "#757575", // Dark gray
+//     iconName: "user",
+//     userId: 101,
+//     photo: "user1.png",
+//     userDescription: "Wants to help with logistics.",
+//   ),
+//   TaskWithUser(
+//     taskId: 2,
+//     creatorId: null,
+//     durationMinutes: 0,
+//     xpGain: 0,
+//     done: false,
+//     studentGroupId: null,
+//     universityId: 0,
+//     location: "",
+//     peopleNeeded: 0,
+//     isPublic: false,
+//     title: "opet nesto",
+//     description: "",
+//     peopleApplied: 0,
+//     color: "#1565C0", // Dark blue
+//     iconName: "user",
+//     userId: 102,
+//     photo: "user2.png",
+//     userDescription: "Has experience with media tasks.",
+//   ),
+// ];
 
 final List<TaskWithUser> toCompleteGlobalFaculty = [
   TaskWithUser(
@@ -137,8 +151,8 @@ final List<TaskWithUser> toCompleteGlobalFaculty = [
     description: "Help sort and organize the library books.",
     peopleApplied: 1,
     color: "#FF5733",
-    iconName: "book",
-    userId: 0,
+    iconName: "shield",
+    userId: 0, // Ensure userId is not null
   ),
 ];
 
@@ -158,7 +172,7 @@ final List<TaskWithUser> toCompleteGroup = [
     description: "Edit a short promotional video for the faculty.",
     peopleApplied: 0,
     color: "#FFD700",
-    iconName: "video",
+    iconName: "shield",
     userId: 0,
   ),
 ];
@@ -179,40 +193,67 @@ final List<TaskWithUser> toCompleteMyFaculty = [
     description: "Help clean and organize the student lounge.",
     peopleApplied: 1,
     color: "#32CD32",
-    iconName: "cleaning",
+    iconName: "star",
     userId: 0,
   ),
 ];
 
-class MyTasks extends StatelessWidget {
+class MyTasks extends StatefulWidget {
   const MyTasks({super.key});
 
   @override
+  _MyTasksState createState() => _MyTasksState();
+}
+
+class _MyTasksState extends State<MyTasks> {
+  late Future<List<TaskWithUser>> _tasksFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _tasksFuture = SupabaseHelper.getAllTaskWithUsers();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          TaskSegment(
-            title: "Moji izdati",
-            items: toApprove, // List of TaskUser
-            backgroundColor: const Color.fromRGBO(187, 222, 251, 1),
-            onTap: ShowToApproveOther,
-          ),
-          TaskSegment(
-            title: "Zavrseni neocenjeni",
-            items: toCompleteMyFaculty, // List of Task
-            backgroundColor: Colors.green.shade100,
-            onTap: ShowMyPending,
-          ),
-          TaskSegment(
-            title: "Trenutni aktivni",
-            items: toCompleteGroup, // List of Task
-            backgroundColor: Colors.purple.shade100,
-            onTap: ShowMyDoing,
-          ),
-        ],
-      ),
+    return FutureBuilder<List<TaskWithUser>>(
+      future: _tasksFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No tasks to approve'));
+        } else {
+          var toApprove = snapshot.data!;
+          return Scaffold(
+            body: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                TaskSegment(
+                  title: "Moji izdati",
+                  items: toApprove, // List of TaskUser
+                  backgroundColor: const Color.fromRGBO(187, 222, 251, 1),
+                  onTap: ShowToApproveOther,
+                ),
+                TaskSegment(
+                  title: "Zavrseni neocenjeni",
+                  items: toCompleteMyFaculty, // List of Task
+                  backgroundColor: Colors.green.shade100,
+                  onTap: ShowMyPending,
+                ),
+                TaskSegment(
+                  title: "Trenutni aktivni",
+                  items: toCompleteGroup, // List of Task
+                  backgroundColor: Colors.purple.shade100,
+                  onTap: ShowMyDoing,
+                ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
 }
@@ -276,43 +317,78 @@ class TaskSegment extends StatelessWidget {
   }
 }
 
-class TaskWidget extends StatelessWidget {
+class TaskWidget extends StatefulWidget {
   final TaskWithUser task;
   final VoidCallback onTap;
 
   const TaskWidget({super.key, required this.task, required this.onTap});
 
   @override
+  _TaskWidgetState createState() => _TaskWidgetState();
+}
+
+class _TaskWidgetState extends State<TaskWidget> {
+  String formatDuration(int minutes) {
+    final int hours = minutes ~/ 60;
+    final int remainingMinutes = minutes % 60;
+    return "${hours.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')}";
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // Calls the function passed as a parameter
+      onTap: () => widget.onTap(),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: _parseColor(task.color),
+          color: Color(int.parse(widget.task.color
+              .replaceAll('#', '0xff'))), // Convert hex to color
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Icon(getIconFromString(task.iconName),
-                    color: Colors.white, size: 30),
-                const SizedBox(width: 10),
-                Text(task.title,
+            Icon(getIconFromString(widget.task.iconName),
+                color: Colors.white, size: 30),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    widget.task.title,
                     style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white)),
-              ],
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.star, color: Colors.white, size: 18),
+                      const SizedBox(width: 4),
+                      Text("XP: ${widget.task.xpGain}",
+                          style: const TextStyle(color: Colors.white)),
+                      const SizedBox(width: 12),
+                      const Icon(Icons.access_time,
+                          color: Colors.white, size: 18),
+                      const SizedBox(width: 4),
+                      Text(formatDuration(widget.task.durationMinutes),
+                          style: const TextStyle(color: Colors.white)),
+                      const SizedBox(width: 12),
+                      const Icon(Icons.people, color: Colors.white, size: 18),
+                      const SizedBox(width: 4),
+                      Text(
+                          "${widget.task.peopleApplied}/${widget.task.peopleNeeded}",
+                          style: const TextStyle(
+                              fontSize: 18, color: Colors.white)),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            Text("XP: ${task.xpGain}",
-                style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)),
           ],
         ),
       ),
@@ -382,7 +458,14 @@ void ShowToApproveOther(BuildContext context, TaskWithUser task) {
             height: 200,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: fetchUserImage("user1.png"), // Placeholder image
+              child: Image.network(
+                task.photo ?? "",
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(Icons.person,
+                      size: 200, color: Colors.grey);
+                },
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -474,18 +557,6 @@ void ShowMyDoing(BuildContext context, TaskWithUser task) {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    backgroundColor: Colors.white,
-                  ),
-                  child: const Text("Nazad",
-                      style: TextStyle(fontSize: 18, color: Colors.black)),
-                ),
                 ElevatedButton(
                   onPressed: () => CancelTask(context, task),
                   style: ElevatedButton.styleFrom(
@@ -511,6 +582,24 @@ void ShowMyDoing(BuildContext context, TaskWithUser task) {
                     foregroundColor: Colors.white,
                   ),
                   child: const Text("Završi", style: TextStyle(fontSize: 18)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    backgroundColor: Colors.white,
+                  ),
+                  child: const Text("Nazad",
+                      style: TextStyle(fontSize: 18, color: Colors.black)),
                 ),
               ],
             ),
@@ -580,14 +669,17 @@ void CancelTask(BuildContext context, TaskWithUser task) {
   Navigator.pop(context);
 }
 
-void CompleteTask(BuildContext context, TaskWithUser task) {
-  // TODO camera button
-  // opens page that takes you to a camera
-  // you can take a picture, and then choose to retake or to send
-  // after that the page closes and this popup closes too,
-  // and this task gets moved to tasks that are pending.
-  // Example: api.completeTask(task.id);
+void CompleteTask(BuildContext context, TaskWithUser task) async {
+  ImagePicker _picker = ImagePicker();
+  final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+  if (image != null) {
+    File _image = File(image.path);
 
+    submitTaskCompletion(
+        taskId: task.taskId, userId: Global.user!.id, imageFile: _image);
+  } else {
+    print("no image captured");
+  }
   Navigator.pop(context);
 }
 
@@ -610,16 +702,12 @@ Widget fetchUserImage(String imageName) {
   );
 }
 
-void DenyCompleted(BuildContext context, TaskWithUser task) {
-  // TODO: Send a request to the backend to mark the task as denied
-  // Example: api.denyTask(task.id);
-
+void DenyCompleted(BuildContext context, TaskWithUser task) async {
+  await denyTaskCompletion(taskId: task.taskId, userId: task.userId);
   Navigator.pop(context);
 }
 
-void AcceptCompleted(BuildContext context, TaskWithUser task) {
-  // TODO: Send a request to the backend to mark the task as accepted
-  // Example: api.acceptTask(task.id);
-
+void AcceptCompleted(BuildContext context, TaskWithUser task) async {
+  await approveTaskCompletion(taskId: task.taskId, userId: task.userId);
   Navigator.pop(context);
 }

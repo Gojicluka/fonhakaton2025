@@ -6,6 +6,7 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_reveal_animation/circular_reveal_animation.dart';
 import 'package:flutter/rendering.dart';
+import 'package:fonhakaton2025/data/UserNotifier.dart';
 import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:fonhakaton2025/theme/custom_colors_theme.dart';
 import 'package:fonhakaton2025/widgets/CameraWidget.dart';
@@ -17,6 +18,7 @@ import 'package:fonhakaton2025/widgets/PublicTaskPage.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
 import "package:fonhakaton2025/data/global.dart";
 import 'package:fonhakaton2025/widgets/TaskSelectionScreen.dart';
+import 'package:fonhakaton2025/widgets/login_page.dart';
 import 'package:fonhakaton2025/widgets/profile_screen.dart';
 
 void main() async {
@@ -27,7 +29,7 @@ void main() async {
   runApp(ProviderScope(child: MyApp()));
 }
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   final Size preferredSize;
 
@@ -36,17 +38,21 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Use the userProvider to watch for changes
+    final user = ref.watch(userProvider);
+
+    Global.setUser(user);
+
     return AppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           CircleAvatar(
-            backgroundImage: Global.user?.avatarUrl != null
-                ? NetworkImage(Global.user!.avatarUrl!)
-                : null,
+            backgroundImage:
+                user?.avatarUrl != null ? NetworkImage(user!.avatarUrl!) : null,
             backgroundColor: Colors.grey[300],
-            child: Global.user?.avatarUrl == null
+            child: user?.avatarUrl == null
                 ? Icon(Icons.person, color: Colors.grey[700])
                 : null,
           ),
@@ -54,14 +60,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                Global.user?.name ?? 'Guest',
+                user?.name ?? 'Guest',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
               ),
               Text(
-                'XP: ${Global.user?.xp ?? 0}',
+                'XP: ${user?.xp ?? 0}',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[500],
@@ -87,7 +93,7 @@ class MyApp extends StatelessWidget {
       title: 'Fonhakaton2025',
       theme: AppTheme.get(isLight: true),
       darkTheme: AppTheme.get(isLight: false),
-      home: MyHomePage(title: 'Animated Navigation Bottom Bar'),
+      home: LoginPage(), // Start with the login page instead of MyHomePage
     );
   }
 }

@@ -25,11 +25,8 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
         .from('tasks')
         .select('*')
         .eq('done', false) // Only fetch undone tasks
-        .not(
-            'id',
-            'in',
-            (query) =>
-                query.from('task_users').select('TaskId').eq('UserId', userId))
+        // .not('id', 'in',
+        //     '(SELECT COALESCE((SELECT task_id FROM task_users WHERE user_id = $userId), 0))')
         .order('id', ascending: false);
     state = response;
   }

@@ -44,13 +44,13 @@ class SupabaseHelper {
     bool denied = false,
   }) async {
     try {
-      final response = await supabase.from('task_users').insert({
-        'TaskId': taskId,
-        'UserId': userId,
-        'Photo': photo,
-        'Description': description,
-        'Approved': approved,
-        'Denied': denied, // New field
+      final response = await supabase.from('task_users').upsert({
+        'task_id': taskId,
+        'user_id': userId,
+        'photo': photo,
+        'description': description,
+        'approved': approved,
+        'denied': denied,
       });
 
       if (response.error != null) {
@@ -73,21 +73,31 @@ class SupabaseHelper {
     bool? denied,
   }) async {
     try {
-      final updateData = <String, dynamic>{};
-      if (approved != null) updateData['Approved'] = approved;
-      if (denied != null) updateData['Denied'] = denied;
-
       final response = await supabase
           .from('task_users')
-          .update(updateData)
-          .match({'TaskId': taskId, 'UserId': userId});
+          .delete()
+          .match({'task_id': taskId, 'user_id': userId});
 
       if (response.error != null) {
-        print("Error updating task_users: ${response.error!.message}");
+        print("Error deleting task_user: ${response.error!.message}");
         return false;
       }
 
       return true;
+      // if (approved != null) updateData['Approved'] = approved;
+      // if (denied != null) updateData['Denied'] = denied;
+
+      // final response = await supabase
+      //     .from('task_users')
+      //     .update(updateData)
+      //     .match({'task_id': taskId, 'UserId': userId});
+
+      // if (response.error != null) {
+      //   print("Error updating task_users: ${response.error!.message}");
+      //   return false;
+      // }
+
+      // return true;
     } catch (e) {
       print("Exception in updateTaskUserStatus: $e");
       return false;
@@ -159,21 +169,15 @@ class SupabaseHelper {
     required int taskId,
     required int peopleApplied,
   }) async {
-    try {
-      final response = await supabase
-          .from('tasks')
-          .update({'people_applied': peopleApplied}).match({'id': taskId});
-
-      if (response.error != null) {
-        print("Error updating task people applied: ${response.error!.message}");
-        return false;
-      }
-
-      return true;
-    } catch (e) {
-      print("Exception in updateTaskPeopleApplied: $e");
-      return false;
-    }
+    return await supabase
+        .from('tasks')
+        .update({'people_applied': peopleApplied})
+        .match({'id': taskId})
+        .then((_) => true) // ✅ If successful, return true
+        .catchError((error) {
+          print("Error updating task people applied: $error");
+          return false;
+        });
   }
 
   static Future<bool> insertTask(Task task) async {
@@ -237,7 +241,7 @@ class SupabaseHelper {
       final response = await supabase
           .from('task_users')
           .select()
-          .match({'TaskId': taskId, 'UserId': userId}).maybeSingle();
+          .match({'task_id': taskId, 'user_id': userId}).maybeSingle();
 
       return response != null;
     } catch (e) {

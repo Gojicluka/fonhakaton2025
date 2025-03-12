@@ -23,6 +23,7 @@ void _acceptTask(BuildContext context, Task task) async {
 
   // Pop the context to close the dialog
   SupabaseHelper.addUserToTask(taskId: task.id, userId: Global.user!.id);
+  print("SEFINO");
   SupabaseHelper.updateTaskPeopleApplied(
       taskId: task.id, peopleApplied: task.peopleApplied + 1);
   Navigator.pop(context);
@@ -52,47 +53,47 @@ void denyTask(BuildContext context, TaskWithUser task) async {
   Navigator.pop(context);
 }
 
-class PendingTaskPage extends ConsumerWidget {
-  PendingTaskPage({super.key});
+// class PendingTaskPage extends ConsumerWidget {
+//   PendingTaskPage({super.key});
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final tasks = ref.watch(pendingTaskProvider);
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final tasks = ref.watch(pendingTaskProvider);
 
-    return Scaffold(
-      body: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Pending tasks to approve',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                final task = TaskWithUser.fromMap(tasks[index]);
-                return FutureBuilder<bool>(
-                  future:
-                      SupabaseHelper.isUserOnTask(task.taskId, Global.user!.id),
-                  builder: (context, snapshot) {
-                    final isReported = snapshot.data ?? false;
-                    return PendingTaskWidget(task: task);
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//     return Scaffold(
+//       body: Column(
+//         children: [
+//           const Padding(
+//             padding: EdgeInsets.all(16.0),
+//             child: Align(
+//               alignment: Alignment.centerLeft,
+//               child: Text(
+//                 'Pending tasks to approve',
+//                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+//               ),
+//             ),
+//           ),
+//           Expanded(
+//             child: ListView.builder(
+//               itemCount: tasks.length,
+//               itemBuilder: (context, index) {
+//                 final task = TaskWithUser.fromMap(tasks[index]);
+//                 return FutureBuilder<bool>(
+//                   future:
+//                       SupabaseHelper.isUserOnTask(task.taskId, Global.user!.id),
+//                   builder: (context, snapshot) {
+//                     final isReported = snapshot.data ?? false;
+//                     return PendingTaskWidget(task: task);
+//                   },
+//                 );
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class PublicTaskPage extends ConsumerWidget {
   PublicTaskPage({super.key});
@@ -119,6 +120,7 @@ class PublicTaskPage extends ConsumerWidget {
               itemCount: tasks.length,
               itemBuilder: (context, index) {
                 final task = Task.fromMap(tasks[index]);
+                //return TaskWidget(task: task, isReported: false);
                 return FutureBuilder<bool>(
                   future: SupabaseHelper.isUserOnTask(task.id, Global.user!.id),
                   builder: (context, snapshot) {
@@ -290,26 +292,24 @@ class _TaskWidgetState extends State<TaskWidget> {
                 ],
               ),
               if (widget.isReported)
-                Row(
-                  children: [
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 20),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Send Report',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      sendReport(context, task);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    )
-                  ],
+                    ),
+                    child: const Text(
+                      'Send Report',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 )
             ],
           ),

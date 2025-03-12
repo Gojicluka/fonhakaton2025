@@ -3,6 +3,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:fonhakaton2025/data/global.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
+import 'package:fonhakaton2025/widgets/icon_converter.dart';
 
 class NewTask extends StatefulWidget {
   const NewTask({super.key});
@@ -158,6 +159,32 @@ class _NewTaskState extends State<NewTask> {
       final int minutes = int.tryParse(_minutesController.text) ?? 0;
       final int duration = (hours * 60) + minutes;
 
+      IconData iconData = Icons.task;
+
+      switch (_selectedColor.value.toRadixString(16).substring(2)) {
+        case '795548':
+          iconData = Icons.shield;
+          break;
+        case '607D8B':
+          iconData = Icons.schedule;
+          break;
+        case '673AB7':
+          iconData = Icons.auto_awesome;
+          break;
+        case 'F44336':
+          iconData = Icons.local_fire_department;
+          break;
+        case '2196F3':
+          iconData = Icons.water;
+          break;
+        case 'E91E63':
+          iconData = Icons.local_florist;
+          break;
+        default:
+          iconData = Icons.task;
+          break;
+      }
+
       final newTask = Task(
         id: 0, // This should be handled by the backend
         creatorId: Global.user!.id, // This should be set with actual user ID
@@ -174,7 +201,7 @@ class _NewTaskState extends State<NewTask> {
         title: _titleController.text,
         description: _descriptionController.text,
         peopleApplied: 0, // Initially 0
-        iconName: "shield",
+        iconName: iconToString(iconData),
         color:
             '#${_selectedColor.value.toRadixString(16).substring(2)}', // Convert Color to hex string
       );
