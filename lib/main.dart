@@ -101,8 +101,8 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.get(),
       darkTheme:
           AppTheme.get(), // Or remove this line since there's no dark theme
-      // home: LoginPage(), // Start with the login page instead of MyHomePage
-      home: MyHomePage(title: "test"),
+      home: LoginPage(), // Start with the login page instead of MyHomePage
+      // home: MyHomePage(title: "test"),
     );
   }
 }
