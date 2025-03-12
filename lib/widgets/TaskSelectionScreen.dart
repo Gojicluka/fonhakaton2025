@@ -25,7 +25,8 @@ class _TaskSelectionScreenState extends State<TaskSelectionScreen> {
               alignment: Alignment.center,
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle "Global" selection
+                  // Handle "Global" selection TODO
+                  // open PublicTaskPage.
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -95,7 +96,8 @@ class _TaskSelectionScreenState extends State<TaskSelectionScreen> {
                   ElevatedButton(
                     onPressed: selectedGroup != null
                         ? () {
-                            // Handle group selection
+                            // Handle group selection TODO
+                            // remember group selected in a global variable, which you will use to display tasks in the GroupTaskPage.
                           }
                         : null, // Disable button if no group is selected
                     style: ElevatedButton.styleFrom(
