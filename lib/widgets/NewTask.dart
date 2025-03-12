@@ -75,50 +75,6 @@ class _NewTaskState extends State<NewTask> {
     });
   }
 
-  // void _createTask() {
-  //   if (_formKey.currentState!.validate()) {
-  //     final int duration = int.parse(_durationController.text) * 60;
-  //     final newTask = Task(
-  //       _titleController.text,
-  //       int.parse(_xpController.text),
-  //       duration,
-  //       "Custom", // todo GROUP NAME
-  //       _locationController.text.isEmpty ? "ETF" : _locationController.text,
-  //       "ETF", // todo SHOULD READ FROM USER
-  //       0,
-  //       _peopleController.text.isEmpty ? 1 : int.parse(_peopleController.text),
-  //       false, // if group exists
-  //       _descriptionController.text,
-  //       "User",
-  //       _selectedColor, // Read selected color
-  //     );
-  //     setState(() {
-  //       tasks.add(newTask);
-  //     });
-
-  //     void _createTask() {
-  //       if (_formKey.currentState!.validate()) {
-  //         final int duration = int.parse(_durationController.text) * 60;
-  //         final newTask = Task(
-  //           _titleController.text,
-  //           int.parse(_xpController.text),
-  //           duration,
-  //           "Custom", // todo GROUP NAME
-  //           _locationController.text.isEmpty ? "ETF" : _locationController.text,
-  //           "ETF", // todo SHOULD READ FROM USER
-  //           0,
-  //           _peopleController.text.isEmpty
-  //               ? 1
-  //               : int.parse(_peopleController.text),
-  //           false, // if group exists
-  //           _descriptionController.text,
-  //           "User",
-  //           _selectedColor, // Read selected color
-  //         );
-
-  //         setState(() {
-  //           tasks.add(newTask);
-
   void _createTask() {
     if (_formKey.currentState!.validate()) {
       final int hours = int.tryParse(_hoursController.text) ?? 0;

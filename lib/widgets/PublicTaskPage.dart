@@ -2,6 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:fonhakaton2025/widgets/Group.dart';
 import 'package:fonhakaton2025/widgets/Task.dart';
 
+void _acceptTask(BuildContext context, Task task) {
+  // Adds the selected task to a list of active tasks
+  //activeTasks.add(task);
+
+  // Increases the amount of people who have accepted the quest
+  // and the player can't accept it again. Perhaps show that the quest has been accepted somewhere.
+  //task.appliedPeople += 1;
+
+  // Pop the context to close the dialog
+  Navigator.pop(context);
+}
+
 class PublicTaskPage extends StatelessWidget {
   PublicTaskPage({super.key});
 
@@ -124,12 +136,13 @@ class TaskWidget extends StatelessWidget {
                         style: TextStyle(fontSize: 18, color: Colors.black)),
                   ),
                   ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => _acceptTask(context, task),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 20),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       backgroundColor: Colors.amber,
                       foregroundColor: Colors.black,
                     ),

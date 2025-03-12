@@ -109,3 +109,12 @@ custom dialogs in flutter.
 za svaki task:
 
 showTask, izolovana funkcija u Task.dart koja ce da uradi minimalisticki prikaz
+
+
+
+TODO:
+
+- publicTaskPage prihvati task -> dodati neku funkciju koja ne radi nista fzn
+
+
+- izoluj prikaz taska kako bi mogla da ga koristis i kod prihvacenih taskova, samo ces tamo izmeniti dugme tako da kaze "Odustani".!!!!
