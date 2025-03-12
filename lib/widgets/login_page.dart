@@ -114,7 +114,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Login to continue',
+                      'Loginujte se da nastavite',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white.withOpacity(0.8),
@@ -131,7 +131,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           TextFormField(
                             controller: _usernameController,
                             decoration: InputDecoration(
-                              hintText: 'Username',
+                              hintText: 'Ime',
                               filled: true,
                               fillColor: Colors.white,
                               border: OutlineInputBorder(
@@ -233,11 +233,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           // Register text
                           RichText(
                             text: TextSpan(
-                              text: 'Don\'t have an account? ',
+                              text: 'Nemate nalog? ',
                               style: TextStyle(color: Colors.white70),
                               children: [
                                 TextSpan(
-                                  text: 'Register',
+                                  text: 'Registrujte se',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,

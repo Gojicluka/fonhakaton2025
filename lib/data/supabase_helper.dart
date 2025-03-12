@@ -10,8 +10,9 @@ Future<void> init_supabase() async {
   print("Initializing Supabase...");
   await dotenv.load();
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_KEY']!,
+    url: "https://jjcjiuphkksjunhjsuto.supabase.co",
+    anonKey:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqY2ppdXBoa2tzanVuaGpzdXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3MTU2ODEsImV4cCI6MjA1NzI5MTY4MX0.fgvHlMW2G8-G6Noi2Xzy37kb8baKbgk3WLsauqK4VII",
   );
 }
 

@@ -44,7 +44,7 @@ class _NewTaskState extends State<NewTask> {
       location: "",
       peopleNeeded: 0,
       isPublic: false,
-      title: "None",
+      title: "Nijedan",
       description: "",
       peopleApplied: 0,
       color: '#9E9E9E',
@@ -56,11 +56,11 @@ class _NewTaskState extends State<NewTask> {
       xpGain: 50,
       studentGroupId: 1,
       universityId: 1,
-      location: "Main Hall",
+      location: "Glavna sala",
       peopleNeeded: 3,
       isPublic: true,
-      title: "Distribute Flyers",
-      description: "Hand out flyers at key locations.",
+      title: "Deljenje letaka",
+      description: "Deljenje letaka na ključnim lokacijama.",
       peopleApplied: 0,
       color: '#2196F3',
     ),
@@ -71,11 +71,11 @@ class _NewTaskState extends State<NewTask> {
       xpGain: 100,
       studentGroupId: 2,
       universityId: 1,
-      location: "Front Desk",
+      location: "Recepcija",
       peopleNeeded: 5,
       isPublic: true,
-      title: "Help at Registration",
-      description: "Assist in checking in attendees.",
+      title: "Pomoć pri registraciji",
+      description: "Pomoć pri prijavljivanju učesnika.",
       peopleApplied: 0,
       color: '#4CAF50',
     ),
@@ -86,11 +86,11 @@ class _NewTaskState extends State<NewTask> {
       xpGain: 80,
       studentGroupId: 2,
       universityId: 1,
-      location: "Storage Room",
+      location: "Skladište",
       peopleNeeded: 2,
       isPublic: true,
-      title: "Organize Equipment",
-      description: "Sort and distribute equipment.",
+      title: "Organizovanje opreme",
+      description: "Sortiranje i distribucija opreme.",
       peopleApplied: 0,
       color: '#FF9800',
     ),
@@ -101,11 +101,11 @@ class _NewTaskState extends State<NewTask> {
       xpGain: 60,
       studentGroupId: 3,
       universityId: 1,
-      location: "Lobby",
+      location: "Hol",
       peopleNeeded: 4,
       isPublic: true,
-      title: "Guide Visitors",
-      description: "Help visitors find their way.",
+      title: "Vođenje posetilaca",
+      description: "Pomoć posetiocima da pronađu svoj put.",
       peopleApplied: 0,
       color: '#9C27B0',
     ),
@@ -115,7 +115,7 @@ class _NewTaskState extends State<NewTask> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Select Task Color"),
+        title: const Text("Izaberite boju"),
         content: SingleChildScrollView(
           child: BlockPicker(
             pickerColor: _selectedColor,
@@ -257,7 +257,7 @@ class _NewTaskState extends State<NewTask> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Create New Task")),
+      appBar: AppBar(title: const Text("Napravi novi zadatak")),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
@@ -275,7 +275,7 @@ class _NewTaskState extends State<NewTask> {
                   ),
                   child: Column(
                     children: [
-                      const Text("Select from predefined tasks",
+                      const Text("Selektujte iz predefinisanih zadataka: ",
                           style: TextStyle(fontSize: 18)),
                       const SizedBox(height: 10),
                       DropdownButtonFormField<Task>(
@@ -292,7 +292,7 @@ class _NewTaskState extends State<NewTask> {
                             setState(() => _selectedPredefinedTask = value);
                           }
                         },
-                        decoration: const InputDecoration(labelText: "Task"),
+                        decoration: const InputDecoration(labelText: "Zadatak"),
                       ),
                     ],
                   ),
@@ -309,7 +309,7 @@ class _NewTaskState extends State<NewTask> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Or create a custom task:",
+                      const Text("Ili napravite svoj zadatak:",
                           style: TextStyle(fontSize: 18)),
                       const SizedBox(height: 10),
 
@@ -320,10 +320,10 @@ class _NewTaskState extends State<NewTask> {
                             child: TextFormField(
                               controller: _titleController,
                               maxLength: 30,
-                              decoration:
-                                  const InputDecoration(labelText: "Task Name"),
+                              decoration: const InputDecoration(
+                                  labelText: "Ime zadatka"),
                               validator: (value) =>
-                                  value!.isEmpty ? "Enter Task Name" : null,
+                                  value!.isEmpty ? "Unesite ime zadatka" : null,
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -351,7 +351,7 @@ class _NewTaskState extends State<NewTask> {
                               controller: _hoursController,
                               keyboardType: TextInputType.number,
                               decoration:
-                                  const InputDecoration(labelText: "Hours"),
+                                  const InputDecoration(labelText: "Sati"),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -360,7 +360,7 @@ class _NewTaskState extends State<NewTask> {
                               controller: _minutesController,
                               keyboardType: TextInputType.number,
                               decoration:
-                                  const InputDecoration(labelText: "Minutes"),
+                                  const InputDecoration(labelText: "Minuti"),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -369,9 +369,9 @@ class _NewTaskState extends State<NewTask> {
                               controller: _xpController,
                               keyboardType: TextInputType.number,
                               decoration:
-                                  const InputDecoration(labelText: "XP Gain"),
+                                  const InputDecoration(labelText: "XP dobit"),
                               validator: (value) =>
-                                  value!.isEmpty ? "Enter XP" : null,
+                                  value!.isEmpty ? "Unesite XP" : null,
                             ),
                           ),
                         ],
@@ -385,7 +385,7 @@ class _NewTaskState extends State<NewTask> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text("Additional options",
+                            const Text("Dodatne opcije",
                                 style: TextStyle(fontSize: 18)),
                             Icon(
                               _showAdditionalOptions
@@ -406,7 +406,7 @@ class _NewTaskState extends State<NewTask> {
                                     controller: _peopleController,
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
-                                        labelText: "People Needed"),
+                                        labelText: "Broj ljudi"),
                                   ),
                                 ),
                                 const SizedBox(width: 10),
@@ -414,7 +414,7 @@ class _NewTaskState extends State<NewTask> {
                                   child: TextFormField(
                                     controller: _locationController,
                                     decoration: const InputDecoration(
-                                        labelText: "Location"),
+                                        labelText: "Lokacija"),
                                   ),
                                 ),
                               ],
@@ -424,7 +424,7 @@ class _NewTaskState extends State<NewTask> {
                               controller: _descriptionController,
                               maxLength: 80,
                               decoration: const InputDecoration(
-                                labelText: "Description",
+                                labelText: "Opis",
                                 border: OutlineInputBorder(),
                               ),
                               validator: (value) =>
@@ -443,7 +443,7 @@ class _NewTaskState extends State<NewTask> {
                               minimumSize: const Size(double.infinity, 50),
                               textStyle: const TextStyle(fontSize: 18),
                             ),
-                            child: const Text("Create Task"),
+                            child: const Text("Napravite zadatak"),
                           ),
                         ),
                       ),

@@ -41,7 +41,7 @@ class _TaskSelectionScreenState extends State<TaskSelectionScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text("GLOBAL"),
+                child: Text("JAVNO"),
               ),
             ),
 
