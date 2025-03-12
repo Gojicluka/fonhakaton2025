@@ -165,11 +165,11 @@ final List<TaskWithUser> toCompleteGroup = [
     done: false,
     studentGroupId: 2,
     universityId: 1,
-    location: "Media Room",
+    location: "Soba za medije",
     peopleNeeded: 1,
     isPublic: false,
-    title: "Edit Promotional Video",
-    description: "Edit a short promotional video for the faculty.",
+    title: "Edituj promotivni video",
+    description: "Edituj kratki video za medije.",
     peopleApplied: 0,
     color: "#FFD700",
     iconName: "shield",
@@ -186,11 +186,11 @@ final List<TaskWithUser> toCompleteMyFaculty = [
     done: false,
     studentGroupId: null,
     universityId: 1,
-    location: "Student Lounge",
+    location: "fakultetski wc",
     peopleNeeded: 1,
     isPublic: true,
-    title: "Clean Student Lounge",
-    description: "Help clean and organize the student lounge.",
+    title: "Ocisti wc",
+    description: "Pomozi nam da ocistimo wc.",
     peopleApplied: 1,
     color: "#32CD32",
     iconName: "star",
@@ -232,19 +232,19 @@ class _MyTasksState extends State<MyTasks> {
               padding: const EdgeInsets.all(16),
               children: [
                 TaskSegment(
-                  title: "Moji izdati",
+                  title: "Oceni",
                   items: toApprove, // List of TaskUser
                   backgroundColor: const Color.fromRGBO(187, 222, 251, 1),
                   onTap: ShowToApproveOther,
                 ),
                 TaskSegment(
-                  title: "Zavrseni neocenjeni",
+                  title: "Na cekanju...",
                   items: toCompleteMyFaculty, // List of Task
                   backgroundColor: Colors.green.shade100,
                   onTap: ShowMyPending,
                 ),
                 TaskSegment(
-                  title: "Trenutni aktivni",
+                  title: "Aktivno",
                   items: toCompleteGroup, // List of Task
                   backgroundColor: Colors.purple.shade100,
                   onTap: ShowMyDoing,

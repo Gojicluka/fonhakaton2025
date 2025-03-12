@@ -102,6 +102,7 @@ class MyApp extends StatelessWidget {
       darkTheme:
           AppTheme.get(), // Or remove this line since there's no dark theme
       home: LoginPage(), // Start with the login page instead of MyHomePage
+      // home: MyHomePage(title: "test"),
     );
   }
 }
@@ -128,24 +129,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late AnimationController _hideBottomBarAnimationController;
 
   final iconList = <IconData>[
-    Icons.bookmark_border,
-    Icons.brightness_4,
-    Icons.brightness_6,
-    Icons.access_alarms_outlined,
+    Icons.menu_book, // PublicTaskPage (Book icon)
+    Icons.checklist, // MyTasks (Checklist icon, representing tasks)
+    Icons.person, // ProfilePage (Person icon)
+    Icons.emoji_events, // LeaderboardPage (Trophy icon)
   ];
 
   final List<Widget> _screens = [
     PublicTaskPage(),
     MyTasks(),
-    ProfilePage(),
     LeaderboardPage(),
+    ProfilePage(),
     TaskSelectionScreen(), // Add this
   ];
 
   @override
   void initState() {
     super.initState();
-
     _fabAnimationController = AnimationController(
       duration: Duration(milliseconds: 500),
       vsync: this,

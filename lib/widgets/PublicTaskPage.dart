@@ -110,7 +110,7 @@ class PublicTaskPage extends ConsumerWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Faculty tasks',
+                'Fakultetski zadaci',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
@@ -333,8 +333,9 @@ class _TaskWidgetState extends State<TaskWidget> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(getIconFromString(widget.task.iconName),
-                color: Colors.white, size: 30),
+            Icon(getIconFromString(widget.task.iconName), // TODO BITNO
+                color: Colors.white,
+                size: 30),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
