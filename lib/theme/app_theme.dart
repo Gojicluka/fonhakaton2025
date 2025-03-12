@@ -4,8 +4,9 @@ import 'custom_colors_theme.dart';
 
 class AppTheme {
   static const Color primaryColor = Color(0xFF007AFF); // Electric Blue
-  static const Color accentColor = Color(0xFFFFC107); // Gold
-  static const Color backgroundColor = Color(0xFFFFF8E1); // Soft Cream
+  static const Color accentColor = Color(0xFF795548); // Brown
+  static const Color backgroundColor =
+      Color.fromARGB(255, 255, 255, 255); // Soft Cream
   static const Color surfaceColor = Color(0xFFF5F5F5); // Light Gray
   static const Color textColor = Color(0xFF1A1A2E); // Deep Navy
 

@@ -110,7 +110,7 @@ class PublicTaskPage extends ConsumerWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Faculty tasks',
+                'Fakultetski zadaci',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),

@@ -137,8 +137,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   final List<Widget> _screens = [
     PublicTaskPage(),
     MyTasks(),
-    ProfilePage(),
     LeaderboardPage(),
+    ProfilePage(),
     TaskSelectionScreen(), // Add this
   ];
 
