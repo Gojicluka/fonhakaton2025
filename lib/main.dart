@@ -10,10 +10,13 @@ import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:fonhakaton2025/theme/custom_colors_theme.dart';
 import 'package:fonhakaton2025/widgets/CameraWidget.dart';
 import 'package:fonhakaton2025/widgets/ExplorePage.dart';
+import 'package:fonhakaton2025/widgets/GroupTaskPage.dart';
+import 'package:fonhakaton2025/widgets/MyTasks.dart';
 import 'package:fonhakaton2025/widgets/NewTask.dart';
 import 'package:fonhakaton2025/widgets/PublicTaskPage.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
 import "package:fonhakaton2025/data/global.dart";
+import 'package:fonhakaton2025/widgets/TaskSelectionScreen.dart';
 import 'package:fonhakaton2025/widgets/profile_screen.dart';
 
 void main() async {
@@ -120,7 +123,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   final List<Widget> _screens = [
     PublicTaskPage(),
     ExplorePage(),
-    CameraScreen(),
+    // CameraScreen(),
+    // TaskSelectionScreen(),
+    // GroupTaskPage(),
+    MyTasks(),
     ProfilePage(),
   ];
 
