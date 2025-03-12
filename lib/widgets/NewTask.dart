@@ -185,43 +185,45 @@ class _NewTaskState extends State<NewTask> {
       });
       SupabaseHelper.insertTask(newTask);
 
+      Navigator.of(context).pop();
+
       // Show alert dialog with task details
-      showDialog(
-        context: context, // Make sure context is correct
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Task Created"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Title: ${newTask.title}"),
-                Text("XP: ${newTask.xpGain}"),
-                Text("Duration: ${newTask.durationMinutes} min"),
-                Text("Group: ${newTask.studentGroupId}"),
-                Text("Location: ${newTask.location}"),
-                Text("Faculty: ${newTask.universityId}"),
-                Text("Needed People: ${newTask.peopleNeeded}"),
-                Text("Public: ${newTask.isPublic ? "Yes" : "No"}"),
-                Text("Description: ${newTask.description}"),
-                Text("Created by: ${newTask.creatorId}"),
-                Container(
-                  width: 50,
-                  height: 20,
-                  color:
-                      Color(int.parse(newTask.color.replaceAll('#', '0xff'))),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
-      );
+      // showDialog(
+      //   context: context, // Make sure context is correct
+      //   builder: (BuildContext context) {
+      //     return AlertDialog(
+      //       title: const Text("Task Created"),
+      //       content: Column(
+      //         mainAxisSize: MainAxisSize.min,
+      //         crossAxisAlignment: CrossAxisAlignment.start,
+      //         children: [
+      //           Text("Title: ${newTask.title}"),
+      //           Text("XP: ${newTask.xpGain}"),
+      //           Text("Duration: ${newTask.durationMinutes} min"),
+      //           Text("Group: ${newTask.studentGroupId}"),
+      //           Text("Location: ${newTask.location}"),
+      //           Text("Faculty: ${newTask.universityId}"),
+      //           Text("Needed People: ${newTask.peopleNeeded}"),
+      //           Text("Public: ${newTask.isPublic ? "Yes" : "No"}"),
+      //           Text("Description: ${newTask.description}"),
+      //           Text("Created by: ${newTask.creatorId}"),
+      //           Container(
+      //             width: 50,
+      //             height: 20,
+      //             color:
+      //                 Color(int.parse(newTask.color.replaceAll('#', '0xff'))),
+      //           ),
+      //         ],
+      //       ),
+      //       actions: [
+      //         TextButton(
+      //           onPressed: () => Navigator.of(context).pop(),
+      //           child: const Text("OK"),
+      //         ),
+      //       ],
+      //     );
+      //   },
+      // );
     }
   }
 

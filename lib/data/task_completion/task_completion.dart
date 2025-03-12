@@ -66,14 +66,18 @@ Future<bool> approveTaskCompletion({
     await SupabaseHelper.updateTask(
       taskId: taskId,
       peopleNeeded: 0,
+      peopleApplied: 0,
       done: true,
     );
   } else {
     await SupabaseHelper.updateTask(
       taskId: taskId,
       peopleNeeded: task.peopleNeeded - 1,
+      peopleApplied: task.peopleApplied - 1,
     );
   }
+
+  await SupabaseHelper.updateUserXP(userId: userId, xpAmount: task.xpGain);
 
   return await SupabaseHelper.updateTaskUserStatus(
     taskId: taskId,

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fonhakaton2025/data/global.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final taskProvider =
@@ -11,12 +12,24 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
     fetchTasks();
     listenForNewTasks();
   }
+  bool isVisible = true;
 
-  /// Fetch all tasks from Supabase
+  void toggleVisibility() {
+    isVisible = !isVisible;
+  }
+
+  /// Fetch all undone tasks from Supabase excluding ones the user has applied to
   Future<void> fetchTasks() async {
+    final userId = Global.user!.id;
     final response = await Supabase.instance.client
         .from('tasks')
         .select('*')
+        .eq('done', false) // Only fetch undone tasks
+        .not(
+            'id',
+            'in',
+            (query) =>
+                query.from('task_users').select('TaskId').eq('UserId', userId))
         .order('id', ascending: false);
     state = response;
   }
