@@ -28,8 +28,7 @@ class _TaskSelectionScreenState extends State<TaskSelectionScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => NewTask(group: "global")),
+                    MaterialPageRoute(builder: (context) => NewTask()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -103,8 +102,7 @@ class _TaskSelectionScreenState extends State<TaskSelectionScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      NewTask(group: selectedGroup!)),
+                                  builder: (context) => NewTask()),
                             );
                           }
                         : null,
