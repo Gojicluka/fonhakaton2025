@@ -104,7 +104,7 @@ class DetailPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                group.name,
+                group.description ?? "",
                 style: const TextStyle(fontSize: 18),
                 textAlign: TextAlign.center,
               ),
