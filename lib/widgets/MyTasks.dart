@@ -232,19 +232,19 @@ class _MyTasksState extends State<MyTasks> {
               padding: const EdgeInsets.all(16),
               children: [
                 TaskSegment(
-                  title: "Moji izdati",
+                  title: "Oceni",
                   items: toApprove, // List of TaskUser
                   backgroundColor: const Color.fromRGBO(187, 222, 251, 1),
                   onTap: ShowToApproveOther,
                 ),
                 TaskSegment(
-                  title: "Zavrseni neocenjeni",
+                  title: "Na cekanju...",
                   items: toCompleteMyFaculty, // List of Task
                   backgroundColor: Colors.green.shade100,
                   onTap: ShowMyPending,
                 ),
                 TaskSegment(
-                  title: "Trenutni aktivni",
+                  title: "Aktivno",
                   items: toCompleteGroup, // List of Task
                   backgroundColor: Colors.purple.shade100,
                   onTap: ShowMyDoing,
