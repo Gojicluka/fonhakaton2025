@@ -10,27 +10,32 @@ class Player {
 
 class LeaderboardPage extends StatelessWidget {
   final List<Player> players = [
-    Player(name: "Alice", imageUrl: "https://i.pravatar.cc/150?img=1", points: 1500),
-    Player(name: "Bob", imageUrl: "https://i.pravatar.cc/150?img=2", points: 1400),
-    Player(name: "Charlie", imageUrl: "https://i.pravatar.cc/150?img=3", points: 1300),
-    Player(name: "David", imageUrl: "https://i.pravatar.cc/150?img=4", points: 1100),
-    Player(name: "Emma", imageUrl: "https://i.pravatar.cc/150?img=5", points: 1000),
-    Player(name: "Frank", imageUrl: "https://i.pravatar.cc/150?img=6", points: 900),
-    Player(name: "Grace", imageUrl: "https://i.pravatar.cc/150?img=7", points: 800),
+    Player(name: "cana", imageUrl: "../../assets/cana.jpg", points: 1500),
+    Player(name: "kekss", imageUrl: "../../assets/cute.jpg", points: 1400),
+    Player(name: "irkee", imageUrl: "../../assets/irke.jpg", points: 1300),
+    Player(name: "miksa99", imageUrl: "../../assets/marko99.jpg", points: 1100),
+    Player(name: "paki", imageUrl: "../../assets/paki.jpg", points: 1000),
+    Player(name: "marko3", imageUrl: "../../assets/marko3.jpg", points: 900),
+    Player(name: "cira", imageUrl: "../../assets/cira.jpg", points: 800),
   ];
 
   LeaderboardPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("🏆 Leaderboard", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 242, 38))),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 78, 125, 234),
-        elevation: 0,
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text(
+        "🏆 Leaderboard",
+        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 242, 38)),
       ),
-      body: Column(
+      centerTitle: true,
+      backgroundColor: const Color.fromARGB(255, 78, 125, 234),
+      elevation: 0,
+    ),
+    body: Container(
+      color: Color(0xFF6F4F37) , // Light wood brown color
+      child: Column(
         children: [
           const SizedBox(height: 20),
           // Top 3 Players Podium
@@ -50,8 +55,10 @@ class LeaderboardPage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   // Podium Design for Top 3
   Widget _buildPodium() {
