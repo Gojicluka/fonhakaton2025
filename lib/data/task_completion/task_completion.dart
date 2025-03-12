@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:fonhakaton2025/data/global.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -66,14 +67,19 @@ Future<bool> approveTaskCompletion({
     await SupabaseHelper.updateTask(
       taskId: taskId,
       peopleNeeded: 0,
+      peopleApplied: 0,
       done: true,
     );
   } else {
     await SupabaseHelper.updateTask(
       taskId: taskId,
       peopleNeeded: task.peopleNeeded - 1,
+      peopleApplied: task.peopleApplied - 1,
     );
   }
+
+  await SupabaseHelper.updateUserXP(
+      userId: userId, xpAmount: Global.user!.xp + task.xpGain);
 
   return await SupabaseHelper.updateTaskUserStatus(
     taskId: taskId,
