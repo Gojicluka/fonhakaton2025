@@ -35,12 +35,22 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  # for color picker //added by Irena
+  flutter_colorpicker: ^1.0.3
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   animated_bottom_navigation_bar: ^1.4.0
   auto_size_text: ^3.0.0
   circular_reveal_animation: ^2.0.1
+  supabase_flutter: ^2.8.4
+  flutter_dotenv: ^5.0.3
+  image_picker: ^1.1.2
+  flutter_riverpod: ^2.6.1
+  google_fonts: ^6.2.1
+  intl: ^0.18.1 # You can use the latest version if available
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -48,13 +58,15 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  fl_chart: ^0.63.0 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  assets:
+    - .env
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

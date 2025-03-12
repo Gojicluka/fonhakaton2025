@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:fonhakaton2025/widgets/Group.dart';
+import 'package:fonhakaton2025/widgets/Task.dart';
+import 'package:fonhakaton2025/data/models/task.dart';
+import 'package:fonhakaton2025/data/models/student_group.dart';
+import 'package:fonhakaton2025/widgets/icon_converter.dart';
+
+void _acceptTask(BuildContext context, Task task) {
+  // Adds the selected task to a list of active tasks
+  //activeTasks.add(task);
+
+  // Increases the amount of people who have accepted the quest
+  // and the player can't accept it again. Perhaps show that the quest has been accepted somewhere.
+  //task.appliedPeople += 1;
+
+  // Pop the context to close the dialog
+  Navigator.pop(context);
+}
 
 class PublicTaskPage extends StatelessWidget {
   PublicTaskPage({super.key});
-
-  final List<PublicTask> tasks = [
-    PublicTask("Deliver Supplies", 50, "2h", "Logistika"),
-    PublicTask("Schedule a Meeting", 30, "1h", "Dnevni red"),
-    PublicTask("Announce Event", 40, "1.5h", "Mediji"),
-    PublicTask("Fire Ritual", 60, "3h", "Red"),
-    PublicTask("Underwater Exploration", 70, "2.5h", "Blue"),
-    PublicTask("Flower Arrangement", 20, "45m", "Pink"),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -20,75 +27,155 @@ class PublicTaskPage extends StatelessWidget {
         itemCount: tasks.length,
         itemBuilder: (context, index) {
           final task = tasks[index];
-          final group = groups.firstWhere((g) => g.name == task.groupName);
-          return PublicTaskWidget(
-            task: task,
-            group: group,
-          );
+          return TaskWidget(task: task);
         },
       ),
     );
   }
 }
 
-class PublicTask {
-  final String title;
-  final int xp;
-  final String duration;
-  final String groupName;
+class TaskWidget extends StatelessWidget {
+  final Task task;
 
-  PublicTask(this.title, this.xp, this.duration, this.groupName);
-}
+  const TaskWidget({super.key, required this.task});
 
-class PublicTaskWidget extends StatelessWidget {
-  final PublicTask task;
-  final Group group;
+  String formatDuration(int minutes) {
+    final int hours = minutes ~/ 60;
+    final int remainingMinutes = minutes % 60;
+    return "${hours.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')}";
+  }
 
-  const PublicTaskWidget({super.key, required this.task, required this.group});
+  void showTaskDialog(BuildContext context, Task task) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Colors.amber, width: 3),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Color(int.parse(task.color
+                .replaceAll('#', '0xff'))), // Background color = Group color
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                task.title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                task.description ?? "",
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
+              const SizedBox(height: 20),
+              if (task.location.length > 15) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.location_on,
+                        color: Colors.white, size: 24),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        task.location,
+                        textAlign: TextAlign.center,
+                        style:
+                            const TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "XP: ${task.xpGain}",
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ] else ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.location_on,
+                        color: Colors.white, size: 24),
+                    const SizedBox(width: 8),
+                    Text(
+                      task.location,
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                    const SizedBox(width: 20),
+                    Text(
+                      "XP: ${task.xpGain}",
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      backgroundColor: Colors.white,
+                    ),
+                    child: const Text("Zatvori",
+                        style: TextStyle(fontSize: 18, color: Colors.black)),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => _acceptTask(context, task),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      backgroundColor: Colors.amber,
+                      foregroundColor: Colors.black,
+                    ),
+                    child: const Text("Prihvati zadatak",
+                        style: TextStyle(fontSize: 18)),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(task.title),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("Group: ${group.name}"),
-                Text("XP: ${task.xp}"),
-                Text("Duration: ${task.duration}"),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Close"),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Accept task logic
-                  Navigator.pop(context);
-                },
-                child: const Text("Accept Task"),
-              ),
-            ],
-          ),
-        );
-      },
+      onTap: () => showTaskDialog(context, task),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: group.color,
+          color: Color(int.parse(
+              task.color.replaceAll('#', '0xff'))), // Convert hex to color
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(group.icon, color: Colors.white, size: 30),
+            Icon(getIconFromString(task.iconName),
+                color: Colors.white, size: 30),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -107,14 +194,20 @@ class PublicTaskWidget extends StatelessWidget {
                     children: [
                       const Icon(Icons.star, color: Colors.white, size: 18),
                       const SizedBox(width: 4),
-                      Text("XP: ${task.xp}",
+                      Text("XP: ${task.xpGain}",
                           style: const TextStyle(color: Colors.white)),
                       const SizedBox(width: 12),
                       const Icon(Icons.access_time,
                           color: Colors.white, size: 18),
                       const SizedBox(width: 4),
-                      Text(task.duration,
+                      Text(formatDuration(task.durationMinutes),
                           style: const TextStyle(color: Colors.white)),
+                      const SizedBox(width: 12),
+                      const Icon(Icons.people, color: Colors.white, size: 18),
+                      const SizedBox(width: 4),
+                      Text("${task.peopleApplied}/${task.peopleNeeded}",
+                          style: const TextStyle(
+                              fontSize: 18, color: Colors.white)),
                     ],
                   ),
                 ],
