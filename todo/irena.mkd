@@ -15,3 +15,153 @@
 ## stranica za RG SEPECIFIC TASKOVE
 
 - 
+
+
+## TASK
+- unique ID -> globally assigned on creation
+- Public: bool
+- xp 
+- how long it takes to complete the task (visually presented in the format of hh:mm, remembered as number of minutes, when representing hours divide minutes by 60)
+- location at which the task needs to be done (visually represented with also a pin icon)
+- how many people are needed and how many people applied to finish it (this will visually be represented as needed/applied with a / in between the two numbers)
+
+### TASK todo
+
+- make functions that support working with database -> adding tasks, fetching tasks. put them in appropriate places!
+
+kako radi firebase??
+
+## USER
+- has a list of task ID-s -> the firebase is searched for these tasks?
+- 
+
+
+## GROUP
+- either a group or a color, and depending on the type 
+
+
+# todo
+
+- napraviti da quest ima vreme trajanja: kad se prijavis da ces da ga uradis, ako ga ne uradis do odredjenog trenutka, task je fejlovan? [] da ljudi ne bi trolovali i uzimali sve taskove, ili eventualno da ogranicimo broj questova koji mogu biti aktivni?
+
+- odvoji task u zaseban task.dart fajl [T]
+- implementirati stranicu preko koje se dodaje novi task []
+- implementirati sortiranje taskova -> po vremenu ili po lokaciji? []
+- implementirati "moji taskovi" stranicu []
+- implementirati korisnika koji ce imati niz id-eva svojih taskova. []
+
+- napraviti stranicu kojom korisnik kaze da je zavrsio task -> i slika sliku i salje na server
+- napraviti stranicu na kojoj korisnik gleda taskove koje je napravio, i za koji task je ko poslao da ga je zavrsio. korisnik moze da kaze da li je task izvrsen uspesno, ili da odbaci pokusaj izvrsavanja. o tome ce korisnik biti notifyovan u "moji taskovi" prozoru
+
+- "moji taskovi"
+    - ongoing
+    - updated (completed or failed -> notifications which dissapear after you open them up and accept them!)
+
+
+- napraviti stranicu kojom se pravi nalog
+- napraviti verifikaciju osobe
+- napraviti mogucnost da REPORTUJES OSOBU
+
+- napraviti DARK MODE []
+
+- napraviti lvl sistem i lvl up sistem []
+    - napraviti neki kul veliki broj za level !!!
+    - napraviti XP bar za osobu!!!
+
+
+## PRIORITETI !!
+
+- task creation SIMPLIFY
+    - za javni task              -> template je l postoji? 
+    - za RG task (izbor koji je) -> template za tu RG 
+    [
+        PREDEFINED:
+        [ dropdown ]
+        custom ... color
+
+    ]
+- task management redom . 
+- user class povezivanje ^^^ 
+- 
+
+edit the following code so that creating a new task actually looks like this:
+in one colored box have two rows, one that has the following text:
+Select from predefined tasks, and the other that has a
+dropdown menu that pulls from some predefined tasks list.
+
+then have another colored box that has this text:
+or create a custom task:
+and then in another row settings:
+in first row : Name (capped to 30 characters) and color picker, when you click on it, you should have a pop up that lets you choose a color
+then in the next row have to input how long the quest should be available for, and also XP gain. both of these are for number input.
+then in the next row have an "Additional options" expandable, when clicked it should show two more options which will be in the same row: people needed for the task (input number) and the location (write text).
+then under all this should be a button to "create task".
+
+
+
+good shit resource:
+https://www.youtube.com/watch?v=rc0ZLsQsDKk
+custom dialogs in flutter. 
+
+===
+
+
+                      // Duration & XP Gain
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _hoursController,
+                              keyboardType: TextInputType.number,
+                              decoration:
+                                  const InputDecoration(labelText: "Hours"),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _minutesController,
+                              keyboardType: TextInputType.number,
+                              decoration:
+                                  const InputDecoration(labelText: "Minutes"),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _xpController,
+                              keyboardType: TextInputType.number,
+                              decoration:
+                                  const InputDecoration(labelText: "XP Gain"),
+                              validator: (value) =>
+                                  value!.isEmpty ? "Enter XP" : null,
+                            ),
+                          ),
+                        ],
+                      ),
+
+===
+
+
+  final TextEditingController _hoursController = TextEditingController();
+  final TextEditingController _minutesController = TextEditingController();
+
+===
+
+
+  void _setTaskFields(Task task) {
+    setState(() {
+      _titleController.text = task.title;
+      _xpController.text = task.xp.toString();
+      _hoursController.text = (task.durationMinutes ~/ 60).toString();
+      _minutesController.text = (task.durationMinutes % 60).toString();
+      _peopleController.text = task.neededPeople.toString();
+      _locationController.text = task.location;
+    });
+  }
+
+  void _createTask() {
+    if (_formKey.currentState!.validate()) {
+      final int hours = int.tryParse(_hoursController.text) ?? 0;
+      final int minutes = int.tryParse(_minutesController.text) ?? 0;
+      final int duration = (hours * 60) + minutes;
