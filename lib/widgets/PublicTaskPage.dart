@@ -3,6 +3,7 @@ import 'package:fonhakaton2025/widgets/Group.dart';
 import 'package:fonhakaton2025/widgets/Task.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/models/student_group.dart';
+import 'package:fonhakaton2025/widgets/icon_converter.dart';
 
 void _acceptTask(BuildContext context, Task task) {
   // Adds the selected task to a list of active tasks
@@ -173,7 +174,8 @@ class TaskWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(Icons.block_rounded, color: Colors.white, size: 30),
+            Icon(getIconFromString(task.iconName),
+                color: Colors.white, size: 30),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,

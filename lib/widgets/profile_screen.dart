@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart'; // Import fl_chart package
 import 'Task.dart';
 import '../achievement.dart';
+import 'package:fonhakaton2025/data/models/task.dart';
 
 class ProfilePage extends StatelessWidget {
   //generic to be changed later
@@ -17,178 +18,183 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(title: Text('Moj nalog')),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Positioned(
-              top: 8,
-              right: 8,
-              child: TextButton.icon(
-                onPressed: handleLogout, // Call the generic function
-                icon: Icon(
-                  Icons.logout,
-                  color: Colors.purple,
-                  size: 18,
-                ),
-                label: Text(
-                  'Logout',
-                  style: TextStyle(color: Colors.purple),
-                ),
-              ),
-            ),
-            // ... (profile picture, name, XP progress, buttons) ...
-            Center(
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage('../../assets/nanana.png'),
-              ),
-            ),
-            SizedBox(height: 16),
-            Center(
-              child: Text(
-                'mimimi',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(height: 16),
-            Text('XP Progress:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            SizedBox(
-              height: 200,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  gridData: FlGridData(show: false), // Disable grid lines
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) =>
-                            const Text(''), // Empty string
-                      ),
-                    ),
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) =>
-                            const Text(''), // Empty string
-                      ),
-                    ),
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) =>
-                            const Text(''), // Empty string
-                      ),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          final days = [
-                            'Mon',
-                            'Tue',
-                            'Wed',
-                            'Thu',
-                            'Fri',
-                            'Sat',
-                            'Sun'
-                          ];
-                          return Text(days[value.toInt()]);
-                        },
-                      ),
-                    ),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 100.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Positioned(
+                top: 8,
+                right: 8,
+                child: TextButton.icon(
+                  onPressed: handleLogout, // Call the generic function
+                  icon: Icon(
+                    Icons.logout,
+                    color: Colors.purple,
+                    size: 18,
                   ),
-
-                  borderData: FlBorderData(
-                    show: false, // Remove all borders
+                  label: Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.purple),
                   ),
-                  barGroups: List.generate(
-                    7,
-                    (index) => BarChartGroupData(
-                      x: index,
-                      barRods: [
-                        BarChartRodData(
-                          toY: (index + 1) * 10.0,
-                          color: Colors.blue,
-                          width: 16,
-                          borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              // ... (profile picture, name, XP progress, buttons) ...
+              Center(
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('../../assets/nanana.png'),
+                ),
+              ),
+              SizedBox(height: 16),
+              Center(
+                child: Text(
+                  'mimimi',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: 16),
+              Text('XP Progress:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              SizedBox(height: 8),
+              SizedBox(
+                height: 200,
+                child: BarChart(
+                  BarChartData(
+                    alignment: BarChartAlignment.spaceAround,
+                    gridData: FlGridData(show: false), // Disable grid lines
+                    titlesData: FlTitlesData(
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (value, meta) =>
+                              const Text(''), // Empty string
                         ),
-                      ],
+                      ),
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (value, meta) =>
+                              const Text(''), // Empty string
+                        ),
+                      ),
+                      topTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (value, meta) =>
+                              const Text(''), // Empty string
+                        ),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (value, meta) {
+                            final days = [
+                              'Mon',
+                              'Tue',
+                              'Wed',
+                              'Thu',
+                              'Fri',
+                              'Sat',
+                              'Sun'
+                            ];
+                            return Text(days[value.toInt()]);
+                          },
+                        ),
+                      ),
+                    ),
+
+                    borderData: FlBorderData(
+                      show: false, // Remove all borders
+                    ),
+                    barGroups: List.generate(
+                      7,
+                      (index) => BarChartGroupData(
+                        x: index,
+                        barRods: [
+                          BarChartRodData(
+                            toY: (index + 1) * 10.0,
+                            color: Colors.blue,
+                            width: 16,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
 
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Moja dostignuća'),
-                          content: Container(
-                            width: double.maxFinite,
-                            child: ProfileAchievements(),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('Nazad'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Moja dostignuća'),
+                            content: Container(
+                              width: double.maxFinite,
+                              child: ProfileAchievements(),
                             ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('Nazad'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    ),
+                    child: Text('Dostignuća'),
                   ),
-                  child: Text('Dostignuća'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Završeni kvestovi'),
-                          content: Container(
-                            width: double.maxFinite,
-                            child: ProfileTasks(),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('Nazad'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Završeni kvestovi'),
+                            content: Container(
+                              width: double.maxFinite,
+                              child: ProfileTasks(),
                             ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('Nazad'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    ),
+                    child: Text('Kvest'),
                   ),
-                  child: Text('Kvest'),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Text('Achievements:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            AchievementIcons(), // Use AchievementIcons here
-          ],
+                ],
+              ),
+              SizedBox(height: 16),
+              Text('Achievements:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              AchievementIcons(), // Use AchievementIcons here
+            ],
+          ),
         ),
       ),
     );
@@ -415,38 +421,37 @@ class ProfileTasks extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: tasks.map((task) {
-          return _buildTaskCard(
-            context,
-            task,
-            DateTime.now()
-          );
+          return _buildTaskCard(context, task, DateTime.now());
         }).toList(),
       ),
     );
   }
 
   Widget _buildTaskCard(BuildContext context, Task task, DateTime date) {
-  return Card(
-    color: Colors.accents[tasks.indexOf(task) % Colors.accents.length],
-    margin: const EdgeInsets.all(10),
-    child: Stack( // Use Stack to overlay the date
-      children: [
-        ListTile(
-          leading: const Icon(Icons.check, color: Colors.white),
-          title: Text(task.title, style: GoogleFonts.lato(color: Colors.white)),
-        ),
-        Positioned( // Position the date at the top right
-          top: 8,
-          right: 8,
-          child: Text(
-            DateFormat('MMM dd, yyyy').format(date), // Format the date
-            style: GoogleFonts.lato(color: Colors.white, fontSize: 12),
+    return Card(
+      color: Colors.accents[tasks.indexOf(task) % Colors.accents.length],
+      margin: const EdgeInsets.all(10),
+      child: Stack(
+        // Use Stack to overlay the date
+        children: [
+          ListTile(
+            leading: const Icon(Icons.check, color: Colors.white),
+            title:
+                Text(task.title, style: GoogleFonts.lato(color: Colors.white)),
           ),
-        ),
-      ],
-    ),
-  );
-}
+          Positioned(
+            // Position the date at the top right
+            top: 8,
+            right: 8,
+            child: Text(
+              DateFormat('MMM dd, yyyy').format(date), // Format the date
+              style: GoogleFonts.lato(color: Colors.white, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ... (allAchievements and tasks lists remain the same)

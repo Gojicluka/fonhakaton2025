@@ -14,6 +14,7 @@ import 'package:fonhakaton2025/widgets/PublicTaskPage.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
 import "package:fonhakaton2025/data/models.dart";
 import "package:fonhakaton2025/data/global.dart";
+import 'package:fonhakaton2025/widgets/profile_screen.dart';
 
 void main() async {
   await init_supabase();
@@ -120,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     PublicTaskPage(),
     ExplorePage(),
     CameraScreen(),
-    Center(child: Text('Text4')),
+    ProfilePage(),
   ];
 
   @override
