@@ -106,62 +106,15 @@ custom dialogs in flutter.
 ===
 
 
-                      // Duration & XP Gain
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _hoursController,
-                              keyboardType: TextInputType.number,
-                              decoration:
-                                  const InputDecoration(labelText: "Hours"),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _minutesController,
-                              keyboardType: TextInputType.number,
-                              decoration:
-                                  const InputDecoration(labelText: "Minutes"),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _xpController,
-                              keyboardType: TextInputType.number,
-                              decoration:
-                                  const InputDecoration(labelText: "XP Gain"),
-                              validator: (value) =>
-                                  value!.isEmpty ? "Enter XP" : null,
-                            ),
-                          ),
-                        ],
-                      ),
+za svaki task:
 
-===
+showTask, izolovana funkcija u Task.dart koja ce da uradi minimalisticki prikaz
 
 
-  final TextEditingController _hoursController = TextEditingController();
-  final TextEditingController _minutesController = TextEditingController();
 
-===
+TODO:
+
+- publicTaskPage prihvati task -> dodati neku funkciju koja ne radi nista fzn
 
 
-  void _setTaskFields(Task task) {
-    setState(() {
-      _titleController.text = task.title;
-      _xpController.text = task.xp.toString();
-      _hoursController.text = (task.durationMinutes ~/ 60).toString();
-      _minutesController.text = (task.durationMinutes % 60).toString();
-      _peopleController.text = task.neededPeople.toString();
-      _locationController.text = task.location;
-    });
-  }
-
-  void _createTask() {
-    if (_formKey.currentState!.validate()) {
-      final int hours = int.tryParse(_hoursController.text) ?? 0;
-      final int minutes = int.tryParse(_minutesController.text) ?? 0;
-      final int duration = (hours * 60) + minutes;
+- izoluj prikaz taska kako bi mogla da ga koristis i kod prihvacenih taskova, samo ces tamo izmeniti dugme tako da kaze "Odustani".!!!!

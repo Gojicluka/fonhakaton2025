@@ -4,6 +4,18 @@ import 'package:fonhakaton2025/widgets/Task.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/models/student_group.dart';
 
+void _acceptTask(BuildContext context, Task task) {
+  // Adds the selected task to a list of active tasks
+  //activeTasks.add(task);
+
+  // Increases the amount of people who have accepted the quest
+  // and the player can't accept it again. Perhaps show that the quest has been accepted somewhere.
+  //task.appliedPeople += 1;
+
+  // Pop the context to close the dialog
+  Navigator.pop(context);
+}
+
 class PublicTaskPage extends StatelessWidget {
   PublicTaskPage({super.key});
 
@@ -38,8 +50,7 @@ class TaskWidget extends StatelessWidget {
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side:
-              const BorderSide(color: Colors.amber, width: 3), // Golden border
+          side: const BorderSide(color: Colors.amber, width: 3),
         ),
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -51,53 +62,64 @@ class TaskWidget extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Centered Title
               Text(
                 task.title,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white, // Visible text color
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 12),
-
-              // Task Description
               Text(
                 task.description ?? "",
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 18, color: Colors.white),
               ),
-
               const SizedBox(height: 20),
-// Location and XP Row in the Same Line
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Location Icon + Text
-                  const Icon(Icons.location_on, color: Colors.white, size: 24),
-                  const SizedBox(width: 8),
-                  Text(
-                    task.location,
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                  const SizedBox(width: 20), // Spacing between location and XP
-
-                  // XP
-                  Text(
-                    "XP: ${task.xpGain}",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      // fontWeight: FontWeight.bold,
-                      color: Colors.white,
+              if (task.location.length > 15) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.location_on,
+                        color: Colors.white, size: 24),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        task.location,
+                        textAlign: TextAlign.center,
+                        style:
+                            const TextStyle(fontSize: 18, color: Colors.white),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "XP: ${task.xp}",
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ] else ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.location_on,
+                        color: Colors.white, size: 24),
+                    const SizedBox(width: 8),
+                    Text(
+                      task.location,
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                    const SizedBox(width: 20),
+                    Text(
+                      "XP: ${task.xp}",
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 20),
-
-              // Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -114,15 +136,13 @@ class TaskWidget extends StatelessWidget {
                         style: TextStyle(fontSize: 18, color: Colors.black)),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      // Accept task logic
-                      Navigator.pop(context);
-                    },
+                    onPressed: () => _acceptTask(context, task),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 20),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       backgroundColor: Colors.amber,
                       foregroundColor: Colors.black,
                     ),
@@ -150,51 +170,46 @@ class TaskWidget extends StatelessWidget {
               task.color.replaceAll('#', '0xff'))), // Convert hex to color
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // First Row - Task Title
-            Text(
-              task.title,
-              style: const TextStyle(
-                fontSize: 24, // Bigger font
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            Icon(group.icon, color: Colors.white, size: 30),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    task.title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.star, color: Colors.white, size: 18),
+                      const SizedBox(width: 4),
+                      Text("XP: ${task.xp}",
+                          style: const TextStyle(color: Colors.white)),
+                      const SizedBox(width: 12),
+                      const Icon(Icons.access_time,
+                          color: Colors.white, size: 18),
+                      const SizedBox(width: 4),
+                      Text(formatDuration(task.durationMinutes),
+                          style: const TextStyle(color: Colors.white)),
+                      const SizedBox(width: 12),
+                      const Icon(Icons.people, color: Colors.white, size: 18),
+                      const SizedBox(width: 4),
+                      Text("${task.appliedPeople}/${task.neededPeople}",
+                          style: const TextStyle(
+                              fontSize: 18, color: Colors.white)),
+                    ],
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-
-            // Second Row - XP, Duration, Applied/Needed
-            Row(
-              children: [
-                const Icon(Icons.star, color: Colors.white, size: 22),
-                const SizedBox(width: 6),
-                Text("XP: ${task.xpGain}",
-                    style: const TextStyle(fontSize: 18, color: Colors.white)),
-                const SizedBox(width: 16),
-                const Icon(Icons.access_time, color: Colors.white, size: 22),
-                const SizedBox(width: 6),
-                Text(formatDuration(task.durationMinutes),
-                    style: const TextStyle(fontSize: 18, color: Colors.white)),
-                const SizedBox(width: 16),
-                const Icon(Icons.people, color: Colors.white, size: 22),
-                const SizedBox(width: 6),
-                Text("${task.peopleApplied}/${task.peopleNeeded}",
-                    style: const TextStyle(fontSize: 18, color: Colors.white)),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            // Third Row - Location
-            Row(
-              children: [
-                const Icon(Icons.location_pin, color: Colors.white, size: 22),
-                const SizedBox(width: 6),
-                Text(
-                  task.location,
-                  style: const TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ],
             ),
           ],
         ),
