@@ -132,4 +132,39 @@ class SupabaseHelper {
       return false;
     }
   }
+
+  static Future<bool> insertTask({
+    required int durationMinutes,
+    required int xpGain,
+    required int universityId,
+    required String location,
+    required int peopleNeeded,
+    int? creatorId,
+    int? studentGroupId,
+    String color = "#FFFFFF",
+  }) async {
+    try {
+      final response = await _supabase.from('tasks').insert({
+        'duration_minutes': durationMinutes,
+        'xp_gain': xpGain,
+        'university_id': universityId,
+        'location': location,
+        'people_needed': peopleNeeded,
+        'creator_id': creatorId,
+        'student_group_id': studentGroupId,
+        'color': color,
+        'done': false,
+      });
+
+      if (response.error != null) {
+        print("Error inserting task: ${response.error!.message}");
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      print("Exception in insertTask: $e");
+      return false;
+    }
+  }
 }

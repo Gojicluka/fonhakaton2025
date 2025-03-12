@@ -8,6 +8,7 @@ class Task {
   final int universityId;
   final String location;
   final int peopleNeeded;
+  final String color; // Added color field
 
   Task({
     required this.id,
@@ -19,8 +20,10 @@ class Task {
     required this.universityId,
     required this.location,
     required this.peopleNeeded,
+    this.color = "#FFFFFF", // Default color
   });
 
+  /// Convert JSON to Task
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       id: json['id'],
@@ -32,9 +35,11 @@ class Task {
       universityId: json['university_id'],
       location: json['location'],
       peopleNeeded: json['people_needed'],
+      color: json['color'] ?? "#FFFFFF",
     );
   }
 
+  /// Convert Task to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -46,6 +51,7 @@ class Task {
       'university_id': universityId,
       'location': location,
       'people_needed': peopleNeeded,
+      'color': color,
     };
   }
 }
