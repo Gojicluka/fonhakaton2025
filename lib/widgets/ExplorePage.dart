@@ -84,11 +84,10 @@ class DetailPage extends StatelessWidget {
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9), // .withValues ...
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(getIconFromString(group.iconName ?? 'Icons.help_outline'),
                   size: 80,
@@ -103,10 +102,17 @@ class DetailPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                group.description ?? "",
-                style: const TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    group.description ?? "",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Color(int.parse(group.color.replaceAll('#', '0xff'))),
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
               ),
             ],
           ),
@@ -115,3 +121,4 @@ class DetailPage extends StatelessWidget {
     );
   }
 }
+
