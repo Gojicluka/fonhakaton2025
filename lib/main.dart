@@ -201,6 +201,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           color: Colors.white,
         ),
         onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NewTask()),
+          );
           // _fabAnimationController.reset();
           // _borderRadiusAnimationController.reset();
           // _borderRadiusAnimationController.forward();
