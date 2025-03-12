@@ -267,6 +267,7 @@ void ShowToApproveOther(BuildContext context, Task task) {
   );
 }
 
+// what to do? TODO
 void ShowMyPending(BuildContext context, Task task) {
   showDialog(
     context: context,
@@ -290,21 +291,120 @@ void ShowMyPending(BuildContext context, Task task) {
 void ShowMyDoing(BuildContext context, Task task) {
   showDialog(
     context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: Colors.grey.shade200,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      title: Text(
-        task.title, // Show task name
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    builder: (context) => Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Colors.purple, width: 3),
       ),
-      content: const Text("This is a placeholder for tasks I'm doing."),
-      actions: [
-        TextButton(
-            onPressed: () => Navigator.pop(context), child: const Text("OK"))
-      ],
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Color(int.parse(task.color.replaceAll('#', '0xff'))),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              task.title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              task.description ?? "",
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, color: Colors.white),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.location_on, color: Colors.white, size: 24),
+                const SizedBox(width: 8),
+                Text(
+                  task.location,
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+                const SizedBox(width: 20),
+                Text(
+                  "XP: ${task.xpGain}",
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    backgroundColor: Colors.white,
+                  ),
+                  child: const Text("Nazad",
+                      style: TextStyle(fontSize: 18, color: Colors.black)),
+                ),
+                ElevatedButton(
+                  onPressed: () => CancelTask(context, task),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text("Odustani", style: TextStyle(fontSize: 18)),
+                ),
+                ElevatedButton(
+                  onPressed: () => CompleteTask(context, task),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text("Završi", style: TextStyle(fontSize: 18)),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     ),
   );
+}
+
+void CancelTask(BuildContext context, Task task) {
+  // TODO: Send a request to the backend to mark the task as canceled
+  // the task is removed from the list of tasks, and the task is refreshed.
+  // Example: api.cancelTask(task.id);
+
+  Navigator.pop(context);
+}
+
+void CompleteTask(BuildContext context, Task task) {
+  // TODO camera button
+  // opens page that takes you to a camera
+  // you can take a picture, and then choose to retake or to send
+  // after that the page closes and this popup closes too,
+  // and this task gets moved to tasks that are pending.
+  // Example: api.completeTask(task.id);
+
+  Navigator.pop(context);
 }
 
 Color _parseColor(String colorStr) {
