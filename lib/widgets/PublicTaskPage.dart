@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fonhakaton2025/widgets/Group.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fonhakaton2025/widgets/Task.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
-import 'package:fonhakaton2025/data/models/student_group.dart';
+import 'package:fonhakaton2025/data/TaskNotifier.dart';
 import 'package:fonhakaton2025/widgets/icon_converter.dart';
 
 void _acceptTask(BuildContext context, Task task) {
@@ -17,16 +17,18 @@ void _acceptTask(BuildContext context, Task task) {
   Navigator.pop(context);
 }
 
-class PublicTaskPage extends StatelessWidget {
+class PublicTaskPage extends ConsumerWidget {
   PublicTaskPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tasks = ref.watch(taskProvider);
+
     return Scaffold(
       body: ListView.builder(
         itemCount: tasks.length,
         itemBuilder: (context, index) {
-          final task = tasks[index];
+          final task = Task.fromMap(tasks[index]);
           return TaskWidget(task: task);
         },
       ),

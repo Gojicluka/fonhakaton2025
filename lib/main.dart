@@ -1,9 +1,10 @@
 import 'dart:async';
-
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_reveal_animation/circular_reveal_animation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:fonhakaton2025/theme/custom_colors_theme.dart';
@@ -12,7 +13,6 @@ import 'package:fonhakaton2025/widgets/ExplorePage.dart';
 import 'package:fonhakaton2025/widgets/NewTask.dart';
 import 'package:fonhakaton2025/widgets/PublicTaskPage.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
-import "package:fonhakaton2025/data/models.dart";
 import "package:fonhakaton2025/data/global.dart";
 import 'package:fonhakaton2025/widgets/profile_screen.dart';
 
@@ -21,7 +21,7 @@ void main() async {
 
   Global.setUser(await SupabaseHelper.getUserByName("Bob Smith"));
 
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -189,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     final colors = Theme.of(context).extension<CustomColorsTheme>()!;
     return Scaffold(
       extendBody: true,
-      appBar: CustomAppBar(),
+      appBar: _bottomNavIndex == 3 ? null : CustomAppBar(),
       body: NotificationListener<ScrollNotification>(
         onNotification: onScrollNotification,
         child: _screens[_bottomNavIndex],

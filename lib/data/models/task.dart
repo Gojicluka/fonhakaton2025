@@ -76,4 +76,24 @@ class Task {
       'icon': iconName,
     };
   }
+
+  factory Task.fromMap(Map<String, dynamic> map) {
+    return Task(
+      id: map['id'],
+      creatorId: map['creator_id'],
+      durationMinutes: map['duration_minutes'],
+      xpGain: map['xp_gain'],
+      done: map['done'] ?? false,
+      studentGroupId: map['student_group_id'],
+      universityId: map['university_id'],
+      location: map['location'],
+      peopleNeeded: map['people_needed'],
+      isPublic: map['is_public'] ?? false,
+      title: map['title'],
+      description: map['description'],
+      peopleApplied: map['people_applied'],
+      color: map['color'],
+      iconName: map['icon'] ?? 'task',
+    );
+  }
 }

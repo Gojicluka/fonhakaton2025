@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:fonhakaton2025/data/global.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
+import 'package:fonhakaton2025/data/supabase_helper.dart';
 
 class NewTask extends StatefulWidget {
   const NewTask({super.key});
@@ -116,6 +118,14 @@ class _NewTaskState extends State<NewTask> {
         content: SingleChildScrollView(
           child: BlockPicker(
             pickerColor: _selectedColor,
+            availableColors: [
+              Color(int.parse('0xFF795548')), // Logistika brown
+              Color(int.parse('0xFF607D8B')), // Dnevni red blue grey
+              Color(int.parse('0xFF673AB7')), // Mediji deep purple
+              Color(int.parse('0xFFF44336')), // Red red
+              Color(int.parse('0xFF2196F3')), // Blue blue
+              Color(int.parse('0xFFE91E63')), // Pink pink
+            ],
             onColorChanged: (color) {
               setState(() {
                 _selectedColor = color;
@@ -147,9 +157,10 @@ class _NewTaskState extends State<NewTask> {
       final int hours = int.tryParse(_hoursController.text) ?? 0;
       final int minutes = int.tryParse(_minutesController.text) ?? 0;
       final int duration = (hours * 60) + minutes;
+
       final newTask = Task(
         id: 0, // This should be handled by the backend
-        creatorId: null, // This should be set with actual user ID
+        creatorId: Global.user!.id, // This should be set with actual user ID
         durationMinutes: duration,
         xpGain: int.parse(_xpController.text),
         studentGroupId: null, // Optional student group ID
@@ -163,6 +174,7 @@ class _NewTaskState extends State<NewTask> {
         title: _titleController.text,
         description: _descriptionController.text,
         peopleApplied: 0, // Initially 0
+        iconName: "shield",
         color:
             '#${_selectedColor.value.toRadixString(16).substring(2)}', // Convert Color to hex string
       );
@@ -171,6 +183,7 @@ class _NewTaskState extends State<NewTask> {
         //tasks.add(newTask);
         //TODO
       });
+      SupabaseHelper.insertTask(newTask);
 
       // Show alert dialog with task details
       showDialog(

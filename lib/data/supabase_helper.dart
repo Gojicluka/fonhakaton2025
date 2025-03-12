@@ -135,7 +135,8 @@ class SupabaseHelper {
 
   static Future<bool> insertTask(Task task) async {
     try {
-      final response = await _supabase.from('tasks').insert(task.toJson());
+      final response =
+          await _supabase.from('tasks').insert(task.toJson()..remove('id'));
 
       if (response.error != null) {
         print("Error inserting task: ${response.error!.message}");

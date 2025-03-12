@@ -15,7 +15,7 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
   /// Fetch all tasks from Supabase
   Future<void> fetchTasks() async {
     final response = await Supabase.instance.client
-        .from('Task')
+        .from('tasks')
         .select('*')
         .order('id', ascending: false);
     state = response;
@@ -24,11 +24,9 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
   /// Listen for new tasks in real-time
   void listenForNewTasks() {
     Supabase.instance.client
-        .from('Task')
-        .stream(primaryKey: ['id'])
-        .eq('approved', true) // Optional: Listen only for approved tasks
-        .listen((data) {
-          fetchTasks(); // Refresh task list when a new task is added
-        });
+        .from('tasks')
+        .stream(primaryKey: ['id']).listen((data) {
+      fetchTasks(); // Refresh task list when a new task is added
+    });
   }
 }

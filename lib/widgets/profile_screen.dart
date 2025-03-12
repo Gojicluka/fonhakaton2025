@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fonhakaton2025/data/global.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart'; // Import fl_chart package
@@ -15,7 +16,15 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Moj nalog')),
+      appBar: AppBar(
+        title: Text('My account'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout, color: Colors.purple),
+            onPressed: handleLogout,
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Padding(
@@ -23,33 +32,19 @@ class ProfilePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Positioned(
-                top: 8,
-                right: 8,
-                child: TextButton.icon(
-                  onPressed: handleLogout, // Call the generic function
-                  icon: Icon(
-                    Icons.logout,
-                    color: Colors.purple,
-                    size: 18,
-                  ),
-                  label: Text(
-                    'Logout',
-                    style: TextStyle(color: Colors.purple),
-                  ),
-                ),
-              ),
               // ... (profile picture, name, XP progress, buttons) ...
               Center(
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: AssetImage('../../assets/nanana.png'),
+                  backgroundImage: Global.user?.avatarUrl != null
+                      ? NetworkImage(Global.user!.avatarUrl!)
+                      : null,
                 ),
               ),
               SizedBox(height: 16),
               Center(
                 child: Text(
-                  'mimimi',
+                  Global.user!.name,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -107,20 +102,57 @@ class ProfilePage extends StatelessWidget {
                     borderData: FlBorderData(
                       show: false, // Remove all borders
                     ),
-                    barGroups: List.generate(
-                      7,
-                      (index) => BarChartGroupData(
-                        x: index,
-                        barRods: [
-                          BarChartRodData(
-                            toY: (index + 1) * 10.0,
-                            color: Colors.blue,
-                            width: 16,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ],
-                      ),
-                    ),
+                    barGroups: [
+                      BarChartGroupData(x: 0, barRods: [
+                        BarChartRodData(
+                            toY: 120,
+                            color: Colors.purple[300],
+                            width: 20,
+                            borderRadius: BorderRadius.circular(6))
+                      ]),
+                      BarChartGroupData(x: 1, barRods: [
+                        BarChartRodData(
+                            toY: 250,
+                            color: Colors.purple[400],
+                            width: 20,
+                            borderRadius: BorderRadius.circular(6))
+                      ]),
+                      BarChartGroupData(x: 2, barRods: [
+                        BarChartRodData(
+                            toY: 180,
+                            color: Colors.purple[500],
+                            width: 20,
+                            borderRadius: BorderRadius.circular(6))
+                      ]),
+                      BarChartGroupData(x: 3, barRods: [
+                        BarChartRodData(
+                            toY: 300,
+                            color: Colors.purple[600],
+                            width: 20,
+                            borderRadius: BorderRadius.circular(6))
+                      ]),
+                      BarChartGroupData(x: 4, barRods: [
+                        BarChartRodData(
+                            toY: 280,
+                            color: Colors.purple[700],
+                            width: 20,
+                            borderRadius: BorderRadius.circular(6))
+                      ]),
+                      BarChartGroupData(x: 5, barRods: [
+                        BarChartRodData(
+                            toY: 150,
+                            color: Colors.purple[800],
+                            width: 20,
+                            borderRadius: BorderRadius.circular(6))
+                      ]),
+                      BarChartGroupData(x: 6, barRods: [
+                        BarChartRodData(
+                            toY: 200,
+                            color: Colors.purple[900],
+                            width: 20,
+                            borderRadius: BorderRadius.circular(6))
+                      ]),
+                    ],
                   ),
                 ),
               ),
@@ -192,6 +224,7 @@ class ProfilePage extends StatelessWidget {
               SizedBox(height: 16),
               Text('Achievements:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              SizedBox(height: 8),
               AchievementIcons(), // Use AchievementIcons here
             ],
           ),
