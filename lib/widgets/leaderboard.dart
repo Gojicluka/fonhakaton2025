@@ -25,9 +25,9 @@ class LeaderboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("🏆 Leaderboard"),
+        title: const Text("🏆 Leaderboard", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 242, 38))),
         centerTitle: true,
-        backgroundColor: Colors.deepPurpleAccent,
+        backgroundColor: const Color.fromARGB(255, 78, 125, 234),
         elevation: 0,
       ),
       body: Column(
@@ -73,7 +73,7 @@ class LeaderboardPage extends StatelessWidget {
           backgroundImage: NetworkImage(player.imageUrl),
         ),
         const SizedBox(height: 8),
-        Text(player.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(player.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 242, 38))),
         Container(
           width: 70,
           height: height,
@@ -82,10 +82,11 @@ class LeaderboardPage extends StatelessWidget {
             color: color,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(
-            "#$rank",
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
+          child: rank == 1
+              ? const Icon(Icons.military_tech, color: Colors.yellow, size: 30) // Gold Medal
+              : rank == 2
+                  ? const Icon(Icons.military_tech, color: Colors.grey, size: 30) // Silver Medal
+                  : const Icon(Icons.military_tech, color: Colors.brown, size: 30), // Bronze Medal
         ),
       ],
     );
@@ -97,7 +98,7 @@ class LeaderboardPage extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: const Color.fromARGB(255, 78, 125, 234),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -109,9 +110,10 @@ class LeaderboardPage extends StatelessWidget {
       ),
       child: Row(
         children: [
+          // For players ranked 4th and below, just display the rank as a number
           Text(
             "#$rank",
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 242, 38)),
           ),
           const SizedBox(width: 12),
           CircleAvatar(
@@ -122,12 +124,12 @@ class LeaderboardPage extends StatelessWidget {
           Expanded(
             child: Text(
               player.name,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color.fromARGB(255, 253, 242, 38)),
             ),
           ),
           Text(
-            "${player.points} pts",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+            "${player.points} xp",
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color:  Color.fromARGB(255, 253, 242, 38)),
           ),
         ],
       ),
