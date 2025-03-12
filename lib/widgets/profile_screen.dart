@@ -43,6 +43,7 @@ class ProfilePage extends StatelessWidget {
               Center(
                 child: CircleAvatar(
                   radius: 50,
+                  // TODO - FETCH IMAGE FROM BACKEND !!!!
                   backgroundImage: AssetImage('../../assets/nanana.png'),
                 ),
               ),

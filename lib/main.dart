@@ -128,9 +128,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   final List<Widget> _screens = [
     PublicTaskPage(),
-    ExplorePage(),
     MyTasks(),
     ProfilePage(),
+    TaskSelectionScreen(),
     TaskSelectionScreen(), // Add this
   ];
 
@@ -214,7 +214,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           setState(() {
             _bottomNavIndex = 4; // Set the index of TaskSelectionScreen
           });
-
           // _fabAnimationController.reset();
           // _borderRadiusAnimationController.reset();
           // _borderRadiusAnimationController.forward();
