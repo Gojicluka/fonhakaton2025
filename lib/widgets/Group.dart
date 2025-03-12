@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:fonhakaton2025/data/models/student_group.dart';
 
+
+
 final List<StudentGroup> groups = [
   StudentGroup(
       id: 1,
       name: "Logistika",
-      iconName: "shield",
-      color: "#795548",
+      iconName: "water",
+      color: "#2196F3",
       description:
-          """Radna grupa za logistiku je odgovorna za upravljanje resursima u toku blokada.\nLogistika se bavi: \n-Donacijama: novcanim i konkretnim -u kontaktu je sa ljudima koji doniraju i dogovara se oko vremena dolaska ukoliko je donacija velika\n-Zajednickom kasom: koje je stanje novcanih donacija i evidencija na sta se sve troše pare i koliko (znaci svi prihodi i rashodi)\n-Prostornom organizacijom fakulteta: koja prostorija se koristi u koje svrhe, za koju radnu grupu, gde je menza, sad kad su veliki protesti gde se spava, organizuje ljude koji sprovode u delo donesene prostorne odlukelaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa""".trimLeft()),
+          """Radna grupa za logistiku je odgovorna za upravljanje resursima u toku blokada.\nLogistika se bavi: \n-Donacijama: novcanim i konkretnim -u kontaktu je sa ljudima koji doniraju i dogovara se oko vremena dolaska ukoliko je donacija velika\n-Zajednickom kasom: koje je stanje novcanih donacija i evidencija na sta se sve troše pare i koliko (znaci svi prihodi i rashodi)\n-Prostornom organizacijom fakulteta: koja prostorija se koristi u koje svrhe, za koju radnu grupu, gde je menza, sad kad su veliki protesti gde se spava, organizuje ljude koji sprovode u delo donesene prostorne odluke""".trimLeft()),
   StudentGroup(
       id: 2,
       name: "Dnevni red",
@@ -31,14 +33,14 @@ final List<StudentGroup> groups = [
   StudentGroup(
       id: 5,
       name: "Agitacija i motivacija",
-      iconName: "water",
-      color: "#2196F3",
+      iconName: "local_florist",
+      color: "#E91E63",
       description: """Radna grupa za agitaciju i motivaciju ima ključnu ulogu u mobilizaciji ljudi i povećavanju angazovanja učesnika.\nNjihov cilj je da  inspirišu i ohrabre ljude da se pridruže protestima. \nOni rade naodržavanju energije i odlučnosti među učesnicima tokom protesta.\n\nZaduzenja radne grupe:\n-Pravljenje transparenata\n-Komunikacija sa licnostima koje odrzavaju radionice/predavanja/.. \n-Organizacija zajednickih aktivnosti""".trimLeft()
       ),
   StudentGroup(
       id: 6,
       name: "Bezbednost",
-      iconName: "local_florist",
-      color: "#E91E63",
+      iconName: "shield",
+      color: "#795548",
       description: """Radna grupa za bezbednost kljucna je u organizaciji svih akcija i blokada.\nZaduzenja bezbednosti:\n-Redarenje na blokadama\n-Sastavljanje bezbednosnog plana pred svaku akciju\n-Organizacija cuvara zgrade fakulteta\n-Odrzavanje reda i mira na fakultetu""".trimLeft()),
 ];
