@@ -14,7 +14,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Profil')),
+      appBar: AppBar(title: Text('Moj nalog')),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
@@ -46,7 +46,7 @@ class ProfilePage extends StatelessWidget {
             SizedBox(height: 16),
             Center(
               child: Text(
-                'myusername',
+                'mimimi',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
@@ -132,14 +132,14 @@ class ProfilePage extends StatelessWidget {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('My Achievements'),
+                          title: Text('Moja dostignuća'),
                           content: Container(
                             width: double.maxFinite,
                             child: ProfileAchievements(),
                           ),
                           actions: <Widget>[
                             TextButton(
-                              child: Text('Close'),
+                              child: Text('Nazad'),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
@@ -152,7 +152,7 @@ class ProfilePage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   ),
-                  child: Text('Achievements'),
+                  child: Text('Dostignuća'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -160,14 +160,14 @@ class ProfilePage extends StatelessWidget {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Done Tasks'),
+                          title: Text('Završeni kvestovi'),
                           content: Container(
                             width: double.maxFinite,
                             child: ProfileTasks(),
                           ),
                           actions: <Widget>[
                             TextButton(
-                              child: Text('Close'),
+                              child: Text('Nazad'),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
@@ -180,7 +180,7 @@ class ProfilePage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   ),
-                  child: Text('Tasks'),
+                  child: Text('Kvest'),
                 ),
               ],
             ),
@@ -215,7 +215,7 @@ class ProfileHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Player Name",
+                  "imee",
                   style: GoogleFonts.lato(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
@@ -227,7 +227,7 @@ class ProfileHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Level: 3",
+                      "Nivo: 3",
                       style: GoogleFonts.lato(
                         fontSize: 18,
                         color: const Color.fromARGB(255, 16, 1, 16),
@@ -418,22 +418,35 @@ class ProfileTasks extends StatelessWidget {
           return _buildTaskCard(
             context,
             task,
+            DateTime.now()
           );
         }).toList(),
       ),
     );
   }
 
-  Widget _buildTaskCard(BuildContext context, Task task) {
-    return Card(
-      color: Colors.accents[tasks.indexOf(task) % Colors.accents.length],
-      margin: const EdgeInsets.all(10),
-      child: ListTile(
-        leading: const Icon(Icons.check, color: Colors.white),
-        title: Text(task.title, style: GoogleFonts.lato(color: Colors.white)),
-      ),
-    );
-  }
+  Widget _buildTaskCard(BuildContext context, Task task, DateTime date) {
+  return Card(
+    color: Colors.accents[tasks.indexOf(task) % Colors.accents.length],
+    margin: const EdgeInsets.all(10),
+    child: Stack( // Use Stack to overlay the date
+      children: [
+        ListTile(
+          leading: const Icon(Icons.check, color: Colors.white),
+          title: Text(task.title, style: GoogleFonts.lato(color: Colors.white)),
+        ),
+        Positioned( // Position the date at the top right
+          top: 8,
+          right: 8,
+          child: Text(
+            DateFormat('MMM dd, yyyy').format(date), // Format the date
+            style: GoogleFonts.lato(color: Colors.white, fontSize: 12),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 }
 
 // ... (allAchievements and tasks lists remain the same)
