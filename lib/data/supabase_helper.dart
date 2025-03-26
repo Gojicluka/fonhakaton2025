@@ -3,7 +3,6 @@ import 'package:fonhakaton2025/data/models/task_with_user.dart';
 import 'package:fonhakaton2025/data/models/user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import "package:fonhakaton2025/data/models.dart";
 
 Future<void> init_supabase() async {
   print("Loading");

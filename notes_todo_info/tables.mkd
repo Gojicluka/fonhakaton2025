@@ -1,0 +1,83 @@
+## task:
+- public key int task_id,
+- string name, string description
+- string place, 
+- uint xp,
+- group_id (0 = nogroup, default)
+- bool urgent
+- foreign key int uni_id,
+- uint exists_for_time 
+- uint ppl_needed
+- uint ppl_doing
+- uint ppl_submitted
+- foreignkey created_by user 
+
+## user_login
+- pk nickname (unique)
+- password (hash)
+- bool verified 
+
+## user_info:
+- pk nickname (unique)
+- xp, lvl, 
+- num_tasks_create: // how many tasks can this player create? 1 default
+    
+## user_sensitive:
+- user_id (pk/fk)
+- index
+- university
+- trust_level
+
+//// MERGE? ////
+## user_ach_points
+
+## * user_ach_unlocked
+- user_id, ach_id
+
+/////////////////
+
+## * user_task
+- user_id
+- foreign_key int STATE
+- all-task-info-here!
+
+## * task_ach_logic
+TODO
+
+## * user_task_image:
+- id, REDNI_BROJ, image
+
+## * user_group
+- user_id, group_id
+
+
+## * task_group
+- task_id, group_id
+
+## groups
+- group_id
+- name,desc
+
+## achievements
+- int ach_id
+- name, description
+
+## info_level
+- level_id (level number)
+- xp_req
+
+## task_predefined
+- predefined_id
+- all the same as task except for id, but the ID is globally added upon creation.
+
+## report_table
+- report_id
+- reporting, reported
+- explanation
+
+## Code
+- code_id
+- bool good ??????
+- explanation ()
+
+## University

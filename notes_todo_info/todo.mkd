@@ -1,0 +1,42 @@
+## ideas
+- "number of people" in task logic
+- "task creation" system -> limitations etc ....
+
+
+## implementation
+- promeniti "korisnicki zadaci" stranu tako da sve prikazuje relevantan info, al da ne bude prenatrpano.
+
+- skladistiti na telefonu kao cache zadatke...?
+
+- implement dart models
+- create API 
+- create tables on SUPA
+- fill tables with info
+
+
+
+======
+### "number of people" tasks
+
+
+### achievement logic !!!!!!!!!!!!!!!!!!!!! :DDDDDDDDDDD
+- can only be updated by solving "predetermined/schema tasks".
+- each user has a table of "usr_ach_stats" that determines achievement logic 
+- this works on taskID -> because predetermined tasks cant be made more than once .
+
+
+
+
+### task creation system => control, trust, fairness . OK !!!
+
+how many tasks?:
+- LVL (at each level up earn a global task!)
+- group-specific tasks have no limits. (if abused => change)
+    - group-wide task count?
+
+how much XP:
+- int(lvl * XP_CONST * group_factor)
+    - (higher LVL => more XP, more tasks)
+    - (group/s member => greater group_factor, more XP!)
+    - rounded down to nearest integer.
+- 
