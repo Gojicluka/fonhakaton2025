@@ -10,17 +10,17 @@ import 'package:fonhakaton2025/data/UserNotifier.dart';
 import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:fonhakaton2025/theme/custom_colors_theme.dart';
 import 'package:fonhakaton2025/widgets/CameraWidget.dart';
-import 'package:fonhakaton2025/widgets/ExplorePage.dart';
+import 'package:fonhakaton2025/screens/GroupDetailsScreen.dart';
 import 'package:fonhakaton2025/widgets/GroupTaskPage.dart';
-import 'package:fonhakaton2025/widgets/MyTasks.dart';
-import 'package:fonhakaton2025/widgets/NewTask.dart';
-import 'package:fonhakaton2025/widgets/PublicTaskPage.dart';
+import 'package:fonhakaton2025/screens/MyTasksScreen.dart';
+import 'package:fonhakaton2025/screens/NewTaskScreen.dart';
+import 'package:fonhakaton2025/screens/TasksScreen.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
 import "package:fonhakaton2025/data/global.dart";
-import 'package:fonhakaton2025/widgets/TaskSelectionScreen.dart';
-import 'package:fonhakaton2025/widgets/leaderboard.dart';
-import 'package:fonhakaton2025/widgets/login_page.dart';
-import 'package:fonhakaton2025/widgets/profile_screen.dart';
+import 'package:fonhakaton2025/screens/NewTaskChoiceScreen.dart';
+import 'package:fonhakaton2025/screens/LeaderboardScreen.dart';
+import 'package:fonhakaton2025/screens/LoginScreen.dart';
+import 'package:fonhakaton2025/screens/ProfileScreen.dart';
 
 void main() async {
   await init_supabase();
@@ -101,7 +101,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.get(),
       darkTheme:
           AppTheme.get(), // Or remove this line since there's no dark theme
-      home: LoginPage(), // Start with the login page instead of MyHomePage
+      home: LoginScreen(), // Start with the login page instead of MyHomePage
       // home: MyHomePage(title: "test"),
     );
   }
@@ -140,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     MyTasks(),
     LeaderboardPage(),
     ProfilePage(),
-    TaskSelectionScreen(), // Add this
+    NewTaskChoiceScreen(), // Add this
   ];
 
   @override

@@ -3,7 +3,7 @@ import 'package:fonhakaton2025/widgets/Group.dart';
 import 'package:fonhakaton2025/widgets/Task.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/models/student_group.dart';
-import 'package:fonhakaton2025/widgets/icon_converter.dart';
+import 'package:fonhakaton2025/utils/IconConverter.dart';
 
 // TODO - remember this group from the screen selection page before navigating to this page. Use this to query backend for group-specific tasks.
 final String selectedGroup = "Logistika";

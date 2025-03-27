@@ -7,7 +7,7 @@ import 'package:fonhakaton2025/data/supabase_helper.dart';
 import 'package:fonhakaton2025/widgets/Task.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/TaskNotifier.dart';
-import 'package:fonhakaton2025/widgets/icon_converter.dart';
+import 'package:fonhakaton2025/utils/IconConverter.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -125,7 +125,7 @@ class PublicTaskPage extends ConsumerWidget {
                   future: SupabaseHelper.isUserOnTask(task.id, Global.user!.id),
                   builder: (context, snapshot) {
                     final isReported = snapshot.data ?? false;
-                    return TaskWidget(task: task, isReported: isReported);
+                    return TaskScreen(task: task, isReported: isReported);
                   },
                 );
               },
@@ -137,17 +137,17 @@ class PublicTaskPage extends ConsumerWidget {
   }
 }
 
-class TaskWidget extends StatefulWidget {
+class TaskScreen extends StatefulWidget {
   final Task task;
   bool isReported = false;
 
-  TaskWidget({super.key, required this.task, this.isReported = false}) {}
+  TaskScreen({super.key, required this.task, this.isReported = false}) {}
 
   @override
-  State<TaskWidget> createState() => _TaskWidgetState();
+  State<TaskScreen> createState() => _TaskScreenState();
 }
 
-class _TaskWidgetState extends State<TaskWidget> {
+class _TaskScreenState extends State<TaskScreen> {
   String formatDuration(int minutes) {
     final int hours = minutes ~/ 60;
     final int remainingMinutes = minutes % 60;

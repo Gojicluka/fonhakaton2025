@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:fonhakaton2025/widgets/NewTask.dart';
+import 'package:fonhakaton2025/screens/NewTaskScreen.dart';
 
-class TaskSelectionScreen extends StatefulWidget {
+class NewTaskChoiceScreen extends StatefulWidget {
   @override
-  _TaskSelectionScreenState createState() => _TaskSelectionScreenState();
+  _NewTaskChoiceScreenState createState() => _NewTaskChoiceScreenState();
 }
 
-class _TaskSelectionScreenState extends State<TaskSelectionScreen> {
+class _NewTaskChoiceScreenState extends State<NewTaskChoiceScreen> {
   // Hardcoded list of groups the user belongs to
   final List<String> userGroups = ["Logistika", "Mediji"];
 
@@ -28,7 +28,7 @@ class _TaskSelectionScreenState extends State<TaskSelectionScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => NewTask()),
+                    MaterialPageRoute(builder: (context) => NewTaskScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -102,7 +102,7 @@ class _TaskSelectionScreenState extends State<TaskSelectionScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => NewTask()),
+                                  builder: (context) => NewTaskScreen()),
                             );
                           }
                         : null,

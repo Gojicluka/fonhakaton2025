@@ -3,16 +3,16 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:fonhakaton2025/data/global.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
-import 'package:fonhakaton2025/widgets/icon_converter.dart';
+import 'package:fonhakaton2025/utils/IconConverter.dart';
 
-class NewTask extends StatefulWidget {
-  const NewTask({super.key});
+class NewTaskScreen extends StatefulWidget {
+  const NewTaskScreen({super.key});
 
   @override
-  _NewTaskState createState() => _NewTaskState();
+  _NewTaskScreenState createState() => _NewTaskScreenState();
 }
 
-class _NewTaskState extends State<NewTask> {
+class _NewTaskScreenState extends State<NewTaskScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers

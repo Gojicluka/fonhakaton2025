@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fonhakaton2025/data/models/student_group.dart';
 import 'package:fonhakaton2025/widgets/Group.dart';
-import 'package:fonhakaton2025/widgets/icon_converter.dart';
+import 'package:fonhakaton2025/utils/IconConverter.dart';
 
 class ExplorePage extends StatelessWidget {
   ExplorePage({super.key});

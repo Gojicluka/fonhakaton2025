@@ -3,7 +3,7 @@ import 'package:fonhakaton2025/data/global.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart'; // Import fl_chart package
-import 'Task.dart';
+import '../widgets/Task.dart';
 import '../achievement.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 
