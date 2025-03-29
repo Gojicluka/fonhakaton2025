@@ -403,6 +403,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                               children: [
                                 Expanded(
                                   child: TextFormField(
+                                    maxLength: 500,
                                     controller: _peopleController,
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
@@ -412,6 +413,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: TextFormField(
+                                    maxLength: 30,
                                     controller: _locationController,
                                     decoration: const InputDecoration(
                                         labelText: "Lokacija"),

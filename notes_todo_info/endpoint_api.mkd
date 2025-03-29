@@ -1,0 +1,138 @@
+## globalne varijable
+
+user_auth -> zagarantovanost da je odredjeni user ulogovan, preko ovoga se moze videti koji je user u pitanju, kao i odrediti je l ima permisije da nesto uradi.
+** pretpostavka da ce svaki API imati token proveru user_auth.
+
+user_task -> tabela koja povezuje usera sa odredjenim taskom i dodeljuje lokalno STANJE (doing/pending/to_review/accepted/denied)
+
+info_tasks -> tabela koja sadrzi generalni info o taskovima.
+
+task_with_status: user_Task + info_tasks
+
+xp_const
+
+group_factor
+
+## task:
+### params:
+- ID,
+- name, description
+- place, 
+- time duration (until complete)
+- number of people needed to complete the task
+- number of people who are doing the task?
+- number of submissions?
+- group (0 = nogroup, default)
+- 
+
+### get
+// todo ubaciti uslov za usera, da nije claimovao nista od zadataka jos uvek.
+getGlobalTasks() -> info_tasks[]
+
+
+getGroupTasks(user, id_group) -> task_with_status[]     T
+
+
+getDoingTasks(user id, state=doing) -> task_with_status[] T
+
+getPendingTasks(user id, state=doing) -> task_with_status[]
+
+getToReviewTasks(user id, state=doing) -> task_with_status[]
+
+
+// get accepted/rejected tasks
+getReviewedTasks() -> task_with_status[]
+
+getCompletedTasks() -> info_tasks[]
+
+### update
+
+// reviewes the given tasks, setting user_task STATE to ACCEPT/DENIED, and removing image from database
+updateReviewTask(user_auth, user_task ID, bool accept) -> NONE
+
+// if user_task state = accepted gives XP to user 
+// always: makes backend run checks for new level/achievement. (todo rethink)
+updateAcknowledgeReview(user_auth, user_task id) -> NONE/todo idk
+
+// adds entry to user_task and sets state to DOING
+updateAcceptTask(user, task) -> none
+
+// removes task from user_task
+updateAbandonTask(user_task) -> none
+
+### create
+//costs the user one "task token"
+createGlobalTask(user, details) -> CODE (success/fail)
+
+// does not cost task tokens, but is only visible in group.
+createGroupTask(user, group, details) -> CODE (success/fail)
+
+### automatic updates done over time
+
+// removes task for all who haven't sent their submissions -> it stops existing because time is up.
+autoTaskTimeDelete()
+
+## user:
+### params:
+- verified bool
+- nickname (unique)
+- password (hash)
+- xp, lvl, 
+
+
+### get
+getMyUserInfo(logged_user) -> user[]
+getLeaderboardInfo(???)
+getUserAchievements(user_ach)
+getUserFinishedTasks(user_finished)
+
+### update
+
+updateValidateUser()
+
+// todo: kako se dodeljuje XP i da li uopste imati visible API za tako nesto?
+// todo: admin user?
+// dodeljuje se XP onom useru koji je sigurno loginovan, user_auth.
+updateGiveXP(user, user_auth, xp)
+
+### create 
+// pravi nalog ali ga stavlja u "pending" -> mora se na fakultetu verifikovati!!!
+createUser(only limited info.)
+
+// debug API posle izbaciti..?
+createUserDebug(all info)
+
+### other
+// checks for level-up, XP, achievements
+updateUserState()
+
+// updates user's achievement logic 
+updateAchievementLogic()
+
+
+## user_task_image:
+### vars:
+- id, REDNI_BROJ, image
+
+### get:
+
+// get image from image table
+getReviewImage(integer user_task_id) -> image
+
+### update:
+
+updateUploadImage(integer user_task_id, image) -> CODE (success/fail)
+
+## user_group
+
+### get
+getGroupList(user) -> groups/groupid[]
+
+## groups
+
+## info_ach
+
+
+
+
+

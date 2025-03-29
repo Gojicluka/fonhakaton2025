@@ -1,0 +1,58 @@
+## ideas
+- "number of people" in task logic
+- "task creation" system -> limitations etc ....
+
+
+## implementation
+- promeniti "korisnicki zadaci" stranu tako da sve prikazuje relevantan info, al da ne bude prenatrpano.
+
+- skladistiti na telefonu kao cache zadatke...?
+
+- implement dart models
+- create API 
+- create tables on SUPA
+- fill tables with info
+
+
+
+======
+### "number of people" tasks
+
+
+### achievement logic !!!!!!!!!!!!!!!!!!!!! :DDDDDDDDDDD
+- can only be updated by solving "predetermined/schema tasks".
+- each user has a table of "usr_ach_stats" that determines achievement logic 
+- this works on taskID -> because predetermined tasks cant be made more than once .
+
+
+
+
+### task creation system => control, trust, fairness . OK !!!
+
+how many tasks?:
+- LVL (at each level up earn a global task!)
+- group-specific tasks have no limits. (if abused => change)
+    - group-wide task count?
+
+how much XP:
+- int(lvl * XP_CONST * group_factor)
+    - (higher LVL => more XP, more tasks)
+    - (group/s member => greater group_factor, more XP!)
+    - rounded down to nearest integer.
+- 
+
+### predefined tasks
+
+- API for getting all tasks -> will combine all tasks visible with also all template tasks visible.
+    - ovo uvodi ideju, template zadaci samo za clanove i template zadaci za samo sve obicne ljude.
+
+template zadaci:
+
+- clan koje grupe moze da napravi ovaj zadatak
+- koja je vidljivost zadatka (svi/samo ta RG)
+
+tabela koja ce da prati koji su sve zadaci template zadaci i to trenutno aktivni, i onda azurira poene u skladu sa zadatkom....
+
+
+- ime ovakvih taskova ne moze biti promenjeno! i lokacija! ali vreme i broj ljudi itd moze? idk 
+
