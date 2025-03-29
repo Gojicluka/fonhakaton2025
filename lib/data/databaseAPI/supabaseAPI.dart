@@ -81,16 +81,30 @@ Future<List<Task>> getGroupTasks({required int group_id}) async {
 
 ///
 /// todo - how to fetch the ID that is "doing" ?
-///
+/// Gets all tasks that the user is currently doing 
 Future<List<TaskWithState>> getDoingTasks({required int nickname}) async {
   final state_id = 1; // todo change!
   final List<Map<String, dynamic>> response = await SupabaseHelper.supabase
-      .from('tasks')
+      .from('user_task')
       .select()
-      .eq('state_id', state_id);
+      .eq('state_id', state_id)
+      .eq('nickname', nickname);
 
   return response.map((task) => TaskWithState.fromJson(task)).toList();
 }
+
+// getPendingTasks(user id, state=doing) -> task_with_status[]
+
+// getToReviewTasks(user id, state=doing) -> task_with_status[]
+
+// getReviewedTasks() -> task_with_status[]
+
+// getCompletedTasks() -> info_tasks[]
+
+
+
+
+
 // /// UPDATE: Updates approval or denial status of a task-user relationship
 // Future<bool> updateTaskUserStatus({
 //   required int taskId,

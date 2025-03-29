@@ -33,7 +33,7 @@ getGlobalTasks() -> info_tasks[]
 getGroupTasks(user, id_group) -> task_with_status[]     T
 
 
-getDoingTasks(user id, state=doing) -> task_with_status[]
+getDoingTasks(user id, state=doing) -> task_with_status[] T
 
 getPendingTasks(user id, state=doing) -> task_with_status[]
 
