@@ -26,9 +26,12 @@ group_factor
 - 
 
 ### get
+// todo ubaciti uslov za usera, da nije claimovao nista od zadataka jos uvek.
 getGlobalTasks() -> info_tasks[]
 
-getGroupTasks(user, id_group) -> task_with_status[]
+
+getGroupTasks(user, id_group) -> task_with_status[]     T
+
 
 getDoingTasks(user id, state=doing) -> task_with_status[]
 

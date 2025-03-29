@@ -40,3 +40,19 @@ how much XP:
     - (group/s member => greater group_factor, more XP!)
     - rounded down to nearest integer.
 - 
+
+### predefined tasks
+
+- API for getting all tasks -> will combine all tasks visible with also all template tasks visible.
+    - ovo uvodi ideju, template zadaci samo za clanove i template zadaci za samo sve obicne ljude.
+
+template zadaci:
+
+- clan koje grupe moze da napravi ovaj zadatak
+- koja je vidljivost zadatka (svi/samo ta RG)
+
+tabela koja ce da prati koji su sve zadaci template zadaci i to trenutno aktivni, i onda azurira poene u skladu sa zadatkom....
+
+
+- ime ovakvih taskova ne moze biti promenjeno! i lokacija! ali vreme i broj ljudi itd moze? idk 
+

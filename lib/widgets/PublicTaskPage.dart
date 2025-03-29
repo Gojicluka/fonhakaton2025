@@ -100,6 +100,7 @@ class PublicTaskPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // used to OBTAIN THE FUTURE ?
     final tasks = ref.watch(taskProvider);
 
     return Scaffold(
