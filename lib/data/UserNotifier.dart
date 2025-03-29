@@ -21,7 +21,7 @@ class UserNotifier extends StateNotifier<UserModel?> {
       final response = await Supabase.instance.client
           .from('users')
           .select()
-          .eq('id', Global.user!.id)
+          .eq('nickname', Global.user!.nickname)
           .single();
 
       if (response != null) {
@@ -40,7 +40,7 @@ class UserNotifier extends StateNotifier<UserModel?> {
     Supabase.instance.client
         .from('users')
         .stream(primaryKey: ['id'])
-        .eq('id', Global.user!.id)
+        .eq('nickname', Global.user!.nickname)
         .listen((List<Map<String, dynamic>> data) {
           if (data.isNotEmpty) {
             final updatedUser = UserModel.fromJson(data.first);
@@ -57,7 +57,7 @@ class UserNotifier extends StateNotifier<UserModel?> {
     try {
       await Supabase.instance.client
           .from('users')
-          .update({'xp': newXP}).eq('id', state!.id);
+          .update({'xp': newXP}).eq('nickname', state!.nickname);
 
       // The listener will automatically update the state
     } catch (e) {

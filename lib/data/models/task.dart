@@ -1,99 +1,75 @@
-import 'package:flutter/material.dart';
-
 class Task {
-  final int id;
-  final int? creatorId;
-  final int durationMinutes;
-  final int xpGain;
-  final bool done;
-  final int? studentGroupId; // Nullable
-  final int universityId;
-  final String location;
-  final int peopleNeeded;
-  final bool isPublic; // New field
-  final String title;
+  final int taskId;
+  final String name;
   final String description;
-  final int peopleApplied;
+  final String place;
+  final int? uniId;
+  final int xp;
+  final int groupId;
+  final bool urgent;
+  final int existsForTime;
+  final int pplNeeded;
+  final int pplDoing;
+  final int pplSubmitted;
+  final String createdBy;
   final String color;
-  final String iconName; // New icon field
+  final String iconName;
+  final int durationInMinutes;
 
   Task({
-    required this.id,
-    this.creatorId,
-    required this.durationMinutes,
-    required this.xpGain,
-    this.done = false,
-    this.studentGroupId,
-    required this.universityId,
-    required this.location,
-    required this.peopleNeeded,
-    this.isPublic = false, // Default value
-    required this.title,
+    required this.taskId,
+    required this.name,
     required this.description,
-    required this.peopleApplied,
+    required this.place,
+    required this.uniId,
+    required this.xp,
+    required this.groupId,
+    required this.urgent,
+    required this.existsForTime,
+    required this.pplNeeded,
+    required this.pplDoing,
+    required this.pplSubmitted,
+    required this.createdBy,
     required this.color,
-    this.iconName = 'task', // Default icon
+    required this.iconName,
+    required this.durationInMinutes,
   });
 
-  /// Convert JSON to `Task`
-  factory Task.fromJson(Map<String, dynamic> json) {
-    return Task(
-      id: json['id'],
-      creatorId: json['creator_id'],
-      durationMinutes: json['duration_minutes'],
-      xpGain: json['xp_gain'],
-      done: json['done'] ?? false,
-      studentGroupId: json['student_group_id'], // Nullable
-      universityId: json['university_id'],
-      location: json['location'],
-      peopleNeeded: json['people_needed'],
-      isPublic: json['is_public'] ?? false, // Default: false
-      title: json['title'],
-      description: json['description'],
-      peopleApplied: json['people_applied'],
-      color: json['color'],
-      iconName: json['icon'] ?? 'task', // Default icon
-    );
-  }
+  factory Task.fromJson(Map<String, dynamic> json) => Task(
+        taskId: json['task_id'],
+        name: json['name'],
+        description: json['description'],
+        place: json['place'],
+        uniId: json['uni_id'],
+        xp: json['xp'],
+        groupId: json['group_id'],
+        urgent: json['urgent'],
+        existsForTime: json['exists_for_time'],
+        pplNeeded: json['ppl_needed'],
+        pplDoing: json['ppl_doing'],
+        pplSubmitted: json['ppl_submitted'],
+        createdBy: json['created_by'],
+        color: json['color'],
+        iconName: json['icon_name'],
+        durationInMinutes: json['duration_in_minutes'],
+      );
 
-  /// Convert `Task` to JSON
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'creator_id': creatorId,
-      'duration_minutes': durationMinutes,
-      'xp_gain': xpGain,
-      'done': done,
-      'student_group_id': studentGroupId, // Nullable
-      'university_id': universityId,
-      'location': location,
-      'people_needed': peopleNeeded,
-      'is_public': isPublic,
-      'title': title,
-      'description': description,
-      'people_applied': peopleApplied,
-      'color': color,
-      'icon': iconName,
-    };
-  }
-
-  factory Task.fromMap(Map<String, dynamic> map) {
-    return Task(
-      id: map['id'],
-      creatorId: map['creator_id'],
-      durationMinutes: map['duration_minutes'],
-      xpGain: map['xp_gain'],
-      done: map['done'] ?? false,
-      studentGroupId: map['student_group_id'],
-      universityId: map['university_id'],
-      location: map['location'],
-      peopleNeeded: map['people_needed'],
-      isPublic: map['is_public'] ?? false,
-      title: map['title'],
-      description: map['description'],
-      peopleApplied: map['people_applied'],
-      color: map['color'],
-      iconName: map['icon'] ?? 'task',
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'task_id': taskId,
+        'name': name,
+        'description': description,
+        'place': place,
+        'uni_id': uniId,
+        'xp': xp,
+        'group_id': groupId,
+        'urgent': urgent,
+        'exists_for_time': existsForTime,
+        'ppl_needed': pplNeeded,
+        'ppl_doing': pplDoing,
+        'ppl_submitted': pplSubmitted,
+        'created_by': createdBy,
+        'color': color,
+        'icon_name': iconName,
+        'duration_in_minutes': durationInMinutes,
+      };
 }

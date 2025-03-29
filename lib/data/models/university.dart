@@ -1,27 +1,19 @@
 class University {
-  final int id;
-  final String name;
-  final String location;
+  final int uniId;
+  final String nameShort;
+  final String nameFull;
 
-  University({
-    required this.id,
-    required this.name,
-    required this.location,
-  });
+  University({required this.uniId, required this.nameShort, required this.nameFull});
 
-  factory University.fromJson(Map<String, dynamic> json) {
-    return University(
-      id: json['id'],
-      name: json['name'],
-      location: json['location'],
-    );
-  }
+  factory University.fromJson(Map<String, dynamic> json) => University(
+        uniId: json['uni_id'],
+        nameShort: json['name_short'],
+        nameFull: json['name_full'],
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'location': location,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'uni_id': uniId,
+        'name_short': nameShort,
+        'name_full': nameFull,
+      };
 }

@@ -1,43 +1,51 @@
 class UserModel {
-  final int id;
-  final String name;
-  final String indexNumber;
-  final String fakultet;
+  final String nickname;
+  final String password;
+  final bool verified;
   final int xp;
+  final int lvl;
+  final int numTasksCreate;
+  final String? image;
+  final String index;
+  final int uniId;
   final int trustLevel;
-  final String? avatarUrl;
 
   UserModel({
-    required this.id,
-    required this.name,
-    required this.indexNumber,
-    required this.fakultet,
-    this.xp = 0,
-    this.trustLevel = 0,
-    this.avatarUrl,
+    required this.nickname,
+    required this.password,
+    required this.verified,
+    required this.xp,
+    required this.lvl,
+    required this.numTasksCreate,
+    this.image,
+    required this.index,
+    required this.uniId,
+    required this.trustLevel,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['id'],
-      name: json['name'],
-      indexNumber: json['index_number'],
-      fakultet: json['fakultet'],
-      xp: json['xp'] ?? 0,
-      trustLevel: json['trust_level'] ?? 0,
-      avatarUrl: json['avatar_url'],
-    );
-  }
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+        nickname: json['nickname'],
+        password: json['password'],
+        verified: json['verified'],
+        xp: json['xp'],
+        lvl: json['lvl'],
+        numTasksCreate: json['num_tasks_create'],
+        image: json['image'],
+        index: json['index'],
+        uniId: json['uni_id'],
+        trustLevel: json['trust_level'],
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'index_number': indexNumber,
-      'fakultet': fakultet,
-      'xp': xp,
-      'trust_level': trustLevel,
-      'avatar_url': avatarUrl,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'nickname': nickname,
+        'password': password,
+        'verified': verified,
+        'xp': xp,
+        'lvl': lvl,
+        'num_tasks_create': numTasksCreate,
+        'image': image,
+        'index': index,
+        'uni_id': uniId,
+        'trust_level': trustLevel,
+      };
 }

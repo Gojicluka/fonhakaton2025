@@ -3,9 +3,65 @@ import 'package:fonhakaton2025/data/global.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart'; // Import fl_chart package
-import '../widgets/Task.dart';
 import '../achievement.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
+
+List<Task> tasks = [
+  Task(
+    taskId: 1,
+    name: "Clean the Library",
+    description: "Help clean and organize the library.",
+    place: "University Library",
+    uniId: 101,
+    xp: 50,
+    groupId: 1,
+    urgent: false,
+    existsForTime: 48,
+    pplNeeded: 5,
+    pplDoing: 3,
+    pplSubmitted: 2,
+    createdBy: "Admin",
+    color: "#FF5733",
+    iconName: "cleaning_services",
+    durationInMinutes: 120,
+  ),
+  Task(
+    taskId: 2,
+    name: "Campus Gardening",
+    description: "Assist in planting flowers around the campus.",
+    place: "Campus Garden",
+    uniId: 102,
+    xp: 70,
+    groupId: 2,
+    urgent: true,
+    existsForTime: 24,
+    pplNeeded: 10,
+    pplDoing: 7,
+    pplSubmitted: 5,
+    createdBy: "Admin",
+    color: "#4CAF50",
+    iconName: "park",
+    durationInMinutes: 180,
+  ),
+  Task(
+    taskId: 3,
+    name: "Event Setup",
+    description: "Help set up the stage and seating for the annual event.",
+    place: "Main Auditorium",
+    uniId: 103,
+    xp: 100,
+    groupId: 3,
+    urgent: true,
+    existsForTime: 12,
+    pplNeeded: 8,
+    pplDoing: 6,
+    pplSubmitted: 4,
+    createdBy: "EventManager",
+    color: "#2196F3",
+    iconName: "event",
+    durationInMinutes: 240,
+  ),
+];
 
 class ProfilePage extends StatelessWidget {
   //generic to be changed later
@@ -36,15 +92,15 @@ class ProfilePage extends StatelessWidget {
               Center(
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: Global.user?.avatarUrl != null
-                      ? NetworkImage(Global.user!.avatarUrl!)
+                  backgroundImage: Global.user?.image != null
+                      ? NetworkImage(Global.user!.image!)
                       : null,
                 ),
               ),
               SizedBox(height: 16),
               Center(
                 child: Text(
-                  Global.user!.name,
+                  Global.user!.nickname,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -470,7 +526,7 @@ class ProfileTasks extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.check, color: Colors.white),
             title:
-                Text(task.title, style: GoogleFonts.lato(color: Colors.white)),
+                Text(task.name, style: GoogleFonts.lato(color: Colors.white)),
           ),
           Positioned(
             // Position the date at the top right

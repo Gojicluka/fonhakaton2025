@@ -1,28 +1,30 @@
-import 'package:fonhakaton2025/data/new_models/task.dart';
-import 'package:fonhakaton2025/data/new_models/task_with_state.dart';
-import 'package:fonhakaton2025/data/new_models/user.dart';
+import 'package:fonhakaton2025/data/models/combined/taskWithUser.dart';
+import 'package:fonhakaton2025/data/models/task.dart';
+import 'package:fonhakaton2025/data/models/combined/taskWithState.dart';
+import 'package:fonhakaton2025/data/models/user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
+import 'package:fonhakaton2025/data/models/user.dart';
 
 // TASKS
 /// TASKS GET
 
-// Future<User?> getUserByName(String name) async {
-//   try {
-//     final response = await SupabaseHelper.supabase
-//         .from('users')
-//         .select('*')
-//         .eq('group_id', 0)
-//         .maybeSingle(); // todo would it be wise to use an enum?
+Future<UserModel?> getUserByName(String name) async {
+  try {
+    final response = await SupabaseHelper.supabase
+        .from('users')
+        .select('*')
+        .eq('nickname', name)
+        .maybeSingle(); // todo would it be wise to use an enum?
 
-//     if (response == null) return null;
-//     return User.fromJson(response);
-//   } catch (e) {
-//     print('Error fetching user: $e');
-//     return null;
-//   }
-// }
+    if (response == null) return null;
+    return UserModel.fromJson(response);
+  } catch (e) {
+    print('Error fetching user: $e');
+    return null;
+  }
+}
 
 // Future<List<Task>> getGlobalTasks() async {
 //   final PostgrestList response = await SupabaseHelper.supabase
@@ -93,6 +95,7 @@ Future<List<TaskWithState>> getDoingTasks({required int nickname}) async {
   return response.map((task) => TaskWithState.fromJson(task)).toList();
 }
 
+
 // getPendingTasks(user id, state=doing) -> task_with_status[]
 
 // getToReviewTasks(user id, state=doing) -> task_with_status[]
@@ -143,3 +146,17 @@ Future<List<TaskWithState>> getDoingTasks({required int nickname}) async {
 //     return false;
 //   }
 // }
+
+/// Checks if a user is assigned to a specific task
+Future<bool> isUserOnTask({required String? user_nickname, required int task_id}) async {
+  return false; // todo implement this
+}
+
+Future<List<TaskWithUser>> getAllTaskWithUsers() async {
+  return []; // todo implement this
+}
+
+/// Inserts a new task into the database
+Future<bool> insertTask(Task task) async {
+  return true;
+}

@@ -11,7 +11,6 @@ import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:fonhakaton2025/theme/custom_colors_theme.dart';
 import 'package:fonhakaton2025/widgets/CameraWidget.dart';
 import 'package:fonhakaton2025/screens/GroupDetailsScreen.dart';
-import 'package:fonhakaton2025/widgets/GroupTaskPage.dart';
 import 'package:fonhakaton2025/screens/MyTasksScreen.dart';
 import 'package:fonhakaton2025/screens/NewTaskScreen.dart';
 import 'package:fonhakaton2025/screens/TasksScreen.dart';
@@ -21,11 +20,12 @@ import 'package:fonhakaton2025/screens/NewTaskChoiceScreen.dart';
 import 'package:fonhakaton2025/screens/LeaderboardScreen.dart';
 import 'package:fonhakaton2025/screens/LoginScreen.dart';
 import 'package:fonhakaton2025/screens/ProfileScreen.dart';
+import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 
 void main() async {
   await init_supabase();
 
-  Global.setUser(await SupabaseHelper.getUserByName("Bob Smith"));
+  Global.setUser(await getUserByName("luka"));
 
   runApp(ProviderScope(child: MyApp()));
 }
@@ -51,9 +51,9 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
         children: [
           CircleAvatar(
             backgroundImage:
-                user?.avatarUrl != null ? NetworkImage(user!.avatarUrl!) : null,
+                user?.image != null ? NetworkImage(user!.image!) : null,
             backgroundColor: Colors.grey[300],
-            child: user?.avatarUrl == null
+            child: user?.image == null
                 ? Icon(Icons.person, color: Colors.grey[700])
                 : null,
           ),
@@ -61,7 +61,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                user?.name ?? 'Guest',
+                user?.nickname ?? 'Guest',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -101,8 +101,8 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.get(),
       darkTheme:
           AppTheme.get(), // Or remove this line since there's no dark theme
-      home: LoginScreen(), // Start with the login page instead of MyHomePage
-      // home: MyHomePage(title: "test"),
+      //home: LoginScreen(), // Start with the login page instead of MyHomePage
+      home: MyHomePage(title: "BloQuest"),
     );
   }
 }

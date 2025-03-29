@@ -4,6 +4,7 @@ import 'package:fonhakaton2025/data/global.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
 import 'package:fonhakaton2025/utils/IconConverter.dart';
+import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 
 class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({super.key});
@@ -33,82 +34,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   bool _showAdditionalOptions = false;
 
   final List<Task> predefinedTasks = [
-    Task(
-      id: 0,
-      creatorId: null,
-      durationMinutes: 0,
-      xpGain: 0,
-      done: false,
-      studentGroupId: null,
-      universityId: 1,
-      location: "",
-      peopleNeeded: 0,
-      isPublic: false,
-      title: "Nijedan",
-      description: "",
-      peopleApplied: 0,
-      color: '#9E9E9E',
-    ),
-    Task(
-      id: 1,
-      creatorId: 1,
-      durationMinutes: 60,
-      xpGain: 50,
-      studentGroupId: 1,
-      universityId: 1,
-      location: "Glavna sala",
-      peopleNeeded: 3,
-      isPublic: true,
-      title: "Deljenje letaka",
-      description: "Deljenje letaka na ključnim lokacijama.",
-      peopleApplied: 0,
-      color: '#2196F3',
-    ),
-    Task(
-      id: 2,
-      creatorId: 1,
-      durationMinutes: 120,
-      xpGain: 100,
-      studentGroupId: 2,
-      universityId: 1,
-      location: "Recepcija",
-      peopleNeeded: 5,
-      isPublic: true,
-      title: "Pomoć pri registraciji",
-      description: "Pomoć pri prijavljivanju učesnika.",
-      peopleApplied: 0,
-      color: '#4CAF50',
-    ),
-    Task(
-      id: 3,
-      creatorId: 1,
-      durationMinutes: 90,
-      xpGain: 80,
-      studentGroupId: 2,
-      universityId: 1,
-      location: "Skladište",
-      peopleNeeded: 2,
-      isPublic: true,
-      title: "Organizovanje opreme",
-      description: "Sortiranje i distribucija opreme.",
-      peopleApplied: 0,
-      color: '#FF9800',
-    ),
-    Task(
-      id: 4,
-      creatorId: 1,
-      durationMinutes: 75,
-      xpGain: 60,
-      studentGroupId: 3,
-      universityId: 1,
-      location: "Hol",
-      peopleNeeded: 4,
-      isPublic: true,
-      title: "Vođenje posetilaca",
-      description: "Pomoć posetiocima da pronađu svoj put.",
-      peopleApplied: 0,
-      color: '#9C27B0',
-    ),
   ];
 
   void _pickColor() {
@@ -141,15 +66,15 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 
   void _setTaskFields(Task task) {
     setState(() {
-      _titleController.text = task.title;
-      _xpController.text = task.xpGain.toString();
+      _titleController.text = task.name;
+      _xpController.text = task.xp.toString();
       // _durationController.text =
       //     (task.durationMinutes ~/ 60).toString(); // Convert to hours
 
-      _hoursController.text = (task.durationMinutes ~/ 60).toString();
-      _minutesController.text = (task.durationMinutes % 60).toString();
-      _peopleController.text = task.peopleNeeded.toString();
-      _locationController.text = task.location;
+      _hoursController.text = (task.durationInMinutes ~/ 60).toString();
+      _minutesController.text = (task.durationInMinutes % 60).toString();
+      _peopleController.text = task.pplNeeded.toString();
+      _locationController.text = task.place;
     });
   }
 
@@ -186,31 +111,31 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       }
 
       final newTask = Task(
-        id: 0, // This should be handled by the backend
-        creatorId: Global.user!.id, // This should be set with actual user ID
-        durationMinutes: duration,
-        xpGain: int.parse(_xpController.text),
-        studentGroupId: null, // Optional student group ID
-        universityId: 1, // Should be set with actual university ID
-        location:
-            _locationController.text.isEmpty ? "ETF" : _locationController.text,
-        peopleNeeded: _peopleController.text.isEmpty
-            ? 1
-            : int.parse(_peopleController.text),
-        isPublic: false, // Set according to your needs
-        title: _titleController.text,
+        taskId: 0, // This should be handled by the backend
+        name: _titleController.text,
         description: _descriptionController.text,
-        peopleApplied: 0, // Initially 0
+        place: _locationController.text.isEmpty ? "ETF" : _locationController.text,
+        uniId: 1, // Should be set with actual university ID
+        xp: int.parse(_xpController.text),
+        groupId: 0, // Optional group ID
+        urgent: false, // Set according to your needs
+        existsForTime: 0, // Placeholder, adjust as needed
+        pplNeeded: _peopleController.text.isEmpty
+        ? 1
+        : int.parse(_peopleController.text),
+        pplDoing: 0, // Initially 0
+        pplSubmitted: 0, // Initially 0
+        createdBy: Global.user!.nickname, // This should be set with actual user ID
+        color: '#${_selectedColor.value.toRadixString(16).substring(2)}', // Convert Color to hex string
         iconName: iconToString(iconData),
-        color:
-            '#${_selectedColor.value.toRadixString(16).substring(2)}', // Convert Color to hex string
+        durationInMinutes: duration,
       );
 
       setState(() {
         //tasks.add(newTask);
         //TODO
       });
-      SupabaseHelper.insertTask(newTask);
+      insertTask(newTask);
 
       Navigator.of(context).pop();
 
@@ -283,7 +208,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                         items: predefinedTasks
                             .map((task) => DropdownMenuItem(
                                   value: task,
-                                  child: Text(task.title),
+                                  child: Text(task.name),
                                 ))
                             .toList(),
                         onChanged: (value) {

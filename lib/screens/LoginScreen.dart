@@ -6,6 +6,7 @@ import 'package:fonhakaton2025/data/supabase_helper.dart';
 import 'package:fonhakaton2025/main.dart';
 import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:flutter/gestures.dart';
+import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -40,7 +41,7 @@ class _LoginPageState extends ConsumerState<LoginScreen> {
         // For demo purposes, you might want to use a mock login
         // In a real app, you would use Supabase authentication here
         final user =
-            await SupabaseHelper.getUserByName(_usernameController.text);
+            await getUserByName(_usernameController.text);
 
         if (user != null) {
           // In a real app, you would verify the password here

@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
-import 'package:fonhakaton2025/data/models/task_users.dart';
-import 'package:fonhakaton2025/data/models/task_with_user.dart';
 import 'package:fonhakaton2025/utils/IconConverter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fonhakaton2025/data/PendingTaskNotifier.dart';
 import 'package:fonhakaton2025/data/global.dart';
-import 'package:fonhakaton2025/data/models/task_with_user.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
-import 'package:fonhakaton2025/widgets/Task.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/TaskNotifier.dart';
 import 'package:fonhakaton2025/utils/IconConverter.dart';
@@ -18,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import "package:fonhakaton2025/data/task_completion/task_completion.dart";
 import "package:fonhakaton2025/data/PendingTaskNotifier.dart";
+import 'package:fonhakaton2025/data/models/combined/taskWithUser.dart';
+import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 // Hardcoded lists
 // final List<TaskWithUser> toApprove = [
 //   TaskUser(
@@ -211,7 +209,7 @@ class _MyTasksState extends State<MyTasks> {
   @override
   void initState() {
     super.initState();
-    _tasksFuture = SupabaseHelper.getAllTaskWithUsers();
+    _tasksFuture = getAllTaskWithUsers();
   }
 
   @override
@@ -670,17 +668,17 @@ void CancelTask(BuildContext context, TaskWithUser task) {
 }
 
 void CompleteTask(BuildContext context, TaskWithUser task) async {
-  ImagePicker _picker = ImagePicker();
-  final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-  if (image != null) {
-    File _image = File(image.path);
+  // ImagePicker _picker = ImagePicker();
+  // final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+  // if (image != null) {
+  //   File _image = File(image.path);
 
-    submitTaskCompletion(
-        taskId: task.taskId, userId: Global.user!.id, imageFile: _image);
-  } else {
-    print("no image captured");
-  }
-  Navigator.pop(context);
+  //   submitTaskCompletion(
+  //       taskId: task.taskId, userId: Global.user!.id, imageFile: _image);
+  // } else {
+  //   print("no image captured");
+  // }
+  // Navigator.pop(context);
 }
 
 Color _parseColor(String colorStr) {
@@ -703,11 +701,11 @@ Widget fetchUserImage(String imageName) {
 }
 
 void DenyCompleted(BuildContext context, TaskWithUser task) async {
-  await denyTaskCompletion(taskId: task.taskId, userId: task.userId);
-  Navigator.pop(context);
+  // await denyTaskCompletion(taskId: task.taskId, userId: task.userId);
+  // Navigator.pop(context);
 }
 
 void AcceptCompleted(BuildContext context, TaskWithUser task) async {
-  await approveTaskCompletion(taskId: task.taskId, userId: task.userId);
-  Navigator.pop(context);
+  // await approveTaskCompletion(taskId: task.taskId, userId: task.userId);
+  // Navigator.pop(context);
 }

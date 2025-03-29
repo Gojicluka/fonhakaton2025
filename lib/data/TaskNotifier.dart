@@ -20,7 +20,6 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
   /// Fetch all undone tasks from Supabase excluding ones the user has applied to
   Future<void> fetchTasks() async {
-    final userId = Global.user!.id;
     final response = await Supabase.instance.client
         .from('tasks')
         .select('*')

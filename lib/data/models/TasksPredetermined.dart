@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class TasksPredetermined {
   final int predId;
   final int canUse;
