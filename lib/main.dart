@@ -21,6 +21,7 @@ import 'package:fonhakaton2025/screens/LeaderboardScreen.dart';
 import 'package:fonhakaton2025/screens/LoginScreen.dart';
 import 'package:fonhakaton2025/screens/ProfileScreen.dart';
 import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
+import 'package:fonhakaton2025/data/models/user.dart';
 
 void main() async {
   await init_supabase();
@@ -28,6 +29,27 @@ void main() async {
   Global.setUser(await getUserByName("luka"));
 
   runApp(ProviderScope(child: MyApp()));
+}
+
+final xpAnimationProvider =
+    StateNotifierProvider<XpAnimationNotifier, bool>((ref) {
+  return XpAnimationNotifier();
+});
+
+class XpAnimationNotifier extends StateNotifier<bool> {
+  int? _previousXp;
+
+  XpAnimationNotifier() : super(false);
+
+  void checkAndAnimateXp(int? currentXp) {
+    if (_previousXp != null && currentXp != null && currentXp != _previousXp) {
+      state = true; // Trigger animation
+      Future.delayed(Duration(milliseconds: 500), () {
+        state = false; // Reset animation state
+      });
+    }
+    _previousXp = currentXp;
+  }
 }
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -40,10 +62,15 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Use the userProvider to watch for changes
     final user = ref.watch(userProvider);
+    final xpAnimation = ref.watch(xpAnimationProvider);
 
-    Global.setUser(user);
+    // Listen to changes in the userProvider and trigger the animation
+    ref.listen<UserModel?>(userProvider, (previous, next) {
+      if (previous?.xp != next?.xp) {
+        ref.read(xpAnimationProvider.notifier).checkAndAnimateXp(next?.xp);
+      }
+    });
 
     return AppBar(
       title: Row(
@@ -67,18 +94,21 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   fontSize: 18,
                 ),
               ),
-              Text(
-                'XP: ${user?.xp ?? 0}',
+                AnimatedDefaultTextStyle(
                 style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[500],
+                  fontSize: xpAnimation ? 18 : 14,
+                  color: xpAnimation ? Colors.green : Colors.grey[500],
+                  fontWeight: xpAnimation ? FontWeight.bold : FontWeight.normal,
+                ),
+                duration: Duration(milliseconds: 200),
+                child: Text(
+                  'XP: ${user?.xp ?? 0}',
                 ),
               ),
             ],
           ),
           IconButton(
             icon: Icon(Icons.menu),
-            // this is for group data
             onPressed: () {
               Navigator.push(
                 context,
