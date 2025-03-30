@@ -1,3 +1,4 @@
+import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:test/test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 // import 'package:fonhakaton2025/data/models/task.dart';
@@ -17,11 +18,13 @@ void main() {
     );
   });
 
-  test('Fetch tasks from Supabase', () async {
+  test('Fetch all available tasks for user', () async {
     // final supabase = Supabase.instance.client;
     // final response = await supabase.from('users').select();
 
-    final response = getGlobalTasks();
+    String username = "test";
+
+    final Future<List<Task>> response = getAllAvailableTasks(username);
 
     print('Fetched tasks: $response');
 

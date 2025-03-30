@@ -197,10 +197,10 @@ class SupabaseHelper {
 
   // static Future<List<TaskWithUser>> getAllTaskWithUsers() async {
   //   final PostgrestList response = await supabase.from('task_users').select('''
-  //           task_id, 
+  //           task_id,
   //           tasks:task_id (
   //               id, creator_id, duration_minutes, xp_gain, done, student_group_id,
-  //               university_id, location, people_needed, is_public, title, description, 
+  //               university_id, location, people_needed, is_public, title, description,
   //               people_applied, color, icon
   //           ),
   //           user_id, photo, description, approved, denied
