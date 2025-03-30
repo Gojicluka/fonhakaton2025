@@ -43,7 +43,9 @@ Future<List<Task>> getAllAvailableTasks(String nickname) async {
   final List<int> excludedTaskIds =
       userTasks.map((task) => task['task_id'] as int).toList();
 
-  // Fetch global tasks that are NOT in user_task
+  // fetch user groups as a list! todo
+
+  // Fetch all tasks that are NOT in user_task
   final List<Map<String, dynamic>> response =
       await supabase.from('tasks').select().not('id', 'in', excludedTaskIds);
 
