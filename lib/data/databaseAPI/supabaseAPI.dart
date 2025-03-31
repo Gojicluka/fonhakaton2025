@@ -3,6 +3,7 @@ import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/models/combined/taskWithState.dart';
 import 'package:fonhakaton2025/data/models/user.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
+import 'package:supabase/src/supabase_client.dart';
 
 //////// STRUCTURES
 
@@ -10,6 +11,8 @@ import 'package:fonhakaton2025/data/supabase_helper.dart';
 // waiting_delete -> taskovi koji su prihvaceni i nagradjeni, ne vide se nigde, ali se brisu tek kada se obrise glavni task iz kog su nastali,
 // kako ne bi jedan user mogao da radi isti quest vise puta!
 enum TaskStatus { DOING, PENDING, ACCEPTED, DENIED, WAITING_DELETE }
+
+enum Groups { NONE, ADDMORE }
 
 class ReturnMessage {
   final bool success;
@@ -34,7 +37,6 @@ Future<List<Task>> getAllAvailableTasks(String nickname) async {
   final supabase = SupabaseHelper.supabase;
 
   // Fetch task_ids associated with the given nickname
-  // todo will this work?
   final List<Map<String, dynamic>> userTasks = await supabase
       .from('user_task')
       .select('task_id')
@@ -43,11 +45,21 @@ Future<List<Task>> getAllAvailableTasks(String nickname) async {
   final List<int> excludedTaskIds =
       userTasks.map((task) => task['task_id'] as int).toList();
 
-  // fetch user groups as a list! todo
+  // fetch user groups as a list
+  final List<Map<String, dynamic>> userGroups = await supabase
+      .from('user_group')
+      .select('group_id')
+      .eq('nickname', nickname);
 
-  // Fetch all tasks that are NOT in user_task
-  final List<Map<String, dynamic>> response =
-      await supabase.from('tasks').select().not('id', 'in', excludedTaskIds);
+  final List<int> userGroupsList =
+      userGroups.map((task) => task['group_id'] as int).toList();
+
+  // Fetch all tasks that are NOT in user_task and match user groups.
+  final List<Map<String, dynamic>> response = await supabase
+      .from('tasks')
+      .select()
+      .not('task_id', 'in', excludedTaskIds)
+      .inFilter('group_id', userGroupsList);
 
   return response.map((task) => Task.fromJson(task)).toList();
 }
@@ -83,16 +95,57 @@ Future<List<Task>> getAllAvailableTasksFilter(
       .from('tasks')
       .select()
       .eq("group_id", groupId)
-      .not('id', 'in', excludedTaskIds);
+      .not('task_id', 'in', excludedTaskIds);
 
   return response.map((task) => Task.fromJson(task)).toList();
+}
+
+/// stvara ulaz u tabelu task_user, sa statusom "doing"
+Future<ReturnMessage> CreateTask(Task task) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    final response = await supabase.from('tasks').insert({
+      'task_id': task.taskId,
+      'name': task.name,
+      'description': task.description,
+      'place': task.place,
+      'uni_id': task.uniId,
+      'xp': task.xp,
+      'group_id': task.groupId,
+      'urgent': task.urgent,
+      'exists_for_time': task.existsForTime,
+      'ppl_needed': task.pplNeeded,
+      'ppl_doing': task.pplDoing,
+      'ppl_submitted': task.pplSubmitted,
+      'created_by': task.createdBy,
+      'color': task.color,
+      'icon_name': task.iconName,
+      'duration_in_minutes': task.durationInMinutes,
+    });
+
+    if (response.error != null) {
+      return ReturnMessage(
+          success: false,
+          statusCode: 500,
+          message: "Database error: ${response.error!.message}");
+    }
+
+    return ReturnMessage(
+        success: true,
+        statusCode: 200,
+        message: "Task '${task.name}' created successfully");
+  } catch (e) {
+    return ReturnMessage(
+        success: false, statusCode: 500, message: "Exception: $e");
+  }
 }
 
 /////////////////////////////////////////////////////////////// USER_TASKS
 
 /// Gets all tasks with the given STATUS code.
 Future<List<TaskWithState>> getUserTasksWithStatus(
-    int nickname, int status) async {
+    String nickname, TaskStatus status) async {
   // final doing_id = 1; // todo change!
   final supabase = SupabaseHelper.supabase;
   final List<Map<String, dynamic>> taskIds = await supabase
@@ -124,6 +177,16 @@ Future<ReturnMessage> CreateUserTask(String nickname, int taskId) async {
           message: "Database error: ${response.error!.message}");
     }
 
+    // update pplDoing by 1.
+    var updateDoing = await updateTaskPeopleDoing(supabase, taskId, 1);
+
+    if (updateDoing.error != null) {
+      return ReturnMessage(
+          success: false,
+          statusCode: 500,
+          message: "Database error: ${response.error!.message}");
+    }
+
     return ReturnMessage(
         success: true,
         statusCode: 200,
@@ -134,22 +197,40 @@ Future<ReturnMessage> CreateUserTask(String nickname, int taskId) async {
   }
 }
 
-/// Check if given status is valid?? and change task status --- todo
-Future<ReturnMessage> SetUserTaskStatus(
-    String nickname, int taskId, TaskStatus evaluation) async {
+Future<dynamic> updateTaskPeopleDoing(
+    SupabaseClient supabase, int taskId, int amount) async {
+  final updateDoing = await supabase.from('tasks').update({
+    'ppl_doing': supabase
+        .rpc('increment', params: {'column': 'ppl_doing', 'amount': amount})
+  }).eq('task_id', taskId);
+  return updateDoing;
+}
+
+Future<dynamic> updateTaskPeopleSubmitted(
+    SupabaseClient supabase, int taskId, int amount) async {
+  final updateSubmitted = await supabase.from('tasks').update({
+    'ppl_submitted': supabase
+        .rpc('increment', params: {'column': 'ppl_submitted', 'amount': 1})
+  }).eq('task_id', taskId);
+  return updateSubmitted;
+}
+
+/// Update user task to given status. if updating to submitted -> update ppl_submitted
+Future<ReturnMessage> UpdateUserTaskStatus(
+    String nickname, int taskId, TaskStatus newStatus) async {
   try {
     final supabase = SupabaseHelper.supabase;
 
-    if (!TaskStatus.values.contains(evaluation)) {
+    if (!TaskStatus.values.contains(newStatus)) {
       return ReturnMessage(
           success: false,
           statusCode: 400,
-          message: "Invalid status given: $evaluation");
+          message: "Invalid status given: $newStatus");
     }
 
     final response = await supabase
         .from('user_task')
-        .update({'state_id': evaluation.index}) // Use integer value of enum
+        .update({'state_id': newStatus.index}) // Use integer value of enum
         .match({
       'task_id': taskId,
       'nickname': nickname
@@ -162,10 +243,23 @@ Future<ReturnMessage> SetUserTaskStatus(
           message: "Database error: ${response.error!.message}");
     }
 
+    if (newStatus == TaskStatus.PENDING) {
+      final response = await updateTaskPeopleSubmitted(supabase, taskId, 1);
+      if (response.error != null) {
+        print("nooo");
+      }
+    }
+    if (newStatus == TaskStatus.DENIED || newStatus == TaskStatus.ACCEPTED) {
+      final response = await updateTaskPeopleSubmitted(supabase, taskId, -1);
+      if (response.error != null) {
+        print("nooo");
+      }
+    }
+
     return ReturnMessage(
         success: true,
         statusCode: 200,
-        message: "Task evaluation updated successfully");
+        message: "Task status updated successfully");
   } catch (e) {
     return ReturnMessage(
         success: false, statusCode: 500, message: "Exception: $e");
@@ -173,7 +267,7 @@ Future<ReturnMessage> SetUserTaskStatus(
 }
 
 // Should be called when user abandons the task.
-Future<ReturnMessage> removeUserTask(String nickname, int taskId) async {
+Future<ReturnMessage> deleteUserTask(String nickname, int taskId) async {
   try {
     final supabase = SupabaseHelper.supabase;
 
@@ -181,6 +275,16 @@ Future<ReturnMessage> removeUserTask(String nickname, int taskId) async {
         {'task_id': taskId, 'nickname': nickname}); // Ensure both are included
 
     if (response.error != null) {
+      return ReturnMessage(
+          success: false,
+          statusCode: 500,
+          message: "Database error: ${response.error!.message}");
+    }
+
+    // make it so that one person less is doing the task.
+    var updateDoing = await updateTaskPeopleDoing(supabase, taskId, -1);
+
+    if (updateDoing.error != null) {
       return ReturnMessage(
           success: false,
           statusCode: 500,
@@ -220,5 +324,29 @@ Future<UserModel?> getUserByName(String name) async {
   } catch (e) {
     print('Error fetching user: $e');
     return null;
+  }
+}
+
+Future<ReturnMessage> updateUserXP(String nickname, int amount) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    final response = await supabase.from('users').update({
+      'xp':
+          supabase.rpc('increment', params: {'column': 'xp', 'amount': amount})
+    }).eq('nickname', nickname);
+
+    if (response.error != null) {
+      return ReturnMessage(
+          success: false,
+          statusCode: 500,
+          message: "Database error: ${response.error!.message}");
+    }
+
+    return ReturnMessage(
+        success: true, statusCode: 200, message: "User got XP $amount");
+  } catch (e) {
+    return ReturnMessage(
+        success: false, statusCode: 500, message: "Exception: $e");
   }
 }
