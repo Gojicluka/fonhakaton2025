@@ -61,3 +61,12 @@ tabela koja ce da prati koji su sve zadaci template zadaci i to trenutno aktivni
 
 
 
+===========================================================================
+# LOGIKA APLIKACIJE
+
+getPredefinedTasks(auth, groupId)
+    - u slucaju kreiranja s ovim, samo cemo napraviti task objekat od predefinisanog, i dodati ga u predefined_existing
+
+
+
+createTask -> prima Task objekat

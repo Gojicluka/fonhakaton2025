@@ -1,3 +1,4 @@
+import 'package:fonhakaton2025/data/models/TasksPredetermined.dart';
 import 'package:fonhakaton2025/data/models/combined/taskWithUser.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/models/combined/taskWithState.dart';
@@ -37,13 +38,8 @@ Future<List<Task>> getAllAvailableTasks(String nickname) async {
   final supabase = SupabaseHelper.supabase;
 
   // Fetch task_ids associated with the given nickname
-  final List<Map<String, dynamic>> userTasks = await supabase
-      .from('user_task')
-      .select('task_id')
-      .eq('nickname', nickname);
 
-  final List<int> excludedTaskIds =
-      userTasks.map((task) => task['task_id'] as int).toList();
+  List<int> excludedTaskIds = await getUserTaskIds(supabase, nickname);
 
   // fetch user groups as a list
   final List<Map<String, dynamic>> userGroups = await supabase
@@ -64,12 +60,21 @@ Future<List<Task>> getAllAvailableTasks(String nickname) async {
   return response.map((task) => Task.fromJson(task)).toList();
 }
 
+Future<List<int>> getUserTaskIds(
+    SupabaseClient supabase, String nickname) async {
+  final List<Map<String, dynamic>> userTasks = await supabase
+      .from('user_task')
+      .select('task_id')
+      .eq('nickname', nickname);
+  return userTasks.map((task) => task['task_id'] as int).toList();
+}
+
 /// Daje sve taskove za odredjenu grupu (vraca [] ako grupa ne postoji)
 Future<List<Task>> getAllAvailableTasksFilter(
     String nickname, int groupId) async {
   final supabase = SupabaseHelper.supabase;
 
-  // todo - check if the user is in the group from which they're asking for tasks
+  // check if the user is in the group from which they're asking for tasks
   final List<Map<String, dynamic>> userGroups = await supabase
       .from('user_group')
       .select('group_id')
@@ -82,13 +87,7 @@ Future<List<Task>> getAllAvailableTasksFilter(
   }
 
   // Fetch task_ids associated with the given nickname
-  final List<Map<String, dynamic>> userTasks = await supabase
-      .from('user_task')
-      .select('task_id')
-      .eq('nickname', nickname);
-
-  final List<int> excludedTaskIds =
-      userTasks.map((task) => task['task_id'] as int).toList();
+  List<int> excludedTaskIds = await getUserTaskIds(supabase, nickname);
 
   // Fetch global tasks that are NOT in user_task
   final List<Map<String, dynamic>> response = await supabase
@@ -101,7 +100,7 @@ Future<List<Task>> getAllAvailableTasksFilter(
 }
 
 /// stvara ulaz u tabelu task_user, sa statusom "doing"
-Future<ReturnMessage> CreateTask(Task task) async {
+Future<ReturnMessage> createTask(Task task) async {
   try {
     final supabase = SupabaseHelper.supabase;
 
@@ -345,6 +344,132 @@ Future<ReturnMessage> updateUserXP(String nickname, int amount) async {
 
     return ReturnMessage(
         success: true, statusCode: 200, message: "User got XP $amount");
+  } catch (e) {
+    return ReturnMessage(
+        success: false, statusCode: 500, message: "Exception: $e");
+  }
+}
+
+/////////////// Predetermined tasks !!!
+
+// getPredeterminedForGroup
+Future<List<TaskPredetermined>> getPredeterminedForGroup(
+    String nickname, int groupId) async {
+  final supabase = SupabaseHelper.supabase;
+
+  // check if the user is in the group from which they're asking for tasks
+  // final List<Map<String, dynamic>> userGroups = await supabase
+  //     .from('user_group')
+  //     .select('group_id')
+  //     .eq('nickname', nickname)
+  //     .eq('group_id', groupId);
+
+  // // HOW TO CHECK IF THIS WILL NOT BREAK ??? todo
+  // if (userGroups.isEmpty) {
+  //   return [];
+  // }
+
+  // fetch predetermined tasks for group
+  final List<Map<String, dynamic>> response = await supabase
+      .from('tasks_predetermined')
+      .select()
+      .eq("group_id", groupId);
+
+  return response.map((task) => TaskPredetermined.fromJson(task)).toList();
+}
+
+// createDeterminedTask - these tasks can't be changed at all, and contibute towards achievements.
+// todo - mozda staviti da je pplNeeded fleksibilno, da se specificira pri pravljenju svakog taska ovog tipa?
+// todo - dodati posebne poene (stats)
+Future<ReturnMessage> createDeterminedTask(TaskPredetermined task) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    final response = await supabase.from('tasks_predetermined').insert({
+      'task_id': task.predId,
+      'can_use': task.canUse,
+      'name': task.name,
+      'description': task.description,
+      'for_group': task.forGroup,
+      'place': task.place,
+      'xp': task.xp,
+      'urgent': task.urgent,
+      'exists_for_time': task.existsForTime,
+      'ppl_needed': task.pplNeeded,
+      'ppl_doing': task.pplDoing,
+      'ppl_submitted': task.pplSubmitted,
+    });
+
+    if (response.error != null) {
+      return ReturnMessage(
+          success: false,
+          statusCode: 500,
+          message: "Database error: ${response.error!.message}");
+    }
+    ;
+
+    return ReturnMessage(
+        success: true,
+        statusCode: 200,
+        message: "Predetermined task '${task.name}' created successfully");
+  } catch (e) {
+    return ReturnMessage(
+        success: false, statusCode: 500, message: "Exception: $e");
+  }
+}
+
+// createDeterminedExisting
+
+Future<ReturnMessage> createDeterminedExisting(
+    String nickname, int taskId, int predId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    final response = await supabase
+        .from('predetermined_existing')
+        .insert({'task_id': taskId, 'pred_id': predId});
+    if (response.error != null) {
+      return ReturnMessage(
+          success: false,
+          statusCode: 500,
+          message: "Database error: ${response.error!.message}");
+    }
+
+    return ReturnMessage(
+        success: true,
+        statusCode: 200,
+        message: "User task $taskId , $nickname added successfully");
+  } catch (e) {
+    return ReturnMessage(
+        success: false, statusCode: 500, message: "Exception: $e");
+  }
+}
+
+// deleteDeterminedExisting
+Future<ReturnMessage> deleteDeterminedExisting(
+    String nickname, int taskId, int predId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    final response = await supabase
+        .from('predetermined_existing')
+        .delete()
+        .match(
+            {'task_id': taskId, 'pred_id': predId}); // Ensure both are included
+
+    if (response.error != null) {
+      return ReturnMessage(
+          success: false,
+          statusCode: 500,
+          message: "Database error: ${response.error!.message}");
+    }
+
+    // todo - maybe include some logic for stats/achievements ?
+
+    return ReturnMessage(
+        success: true,
+        statusCode: 200,
+        message: "User task $taskId removed successfully");
   } catch (e) {
     return ReturnMessage(
         success: false, statusCode: 500, message: "Exception: $e");
