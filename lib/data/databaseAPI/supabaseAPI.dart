@@ -11,9 +11,9 @@ import 'package:supabase/src/supabase_client.dart';
 // todo: make it match the ID-s in database.
 // waiting_delete -> taskovi koji su prihvaceni i nagradjeni, ne vide se nigde, ali se brisu tek kada se obrise glavni task iz kog su nastali,
 // kako ne bi jedan user mogao da radi isti quest vise puta!
-enum TaskStatus { DOING, PENDING, ACCEPTED, DENIED, WAITING_DELETE }
+enum TaskStatus { _, DOING, PENDING, ACCEPTED, DENIED, WAITING_DELETE }
 
-enum Groups { NONE, ADDMORE }
+enum Groups { NOGROUP, ADDMORE }
 
 class ReturnMessage {
   final bool success;
@@ -30,6 +30,15 @@ class ReturnMessage {
       };
 }
 
+// helper functions
+
+Future<List<int>> getTasksCreatedBy(
+    SupabaseClient supabase, String nickname) async {
+  final List<Map<String, dynamic>> userTasks =
+      await supabase.from('tasks').select('task_id').eq('created_by', nickname);
+  return userTasks.map((task) => task['task_id'] as int).toList();
+}
+
 ////////////////////////////////////////////////////////////////// TASKS
 /// todo: da li cemo znati koji user je ulogovan sve vreme, ili treba da fetchujem usera?
 
@@ -37,9 +46,9 @@ class ReturnMessage {
 Future<List<Task>> getAllAvailableTasks(String nickname) async {
   final supabase = SupabaseHelper.supabase;
 
-  // Fetch task_ids associated with the given nickname
-
+  // Fetch task_ids associated with the given nickname - both taken quests and made quests.
   List<int> excludedTaskIds = await getUserTaskIds(supabase, nickname);
+  List<int> getTasksUserCreated = await getTasksCreatedBy(supabase, nickname);
 
   // fetch user groups as a list
   final List<Map<String, dynamic>> userGroups = await supabase
@@ -49,12 +58,14 @@ Future<List<Task>> getAllAvailableTasks(String nickname) async {
 
   final List<int> userGroupsList =
       userGroups.map((task) => task['group_id'] as int).toList();
+  userGroupsList.add(Groups.NOGROUP as int);
 
   // Fetch all tasks that are NOT in user_task and match user groups.
   final List<Map<String, dynamic>> response = await supabase
       .from('tasks')
       .select()
       .not('task_id', 'in', excludedTaskIds)
+      .not('task_id', 'in', getTasksUserCreated)
       .inFilter('group_id', userGroupsList);
 
   return response.map((task) => Task.fromJson(task)).toList();
@@ -88,12 +99,14 @@ Future<List<Task>> getAllAvailableTasksFilter(
 
   // Fetch task_ids associated with the given nickname
   List<int> excludedTaskIds = await getUserTaskIds(supabase, nickname);
+  List<int> getTasksUserCreated = await getTasksCreatedBy(supabase, nickname);
 
   // Fetch global tasks that are NOT in user_task
   final List<Map<String, dynamic>> response = await supabase
       .from('tasks')
       .select()
       .eq("group_id", groupId)
+      .not("task_id", 'in', getTasksUserCreated)
       .not('task_id', 'in', excludedTaskIds);
 
   return response.map((task) => Task.fromJson(task)).toList();
@@ -163,7 +176,7 @@ Future<List<TaskWithState>> getUserTasksWithStatus(
 }
 
 /// stvara ulaz u tabelu task_user, sa statusom "doing"
-Future<ReturnMessage> CreateUserTask(String nickname, int taskId) async {
+Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
   try {
     final supabase = SupabaseHelper.supabase;
 

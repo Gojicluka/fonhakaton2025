@@ -37,7 +37,7 @@ void main() {
 
   test('Fetch all global available for user', () async {
     final response =
-        await getAllAvailableTasksFilter(username, Groups.NONE as int);
+        await getAllAvailableTasksFilter(username, Groups.NOGROUP as int);
     print('Fetched tasks: $response');
 
     for (var task in response) {
