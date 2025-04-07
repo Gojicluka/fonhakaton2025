@@ -1,4 +1,4 @@
-class TasksPredetermined {
+class TaskPredetermined {
   final int predId;
   final int canUse;
   final int forGroup;
@@ -12,7 +12,7 @@ class TasksPredetermined {
   final int pplDoing;
   final int pplSubmitted;
 
-  TasksPredetermined({
+  TaskPredetermined({
     required this.predId,
     required this.canUse,
     required this.forGroup,
@@ -27,8 +27,8 @@ class TasksPredetermined {
     required this.pplSubmitted,
   });
 
-  factory TasksPredetermined.fromJson(Map<String, dynamic> json) =>
-      TasksPredetermined(
+  factory TaskPredetermined.fromJson(Map<String, dynamic> json) =>
+      TaskPredetermined(
         predId: json['pred_id'],
         canUse: json['can_use'],
         forGroup: json['for_group'],

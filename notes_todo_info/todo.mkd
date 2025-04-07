@@ -3,6 +3,9 @@
 - "task creation" system -> limitations etc ....
 
 
+## tasks
+- dodati mogucnost da korisnik obrise taskove koje je kreirao! (mozda hoce unapred da obrise task ili je nesto lose napisao...?)
+
 ## implementation
 - promeniti "korisnicki zadaci" stranu tako da sve prikazuje relevantan info, al da ne bude prenatrpano.
 
@@ -56,3 +59,14 @@ tabela koja ce da prati koji su sve zadaci template zadaci i to trenutno aktivni
 
 - ime ovakvih taskova ne moze biti promenjeno! i lokacija! ali vreme i broj ljudi itd moze? idk 
 
+
+
+===========================================================================
+# LOGIKA APLIKACIJE
+
+getPredefinedTasks(auth, groupId)
+    - u slucaju kreiranja s ovim, samo cemo napraviti task objekat od predefinisanog, i dodati ga u predefined_existing
+
+
+
+createTask -> prima Task objekat

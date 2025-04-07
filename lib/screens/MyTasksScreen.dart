@@ -209,7 +209,8 @@ class _MyTasksState extends State<MyTasks> {
   @override
   void initState() {
     super.initState();
-    _tasksFuture = getAllTaskWithUsers();
+    _tasksFuture =
+        getAllTaskWithUsers(); // todo: promeniti u getUserTasksWithStatus...
   }
 
   @override
