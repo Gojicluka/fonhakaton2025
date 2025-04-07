@@ -6,4 +6,12 @@ class Global {
   static void setUser(UserModel? user) {
     Global.user = user;
   }
+
+  static String getUsername() {
+    if (Global.user != null) {
+      return Global.user!.nickname;
+    } else {
+      return "none";
+    }
+  }
 }

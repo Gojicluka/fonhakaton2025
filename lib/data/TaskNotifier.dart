@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 import 'package:fonhakaton2025/data/global.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,11 +21,16 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
   /// Fetch all undone tasks from Supabase excluding ones the user has applied to
   Future<void> fetchTasks() async {
-    final response = await Supabase.instance.client
-        .from('tasks')
-        .select('*')        // .not('id', 'in',
-        //     '(SELECT COALESCE((SELECT task_id FROM task_users WHERE user_id = $userId), 0))')
-        .order('task_id', ascending: false);
+    // changed to use API function.
+
+    // is a dynamic map <string,dynamic>
+    final response = await getAllAvailableTasks(Global.getUsername());
+
+    // final response = await Supabase.instance.client
+    //     .from('tasks')
+    //     .select('*')        // .not('id', 'in',
+    //     //     '(SELECT COALESCE((SELECT task_id FROM task_users WHERE user_id = $userId), 0))')
+    //     .order('task_id', ascending: false);
     state = response;
   }
 
@@ -32,7 +38,7 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
   void listenForNewTasks() {
     Supabase.instance.client
         .from('tasks')
-        .stream(primaryKey: ['tadk_id']).listen((data) {
+        .stream(primaryKey: ['task_id']).listen((data) {
       fetchTasks(); // Refresh task list when a new task is added
     });
   }

@@ -4,6 +4,7 @@ import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/models/combined/taskWithState.dart';
 import 'package:fonhakaton2025/data/models/user.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
+// import 'package:postgrest/src/types.dart';
 import 'package:supabase/src/supabase_client.dart';
 
 //////// STRUCTURES
@@ -32,23 +33,58 @@ class ReturnMessage {
 
 // helper functions
 
-Future<List<int>> getTasksCreatedBy(
-    SupabaseClient supabase, String nickname) async {
+Future<List<int>> getTasksCreatedBy(String nickname) async {
+  final supabase = SupabaseHelper.supabase;
+
   final List<Map<String, dynamic>> userTasks =
       await supabase.from('tasks').select('task_id').eq('created_by', nickname);
   return userTasks.map((task) => task['task_id'] as int).toList();
+}
+
+Future<List<int>> getUserTaskIds(String nickname) async {
+  final supabase = SupabaseHelper.supabase;
+
+  final List<Map<String, dynamic>> userTasks = await supabase
+      .from('user_task')
+      .select('task_id')
+      .eq('nickname', nickname);
+  return userTasks.map((task) => task['task_id'] as int).toList();
+}
+
+Future<int> getUserUniversity(String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    final response = await supabase
+        .from('users')
+        .select('uni_id')
+        .eq('nickname', nickname)
+        .maybeSingle();
+
+    // todo check if username exists???
+    if (response == null) return -1;
+    return response['uni_id'] as int; // todo will this throw err?
+  } catch (e) {
+    print('Error fetching user: $e');
+    return -1;
+  }
 }
 
 ////////////////////////////////////////////////////////////////// TASKS
 /// todo: da li cemo znati koji user je ulogovan sve vreme, ili treba da fetchujem usera?
 
 /// Vraca sve aktivne globalne taskove koje igrac nije vec prihvatio
-Future<List<Task>> getAllAvailableTasks(String nickname) async {
+// Future<List<Task>> getAllAvailableTasks(String nickname) async {
+Future<List<Map<String, dynamic>>> getAllAvailableTasks(String nickname) async {
   final supabase = SupabaseHelper.supabase;
 
   // Fetch task_ids associated with the given nickname - both taken quests and made quests.
-  List<int> excludedTaskIds = await getUserTaskIds(supabase, nickname);
-  List<int> getTasksUserCreated = await getTasksCreatedBy(supabase, nickname);
+  List<int> excludedTaskIds = await getUserTaskIds(nickname);
+  List<int> getTasksUserCreated = await getTasksCreatedBy(nickname);
+  int userUniversity = await getUserUniversity(nickname);
+
+  print("excluded task ids $excludedTaskIds");
+  print("user created ids $getTasksUserCreated");
 
   // fetch user groups as a list
   final List<Map<String, dynamic>> userGroups = await supabase
@@ -58,7 +94,9 @@ Future<List<Task>> getAllAvailableTasks(String nickname) async {
 
   final List<int> userGroupsList =
       userGroups.map((task) => task['group_id'] as int).toList();
-  userGroupsList.add(Groups.NOGROUP as int);
+  userGroupsList.add(Groups.NOGROUP.index);
+
+  print("user groups $userGroupsList");
 
   // Fetch all tasks that are NOT in user_task and match user groups.
   final List<Map<String, dynamic>> response = await supabase
@@ -66,18 +104,11 @@ Future<List<Task>> getAllAvailableTasks(String nickname) async {
       .select()
       .not('task_id', 'in', excludedTaskIds)
       .not('task_id', 'in', getTasksUserCreated)
+      .eq('uni_id', userUniversity)
       .inFilter('group_id', userGroupsList);
 
-  return response.map((task) => Task.fromJson(task)).toList();
-}
-
-Future<List<int>> getUserTaskIds(
-    SupabaseClient supabase, String nickname) async {
-  final List<Map<String, dynamic>> userTasks = await supabase
-      .from('user_task')
-      .select('task_id')
-      .eq('nickname', nickname);
-  return userTasks.map((task) => task['task_id'] as int).toList();
+  // return response.map((task) => Task.fromJson(task)).toList();
+  return response;
 }
 
 /// Daje sve taskove za odredjenu grupu (vraca [] ako grupa ne postoji)
@@ -98,14 +129,16 @@ Future<List<Task>> getAllAvailableTasksFilter(
   }
 
   // Fetch task_ids associated with the given nickname
-  List<int> excludedTaskIds = await getUserTaskIds(supabase, nickname);
-  List<int> getTasksUserCreated = await getTasksCreatedBy(supabase, nickname);
+  List<int> excludedTaskIds = await getUserTaskIds(nickname);
+  List<int> getTasksUserCreated = await getTasksCreatedBy(nickname);
+  int userUniversity = await getUserUniversity(nickname);
 
   // Fetch global tasks that are NOT in user_task
   final List<Map<String, dynamic>> response = await supabase
       .from('tasks')
       .select()
       .eq("group_id", groupId)
+      .eq('uni_id', userUniversity)
       .not("task_id", 'in', getTasksUserCreated)
       .not('task_id', 'in', excludedTaskIds);
 
@@ -156,7 +189,7 @@ Future<ReturnMessage> createTask(Task task) async {
 /////////////////////////////////////////////////////////////// USER_TASKS
 
 /// Gets all tasks with the given STATUS code.
-Future<List<TaskWithState>> getUserTasksWithStatus(
+Future<List<Task>> getUserTasksWithStatus(
     String nickname, TaskStatus status) async {
   // final doing_id = 1; // todo change!
   final supabase = SupabaseHelper.supabase;
@@ -172,7 +205,7 @@ Future<List<TaskWithState>> getUserTasksWithStatus(
   final List<Map<String, dynamic>> response =
       await supabase.from('tasks').select().inFilter('task_id', taskIdsList);
 
-  return response.map((task) => TaskWithState.fromJson(task)).toList();
+  return response.map((task) => Task.fromJson(task)).toList();
 }
 
 /// stvara ulaz u tabelu task_user, sa statusom "doing"
@@ -180,8 +213,10 @@ Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
   try {
     final supabase = SupabaseHelper.supabase;
 
-    final response = await supabase.from('user_task').insert(
-        {'nickname': nickname, 'task_id': taskId, 'status': TaskStatus.DOING});
+    final response = await supabase.from('user_task').insert({
+      'nickname': nickname,
+      'task_id': taskId
+    }); // , 'status': TaskStatus.DOING
     if (response.error != null) {
       return ReturnMessage(
           success: false,
@@ -190,7 +225,7 @@ Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
     }
 
     // update pplDoing by 1.
-    var updateDoing = await updateTaskPeopleDoing(supabase, taskId, 1);
+    var updateDoing = await updateTaskPeopleDoing(taskId, 1);
 
     if (updateDoing.error != null) {
       return ReturnMessage(
@@ -209,21 +244,17 @@ Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
   }
 }
 
-Future<dynamic> updateTaskPeopleDoing(
-    SupabaseClient supabase, int taskId, int amount) async {
-  final updateDoing = await supabase.from('tasks').update({
-    'ppl_doing': supabase
-        .rpc('increment', params: {'column': 'ppl_doing', 'amount': amount})
-  }).eq('task_id', taskId);
+Future<dynamic> updateTaskPeopleDoing(int taskId, int amount) async {
+  final supabase = SupabaseHelper.supabase;
+  final updateDoing = await supabase.rpc('increment_ppl_doing',
+      params: {'given_task_id': taskId, 'amount': amount});
   return updateDoing;
 }
 
 Future<dynamic> updateTaskPeopleSubmitted(
     SupabaseClient supabase, int taskId, int amount) async {
-  final updateSubmitted = await supabase.from('tasks').update({
-    'ppl_submitted': supabase
-        .rpc('increment', params: {'column': 'ppl_submitted', 'amount': 1})
-  }).eq('task_id', taskId);
+  final updateSubmitted = await supabase.rpc('increment_ppl_submitted',
+      params: {'given_task_id': taskId, 'amount': amount});
   return updateSubmitted;
 }
 
@@ -294,7 +325,7 @@ Future<ReturnMessage> deleteUserTask(String nickname, int taskId) async {
     }
 
     // make it so that one person less is doing the task.
-    var updateDoing = await updateTaskPeopleDoing(supabase, taskId, -1);
+    var updateDoing = await updateTaskPeopleDoing(taskId, -1);
 
     if (updateDoing.error != null) {
       return ReturnMessage(
@@ -343,11 +374,8 @@ Future<ReturnMessage> updateUserXP(String nickname, int amount) async {
   try {
     final supabase = SupabaseHelper.supabase;
 
-    final response = await supabase.from('users').update({
-      'xp':
-          supabase.rpc('increment', params: {'column': 'xp', 'amount': amount})
-    }).eq('nickname', nickname);
-
+    final response = await supabase.rpc('increment_user_xp',
+        params: {'given_nickname': nickname, 'amount': amount});
     if (response.error != null) {
       return ReturnMessage(
           success: false,
@@ -490,7 +518,8 @@ Future<ReturnMessage> deleteDeterminedExisting(
 }
 
 /// Checks if a user is assigned to a specific task
-Future<bool> isUserOnTask({required String? user_nickname, required int task_id}) async {
+Future<bool> isUserOnTask(
+    {required String? user_nickname, required int task_id}) async {
   return false; // todo implement this
 }
 

@@ -13,6 +13,10 @@ import "package:fonhakaton2025/data/task_completion/task_completion.dart";
 import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 
 void _acceptTask(BuildContext context, Task task) async {
+  final message = await createUserTask(Global.getUsername(), task.taskId);
+  print(message.message);
+  Navigator.pop(context);
+
   // Adds the selected task to a list of active tasks
   //activeTasks.add(task);
 
@@ -361,8 +365,7 @@ class _TaskScreenState extends State<TaskScreen> {
                       const SizedBox(width: 12),
                       const Icon(Icons.people, color: Colors.white, size: 18),
                       const SizedBox(width: 4),
-                      Text(
-                          "${widget.task.pplDoing}/${widget.task.pplNeeded}",
+                      Text("${widget.task.pplDoing}/${widget.task.pplNeeded}",
                           style: const TextStyle(
                               fontSize: 18, color: Colors.white)),
                     ],
