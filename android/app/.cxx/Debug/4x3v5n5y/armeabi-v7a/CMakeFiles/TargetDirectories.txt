@@ -1,2 +1,0 @@
-C:/Users/irena/OneDrive/Desktop/BLOKADNI HAKATON/fonhakaton2025/android/app/.cxx/Debug/4x3v5n5y/armeabi-v7a/CMakeFiles/edit_cache.dir
-C:/Users/irena/OneDrive/Desktop/BLOKADNI HAKATON/fonhakaton2025/android/app/.cxx/Debug/4x3v5n5y/armeabi-v7a/CMakeFiles/rebuild_cache.dir
