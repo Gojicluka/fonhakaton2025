@@ -121,16 +121,9 @@ class PublicTaskPage extends ConsumerWidget {
               itemCount: tasks.length,
               itemBuilder: (context, index) {
                 final taskJson = tasks[index] as Map<String, dynamic>;
-
                 final task = Task.fromJson(taskJson);
                 //return TaskWidget(task: task, isReported: false);
-                return FutureBuilder<bool>(
-                  future: isUserOnTask(user_nickname:  Global.user!.nickname,task_id: task.taskId),
-                  builder: (context, snapshot) {
-                    final isReported = snapshot.data ?? false;
-                    return TaskScreen(task: task, isReported: isReported);
-                  },
-                );
+                return TaskScreen(task: task, isReported: false);
               },
             ),
           ),

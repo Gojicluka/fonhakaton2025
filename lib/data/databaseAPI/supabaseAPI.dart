@@ -488,3 +488,17 @@ Future<ReturnMessage> deleteDeterminedExisting(
         success: false, statusCode: 500, message: "Exception: $e");
   }
 }
+
+/// Checks if a user is assigned to a specific task
+Future<bool> isUserOnTask({required String? user_nickname, required int task_id}) async {
+  return false; // todo implement this
+}
+
+Future<List<TaskWithUser>> getAllTaskWithUsers() async {
+  return []; // todo implement this
+}
+
+/// Inserts a new task into the database
+Future<bool> insertTask(Task task) async {
+  return true;
+}

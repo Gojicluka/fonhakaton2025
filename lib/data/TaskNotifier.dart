@@ -22,11 +22,9 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
   Future<void> fetchTasks() async {
     final response = await Supabase.instance.client
         .from('tasks')
-        .select('*')
-        .eq('done', false) // Only fetch undone tasks
-        // .not('id', 'in',
+        .select('*')        // .not('id', 'in',
         //     '(SELECT COALESCE((SELECT task_id FROM task_users WHERE user_id = $userId), 0))')
-        .order('id', ascending: false);
+        .order('task_id', ascending: false);
     state = response;
   }
 
@@ -34,7 +32,7 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
   void listenForNewTasks() {
     Supabase.instance.client
         .from('tasks')
-        .stream(primaryKey: ['id']).listen((data) {
+        .stream(primaryKey: ['tadk_id']).listen((data) {
       fetchTasks(); // Refresh task list when a new task is added
     });
   }
