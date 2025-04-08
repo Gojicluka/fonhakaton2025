@@ -28,9 +28,7 @@ void main() {
 
     print('Fetched tasks: $response');
 
-    for (var task in response) {
-      print('Task name: ${task.name}');
-    }
+    for (var task in response) {}
 
     expect(response, isNotEmpty);
   });

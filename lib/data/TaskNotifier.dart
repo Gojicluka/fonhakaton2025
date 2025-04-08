@@ -39,7 +39,6 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
     Supabase.instance.client
         .from('tasks')
         .stream(primaryKey: ['task_id']).listen((data) {
-      print(data);
       fetchTasks(); // Refresh task list when a new task is added
     });
   }

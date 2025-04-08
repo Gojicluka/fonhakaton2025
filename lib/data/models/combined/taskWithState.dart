@@ -22,7 +22,7 @@ class TaskWithState {
   final String userDoing;
   final String evalDescription;
   final String imageEvidence;
-  final String stateId; // this is string enum in supabase table.
+  final String stateId; // this is string enum in supabase table  .
   TaskWithState({
     required this.taskId,
     required this.name,
@@ -45,6 +45,14 @@ class TaskWithState {
     required this.imageEvidence,
     required this.stateId,
   });
+
+  bool isApproved() {
+    return this.stateId == "accepted";
+  }
+
+  bool isDenied() {
+    return this.stateId == "denied";
+  }
 
   factory TaskWithState.fromJson(Map<String, dynamic> json) {
     return TaskWithState(

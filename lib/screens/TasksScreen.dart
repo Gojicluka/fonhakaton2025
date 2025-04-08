@@ -14,6 +14,9 @@ import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 
 void _acceptTask(BuildContext context, Task task) async {
   final message = await createUserTask(Global.getUsername(), task.taskId);
+  // listener se ne azurira lepo zapravo, trebalo bi da se refrehsuje i kad se promeni user_task i kad se promeni tasks
+  // todo !!
+
   print(message.message);
   Navigator.pop(context);
 

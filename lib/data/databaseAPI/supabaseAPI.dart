@@ -202,6 +202,7 @@ Future<List<TaskWithState>> getTaskWithStateWithStatus(
     String nickname, TaskStatus statusId) async {
   // final doing_id = 1; // todo change!
   final supabase = SupabaseHelper.supabase;
+
   final List<Map<String, dynamic>> taskIds = await supabase
       .from('user_task')
       .select('task_id')
@@ -211,12 +212,17 @@ Future<List<TaskWithState>> getTaskWithStateWithStatus(
   final List<int> taskIdsList =
       taskIds.map((task) => task['task_id'] as int).toList();
 
+  print(statusToStringArr[statusId.index]);
+
+  print(taskIdsList);
+
   /// mozda dodaj * ??
   final List<Map<String, dynamic>> response = await supabase
       .from('user_task')
       .select('nickname, state_id,image_evidence,eval_description,tasks()')
       .inFilter('task_id', taskIdsList);
 
+  print(response);
   return response.map((task) => TaskWithState.fromJson(task)).toList();
 }
 
