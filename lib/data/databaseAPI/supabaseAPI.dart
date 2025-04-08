@@ -16,6 +16,15 @@ enum TaskStatus { _, DOING, PENDING, ACCEPTED, DENIED, WAITING_DELETE }
 
 enum Groups { NOGROUP, ADDMORE }
 
+List<String> statusToStringArr = [
+  "",
+  "doing",
+  "pending",
+  "accepted",
+  "denied",
+  "waiting_delete"
+];
+
 class ReturnMessage {
   final bool success;
   final int statusCode;
@@ -188,31 +197,69 @@ Future<ReturnMessage> createTask(Task task) async {
 
 /////////////////////////////////////////////////////////////// USER_TASKS
 
-/// Gets all tasks with the given STATUS code.
-Future<List<Task>> getUserTasksWithStatus(
-    String nickname, TaskStatus status) async {
+/// Gets all tasks with the given STATUS code.   8apr change
+Future<List<TaskWithState>> getTaskWithStateWithStatus(
+    String nickname, TaskStatus statusId) async {
   // final doing_id = 1; // todo change!
   final supabase = SupabaseHelper.supabase;
   final List<Map<String, dynamic>> taskIds = await supabase
       .from('user_task')
       .select('task_id')
-      .eq('state_id', status)
+      .eq('state_id', statusToStringArr[statusId.index])
       .eq('nickname', nickname);
 
   final List<int> taskIdsList =
       taskIds.map((task) => task['task_id'] as int).toList();
 
-  final List<Map<String, dynamic>> response =
-      await supabase.from('tasks').select().inFilter('task_id', taskIdsList);
+  /// mozda dodaj * ??
+  final List<Map<String, dynamic>> response = await supabase
+      .from('user_task')
+      .select('nickname, state_id,image_evidence,eval_description,tasks()')
+      .inFilter('task_id', taskIdsList);
 
-  return response.map((task) => Task.fromJson(task)).toList();
+  return response.map((task) => TaskWithState.fromJson(task)).toList();
 }
+
+// todo apr8
+
+Future<List<TaskWithState>> getTaskWithStateToEvaluate(String nickname) async {
+  final statusId = TaskStatus.PENDING; // todo change!
+  final supabase = SupabaseHelper.supabase;
+
+  final List<int> tasksCreated = await getTasksCreatedBy(nickname);
+
+  /// mozda dodaj * ??
+  final List<Map<String, dynamic>> response = await supabase
+      .from('user_task')
+      .select('nickname, state_id,image_evidence,eval_description,tasks(*)')
+      .inFilter('task_id', tasksCreated)
+      .eq('state_id', statusToStringArr[statusId.index]);
+
+  return response.map((task) => TaskWithState.fromJson(task)).toList();
+}
+
+Future<List<TaskWithState>> getTaskWithStateToConfirm(String nickname) async {
+  final supabase = SupabaseHelper.supabase;
+
+  /// mozda dodaj * ??
+  final List<Map<String, dynamic>> response = await supabase
+      .from('user_task')
+      .select('nickname, state_id,image_evidence,eval_description,tasks(*)')
+      .eq('nickname', nickname)
+      .inFilter('state_id', [
+    statusToStringArr[TaskStatus.ACCEPTED.index],
+    statusToStringArr[TaskStatus.DENIED.index]
+  ]);
+
+  return response.map((task) => TaskWithState.fromJson(task)).toList();
+}
+
+// todo apr8
 
 /// stvara ulaz u tabelu task_user, sa statusom "doing"
 Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
   try {
     final supabase = SupabaseHelper.supabase;
-
     final response = await supabase.from('user_task').insert({
       'nickname': nickname,
       'task_id': taskId
@@ -260,20 +307,20 @@ Future<dynamic> updateTaskPeopleSubmitted(
 
 /// Update user task to given status. if updating to submitted -> update ppl_submitted
 Future<ReturnMessage> UpdateUserTaskStatus(
-    String nickname, int taskId, TaskStatus newStatus) async {
+    String nickname, int taskId, TaskStatus newStatusId) async {
   try {
     final supabase = SupabaseHelper.supabase;
 
-    if (!TaskStatus.values.contains(newStatus)) {
+    if (!TaskStatus.values.contains(newStatusId)) {
       return ReturnMessage(
           success: false,
           statusCode: 400,
-          message: "Invalid status given: $newStatus");
+          message: "Invalid status given: $newStatusId");
     }
 
-    final response = await supabase
-        .from('user_task')
-        .update({'state_id': newStatus.index}) // Use integer value of enum
+    final response = await supabase.from('user_task').update({
+      'state_id': statusToStringArr[newStatusId.index]
+    }) // Use integer value of enum
         .match({
       'task_id': taskId,
       'nickname': nickname
@@ -286,13 +333,14 @@ Future<ReturnMessage> UpdateUserTaskStatus(
           message: "Database error: ${response.error!.message}");
     }
 
-    if (newStatus == TaskStatus.PENDING) {
+    if (newStatusId == TaskStatus.PENDING) {
       final response = await updateTaskPeopleSubmitted(supabase, taskId, 1);
       if (response.error != null) {
         print("nooo");
       }
     }
-    if (newStatus == TaskStatus.DENIED || newStatus == TaskStatus.ACCEPTED) {
+    if (newStatusId == TaskStatus.DENIED ||
+        newStatusId == TaskStatus.ACCEPTED) {
       final response = await updateTaskPeopleSubmitted(supabase, taskId, -1);
       if (response.error != null) {
         print("nooo");

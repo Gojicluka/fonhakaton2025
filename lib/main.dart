@@ -94,7 +94,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   fontSize: 18,
                 ),
               ),
-                AnimatedDefaultTextStyle(
+              AnimatedDefaultTextStyle(
                 style: TextStyle(
                   fontSize: xpAnimation ? 18 : 14,
                   color: xpAnimation ? Colors.green : Colors.grey[500],
@@ -167,7 +167,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   final List<Widget> _screens = [
     PublicTaskPage(),
-    MyTasks(),
+    PublicTaskPage(),
+    // FutureTaskSegment(), todo reimplement
     LeaderboardPage(),
     ProfilePage(),
     NewTaskChoiceScreen(), // Add this
