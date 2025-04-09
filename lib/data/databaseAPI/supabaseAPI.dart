@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:fonhakaton2025/data/models/TasksPredetermined.dart';
 import 'package:fonhakaton2025/data/models/combined/taskWithUser.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
@@ -6,6 +7,8 @@ import 'package:fonhakaton2025/data/models/user.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
 // import 'package:postgrest/src/types.dart';
 import 'package:supabase/src/supabase_client.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:path/path.dart' as path;
 
 //////// STRUCTURES
 
@@ -15,6 +18,9 @@ import 'package:supabase/src/supabase_client.dart';
 enum TaskStatus { DOING, PENDING, ACCEPTED, DENIED, WAITING_DELETE }
 
 enum Groups { NOGROUP, ADDMORE }
+
+// bucket names for storage
+final String TASKCOMPLETIONS_BUCKET_NAME = "taskcompletions";
 
 List<String> statusToStringArr = [
   "doing",
@@ -280,17 +286,6 @@ Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
           statusCode: 500,
           message: "Database error: ${response.error!.message}");
     }
-
-    // // update pplDoing by 1.
-    // var updateDoing = await updateTaskPeopleDoing(taskId, 1);
-
-    // if (updateDoing.error != null) {
-    //   return ReturnMessage(
-    //       success: false,
-    //       statusCode: 500,
-    //       message: "Database error: ${response.error!.message}");
-    // }
-
     return ReturnMessage(
         success: true,
         statusCode: 200,
@@ -303,6 +298,7 @@ Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
   }
 }
 
+// todo warn : Da li ce ovo biti sinhronizacioni problem ako vise usera istovremeno bude radilo stvari?
 Future<dynamic> updateTaskPeopleDoing(int taskId, int toValue) async {
   try {
     final supabase = SupabaseHelper.supabase;
@@ -319,11 +315,99 @@ Future<dynamic> updateTaskPeopleDoing(int taskId, int toValue) async {
   }
 }
 
-Future<dynamic> updateTaskPeopleSubmitted(
-    SupabaseClient supabase, int taskId, int amount) async {
+Future<dynamic> updateTaskPeopleSubmitted(int taskId, int amount) async {
+  final supabase = SupabaseHelper.supabase;
   final updateSubmitted = await supabase.rpc('increment_ppl_submitted',
       params: {'given_task_id': taskId, 'amount': amount});
   return updateSubmitted;
+}
+
+// apr 9 todo
+Future<ReturnMessage> submitUserTask(
+    {required String nickname,
+    required int taskId,
+    required File imageEvidence}) async {
+  final supabase = SupabaseHelper.supabase;
+
+  // upload the photo first
+  final photoUrl = await uploadPhotoToSupabase(imageEvidence);
+  if (photoUrl == null) {
+    return ReturnMessage(
+        success: false,
+        statusCode: 500,
+        message: "error in submitUserTask: photo url is null.");
+  }
+
+  // Then create the task-user relationship
+  final response = await supabase.from('user_task').update({
+    'state_id': statusToStringArr[TaskStatus.PENDING.index],
+    'image_evidence': photoUrl
+  }) // Use integer value of enum
+      .match({
+    'task_id': taskId,
+    'nickname': nickname
+  }); // Ensure both are included
+
+  if (response.error != null) {
+    return ReturnMessage(
+        success: false,
+        statusCode: 500,
+        message: "Database error: ${response.error!.message}");
+  }
+
+  return ReturnMessage(
+      success: true,
+      statusCode: 200,
+      message: "UserTask submitted successfully");
+}
+
+// Future<bool> submitTaskCompletion({
+//   required File imageFile,
+//   required int taskId,
+//   required int userId,
+//   String? description,
+// }) async {
+//   // First upload the photo
+//   final photoUrl = await uploadPhotoToSupabase(imageFile);
+//   if (photoUrl == null) return false;
+
+//   // Then create the task-user relationship
+//   return await SupabaseHelper.addUserToTask(
+//     taskId: taskId,
+//     userId: userId,
+//     photo: photoUrl,
+//     description: description,
+//   );
+// }
+
+Future<String?> uploadPhotoToSupabase(File imageFile) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+    final fileName = path.basename(imageFile.path);
+    final uniqueFileName = '${DateTime.now().millisecondsSinceEpoch}_$fileName';
+
+    // Upload the file to Supabase storage
+    final response = await supabase.storage
+        .from(TASKCOMPLETIONS_BUCKET_NAME) // Replace with your bucket name
+        .upload(
+          uniqueFileName,
+          imageFile,
+          fileOptions: const FileOptions(
+            cacheControl: '3600',
+            upsert: false,
+          ),
+        );
+
+    // Get the public URL of the uploaded file
+    final String publicUrl = supabase.storage
+        .from(TASKCOMPLETIONS_BUCKET_NAME)
+        .getPublicUrl(uniqueFileName);
+
+    return publicUrl;
+  } catch (e) {
+    print('Error uploading image: $e');
+    return null;
+  }
 }
 
 /// Update user task to given status. if updating to submitted -> update ppl_submitted
@@ -355,14 +439,14 @@ Future<ReturnMessage> UpdateUserTaskStatus(
     }
 
     if (newStatusId == TaskStatus.PENDING) {
-      final response = await updateTaskPeopleSubmitted(supabase, taskId, 1);
+      final response = await updateTaskPeopleSubmitted(taskId, 1);
       if (response.error != null) {
         print("nooo");
       }
     }
     if (newStatusId == TaskStatus.DENIED ||
         newStatusId == TaskStatus.ACCEPTED) {
-      final response = await updateTaskPeopleSubmitted(supabase, taskId, -1);
+      final response = await updateTaskPeopleSubmitted(taskId, -1);
       if (response.error != null) {
         print("nooo");
       }
