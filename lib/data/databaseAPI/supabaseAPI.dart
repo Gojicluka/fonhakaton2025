@@ -306,7 +306,7 @@ Future<List<TaskWithState>> getTaskWithStateToConfirm(String nickname) async {
 
 // todo apr8
 
-/// stvara ulaz u tabelu task_user, sa statusom "doing"
+/// stvara ulaz u tabelu task_user, sa statusom "doing", i povecava peopleDoing za 1.
 Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
   try {
     final supabase = SupabaseHelper.supabase;
@@ -316,6 +316,7 @@ Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
       'state_id': statusToStringArr[TaskStatus.DOING.index]
     }); // , 'status': TaskStatus.DOING
 
+    await updateTaskPeopleDoing(taskId, 1);
     // if (response == null || response.error != null) {
     //   return ReturnMessage(
     //       success: false,
@@ -335,7 +336,7 @@ Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
 }
 
 // todo warn : Da li ce ovo biti sinhronizacioni problem ako vise usera istovremeno bude radilo stvari?
-Future<dynamic> updateTaskPeopleDoing(int taskId, int toValue) async {
+Future<dynamic> updateTaskPeopleDoingNoRPC(int taskId, int toValue) async {
   try {
     final supabase = SupabaseHelper.supabase;
     final updateDoing = await supabase
@@ -350,6 +351,21 @@ Future<dynamic> updateTaskPeopleDoing(int taskId, int toValue) async {
         success: false,
         statusCode: 500,
         message: "Exception updateTaskPeopleDoing: $e");
+  }
+}
+
+Future<dynamic> updateTaskPeopleDoing(int taskId, int amount) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+    final updateSubmitted = await supabase.rpc('increment_ppl_doing',
+        params: {'given_task_id': taskId, 'amount': amount});
+    return updateSubmitted;
+  } catch (e) {
+    print("Error in updateTaskPeopleDoing: $e");
+    return ReturnMessage(
+        success: false,
+        statusCode: 500,
+        message: "Exception in updateTaskPeopleDoing: $e");
   }
 }
 
@@ -369,6 +385,91 @@ Future<dynamic> updateTaskPeopleSubmitted(int taskId, int amount) async {
 }
 
 // apr 9 todo
+
+// Future<ReturnMessage> approveTaskCompletion() async {
+
+// }
+
+Future<ReturnMessage> acceptUserTask(
+    {required String nickname,
+    required int taskId,
+    required String evalDescription}) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Then create the task-user relationship
+    final response = await supabase.from('user_task').update({
+      'state_id': statusToStringArr[TaskStatus.ACCEPTED.index],
+      'eval_description': evalDescription
+    }) // Use integer value of enum
+        .match({
+      'task_id': taskId,
+      'nickname': nickname
+    }); // Ensure both are included
+
+    // await updateTaskPeopleSubmitted(taskId, -1);
+    // people completed todo???
+
+    // if (response.error != null) {
+    //   return ReturnMessage(
+    //       success: false,
+    //       statusCode: 500,
+    //       message: "Database error: ${response.error!.message}");
+    // }
+
+    return ReturnMessage(
+        success: true,
+        statusCode: 200,
+        message: "acceptUserTask submitted successfully");
+  } catch (e) {
+    print("Error in acceptUserTask: $e");
+    return ReturnMessage(
+        success: false,
+        statusCode: 500,
+        message: "Exception in acceptUserTask: $e");
+  }
+}
+
+Future<ReturnMessage> denyUserTask(
+    {required String nickname,
+    required int taskId,
+    required String evalDescription}) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Then create the task-user relationship
+    final response = await supabase.from('user_task').update({
+      'state_id': statusToStringArr[TaskStatus.DENIED.index],
+      'eval_description': evalDescription
+    }) // Use integer value of enum
+        .match({
+      'task_id': taskId,
+      'nickname': nickname
+    }); // Ensure both are included
+
+    await updateTaskPeopleSubmitted(taskId, -1);
+    // people completed todo???
+
+    // if (response.error != null) {
+    //   return ReturnMessage(
+    //       success: false,
+    //       statusCode: 500,
+    //       message: "Database error: ${response.error!.message}");
+    // }
+
+    return ReturnMessage(
+        success: true,
+        statusCode: 200,
+        message: "denyUserTask submitted successfully");
+  } catch (e) {
+    print("Error in denyUserTask: $e");
+    return ReturnMessage(
+        success: false,
+        statusCode: 500,
+        message: "Exception in denyUserTask: $e");
+  }
+}
+
 Future<ReturnMessage> submitUserTask(
     {required String nickname,
     required int taskId,
@@ -395,12 +496,15 @@ Future<ReturnMessage> submitUserTask(
       'nickname': nickname
     }); // Ensure both are included
 
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
+    await updateTaskPeopleDoing(taskId, -1);
+    await updateTaskPeopleSubmitted(taskId, 1);
+
+    // if (response.error != null) {
+    //   return ReturnMessage(
+    //       success: false,
+    //       statusCode: 500,
+    //       message: "Database error: ${response.error!.message}");
+    // }
 
     return ReturnMessage(
         success: true,
@@ -508,12 +612,12 @@ Future<ReturnMessage> deleteUserTask(String nickname, int taskId) async {
     final response = await supabase.from('user_task').delete().match(
         {'task_id': taskId, 'nickname': nickname}); // Ensure both are included
 
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
+    // if (response.error != null) {
+    //   return ReturnMessage(
+    //       success: false,
+    //       statusCode: 500,
+    //       message: "Database error: ${response.error!.message}");
+    // }
 
     // make it so that one person less is doing the task.
     var updateDoing = await updateTaskPeopleDoing(taskId, -1);

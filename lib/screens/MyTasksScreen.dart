@@ -871,12 +871,11 @@ void ShowMyPending(BuildContext context, TaskWithState task) {
 }
 
 void CancelTask(BuildContext context, TaskWithState task) {
-  // TODO: Send a request to the backend to mark the task as canceled
+  // Send a request to the backend to mark the task as canceled
   // the task is removed from the list of tasks, and the task is refreshed.
   // Example: api.cancelTask(task.id);
 
   deleteUserTask(Global.getUsername(), task.taskId);
-  updateTaskPeopleDoing(task.taskId, task.pplDoing - 1);
 
   Navigator.pop(context);
 }
@@ -893,8 +892,6 @@ void CompleteTask(BuildContext context, TaskWithState task) async {
         nickname: Global.getUsername(),
         taskId: task.taskId,
         imageEvidence: _image);
-    updateTaskPeopleDoing(task.taskId, task.pplDoing - 1);
-    updateTaskPeopleSubmitted(task.taskId, 1);
   } else {
     print("no image captured");
   }
@@ -925,8 +922,14 @@ void denySubmittedTask(BuildContext context, TaskWithState task) async {
   // update the number of people who completed the quest! maybe change the ppl count system a bit.
   // todo: implement a text bubble where the user evaluating can add their comment (not required)
 
-  // await denyUserTask(taskId: task.taskId, userId: task.userId);
-  // Navigator.pop(context);
+  print("button denySubmittedTask pressed");
+  String evalDescription = "TODO: Make a bubble to leave a description at!";
+  final message = await denyUserTask(
+      taskId: task.taskId,
+      nickname: Global.getUsername(),
+      evalDescription: evalDescription);
+  print(message.message);
+  Navigator.pop(context);
 }
 
 void acceptSubmittedTask(BuildContext context, TaskWithState task) async {
@@ -934,8 +937,12 @@ void acceptSubmittedTask(BuildContext context, TaskWithState task) async {
   // update the number of people who completed the quest! maybe change the ppl count system a bit.
   // todo: implement a text bubble where the user evaluating can add their comment (not required)
 
-  // await acceptUserTask(taskId: task.taskId, userId: task.userId);
-  // Navigator.pop(context);
+  String evalDescription = "TODO: Make a bubble to leave a description at!";
+  await acceptUserTask(
+      taskId: task.taskId,
+      nickname: Global.getUsername(),
+      evalDescription: evalDescription);
+  Navigator.pop(context);
 }
 
 

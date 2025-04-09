@@ -31,8 +31,6 @@ void _acceptTask(BuildContext context, Task task) async {
   // listener se ne azurira lepo zapravo, trebalo bi da se refrehsuje i kad se promeni user_task i kad se promeni tasks
   // todo !!
 
-  var updateDoing = await updateTaskPeopleDoing(task.taskId, task.pplDoing + 1);
-
   print("message: ${message.message}");
   Navigator.pop(context);
   // setState(() {});
@@ -86,12 +84,14 @@ class PublicTaskPage extends StatelessWidget {
                 children: [
                   // First Tab Content
                   TaskListView(
-                    taskProvider: taskProvider, // Replace with the appropriate provider
+                    taskProvider:
+                        taskProvider, // Replace with the appropriate provider
                     title: 'Svi zadaci',
                   ),
                   // Second Tab Content
                   TaskListView(
-                    taskProvider: groupTaskProvider, // Replace with the appropriate provider
+                    taskProvider:
+                        groupTaskProvider, // Replace with the appropriate provider
                     title: 'Zadaci radne grupe',
                   ),
                 ],
@@ -108,7 +108,8 @@ class TaskListView extends ConsumerWidget {
   final StateNotifierProvider taskProvider;
   final String title;
 
-  const TaskListView({super.key, required this.taskProvider, required this.title});
+  const TaskListView(
+      {super.key, required this.taskProvider, required this.title});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
