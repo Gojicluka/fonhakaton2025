@@ -8,9 +8,9 @@ final taskProvider =
   (ref) => TaskNotifier(),
 );
 
-final takenTaskProvider =
-    StateNotifierProvider<TaskNotifier, List<Map<String, dynamic>>>(
-  (ref) => TaskNotifier(),
+final groupTaskProvider =
+    StateNotifierProvider<GroupTaskNotifier, List<Map<String, dynamic>>>(
+  (ref) => GroupTaskNotifier(),
 );
 
 class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
@@ -26,16 +26,7 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
   /// Fetch all undone tasks from Supabase excluding ones the user has applied to
   Future<void> fetchTasks() async {
-    // changed to use API function.
-
-    // is a dynamic map <string,dynamic>
     final response = await getAllAvailableTasks(Global.getUsername());
-
-    // final response = await Supabase.instance.client
-    //     .from('tasks')
-    //     .select('*')        // .not('id', 'in',
-    //     //     '(SELECT COALESCE((SELECT task_id FROM task_users WHERE user_id = $userId), 0))')
-    //     .order('task_id', ascending: false);
     state = response;
   }
 
@@ -46,5 +37,13 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
         .stream(primaryKey: ['task_id']).listen((data) {
       fetchTasks(); // Refresh task list when a new task is added
     });
+  }
+}
+
+class GroupTaskNotifier extends TaskNotifier {
+  @override
+  Future<void> fetchTasks() async {
+    // final response = await getAllAvailableTasksFilter(Global.getUsername(), 0);
+    // state = response;
   }
 }

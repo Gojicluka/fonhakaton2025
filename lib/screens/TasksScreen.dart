@@ -63,82 +63,88 @@ void denyTask(BuildContext context, Task task) async {
   // Navigator.pop(context);
 }
 
-// class PendingTaskPage extends ConsumerWidget {
-//   PendingTaskPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final tasks = ref.watch(pendingTaskProvider);
-
-//     return Scaffold(
-//       body: Column(
-//         children: [
-//           const Padding(
-//             padding: EdgeInsets.all(16.0),
-//             child: Align(
-//               alignment: Alignment.centerLeft,
-//               child: Text(
-//                 'Pending tasks to approve',
-//                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-//               ),
-//             ),
-//           ),
-//           Expanded(
-//             child: ListView.builder(
-//               itemCount: tasks.length,
-//               itemBuilder: (context, index) {
-//                 final task = TaskWithUser.fromMap(tasks[index]);
-//                 return FutureBuilder<bool>(
-//                   future:
-//                       SupabaseHelper.isUserOnTask(task.taskId, Global.user!.id),
-//                   builder: (context, snapshot) {
-//                     final isReported = snapshot.data ?? false;
-//                     return PendingTaskWidget(task: task);
-//                   },
-//                 );
-//               },
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-class PublicTaskPage extends ConsumerWidget {
+class PublicTaskPage extends StatelessWidget {
   PublicTaskPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // used to OBTAIN THE FUTURE ?
-    dynamic tasks = ref.watch(taskProvider);
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2, // Number of tabs
+      child: Scaffold(
+        body: Column(
+          children: [
+            const TabBar(
+              labelColor: Colors.black,
+              indicatorColor: Color.fromARGB(255, 0, 0, 0),
+              tabs: [
+                Tab(icon: Icon(Icons.public), text: 'Svi zadaci'),
+                Tab(icon: Icon(Icons.work), text: 'Zadaci radne grupe'),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  // First Tab Content
+                  TaskListView(
+                    taskProvider: taskProvider, // Replace with the appropriate provider
+                    title: 'Svi zadaci',
+                  ),
+                  // Second Tab Content
+                  TaskListView(
+                    taskProvider: groupTaskProvider, // Replace with the appropriate provider
+                    title: 'Zadaci radne grupe',
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-    return Scaffold(
-      body: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Fakultetski zadaci',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+class TaskListView extends ConsumerWidget {
+  final StateNotifierProvider taskProvider;
+  final String title;
+
+  const TaskListView({super.key, required this.taskProvider, required this.title});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tasks = ref.watch(taskProvider);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Align(
+            alignment: Alignment.centerLeft, // Aligns the title to the left
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                final taskJson = tasks[index] as Map<String, dynamic>;
-                final task = Task.fromJson(taskJson);
-                //return TaskWidget(task: task, isReported: false);
-                return TaskScreen(task: task, isReported: false);
-              },
-            ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            itemCount: tasks.length,
+            itemBuilder: (context, index) {
+              final taskJson = tasks[index] as Map<String, dynamic>;
+              final task = Task.fromJson(taskJson);
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: TaskScreen(task: task, isReported: false),
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -391,199 +397,3 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 }
-
-// class PendingTaskWidget extends StatelessWidget {
-//   final Task task;
-
-//   const PendingTaskWidget({super.key, required this.task});
-
-//   String formatDuration(int minutes) {
-//     final int hours = minutes ~/ 60;
-//     final int remainingMinutes = minutes % 60;
-//     return "${hours.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')}";
-//   }
-
-//   void showTaskDialog(BuildContext context, Task task) {
-//     showDialog(
-//       context: context,
-//       builder: (context) => Dialog(
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(16),
-//           side: const BorderSide(color: Colors.amber, width: 3),
-//         ),
-//         child: Container(
-//           padding: const EdgeInsets.all(20),
-//           decoration: BoxDecoration(
-//             color: Color(int.parse(task.color
-//                 .replaceAll('#', '0xff'))), // Background color = Group color
-//             borderRadius: BorderRadius.circular(16),
-//           ),
-//           child: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               Text(
-//                 task.name,
-//                 textAlign: TextAlign.center,
-//                 style: const TextStyle(
-//                   fontSize: 22,
-//                   fontWeight: FontWeight.bold,
-//                   color: Colors.white,
-//                 ),
-//               ),
-//               const SizedBox(height: 12),
-//               Text(
-//                 task.description ?? "",
-//                 textAlign: TextAlign.center,
-//                 style: const TextStyle(fontSize: 18, color: Colors.white),
-//               ),
-//               const SizedBox(height: 20),
-//               if (task.place.length > 15) ...[
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     const Icon(Icons.location_on,
-//                         color: Colors.white, size: 24),
-//                     const SizedBox(width: 8),
-//                     Expanded(
-//                       child: Text(
-//                         task.place,
-//                         textAlign: TextAlign.center,
-//                         style:
-//                             const TextStyle(fontSize: 18, color: Colors.white),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 const SizedBox(height: 10),
-//                 Text(
-//                   "XP: ${task.xp}",
-//                   style: const TextStyle(fontSize: 18, color: Colors.white),
-//                 ),
-//               ] else ...[
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     const Icon(Icons.location_on,
-//                         color: Colors.white, size: 24),
-//                     const SizedBox(width: 8),
-//                     Text(
-//                       task.place,
-//                       style: const TextStyle(fontSize: 18, color: Colors.white),
-//                     ),
-//                     const SizedBox(width: 20),
-//                     Text(
-//                       "XP: ${task.xp}",
-//                       style: const TextStyle(fontSize: 18, color: Colors.white),
-//                     ),
-//                   ],
-//                 ),
-//               ],
-//               const SizedBox(height: 20),
-//               Column(
-//                 children: [
-//                   CircleAvatar(
-//                     radius: 40,
-//                     backgroundImage:
-//                         NetworkImage(task.image ?? ""), // User image
-//                   ),
-//                   const SizedBox(height: 16),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                     children: [
-//                       ElevatedButton(
-//                         onPressed: () => {denyTask(context, task)},
-//                         style: ElevatedButton.styleFrom(
-//                           backgroundColor: Colors.red,
-//                           padding: const EdgeInsets.symmetric(
-//                               horizontal: 20, vertical: 10),
-//                           shape: RoundedRectangleBorder(
-//                             borderRadius: BorderRadius.circular(12),
-//                           ),
-//                         ),
-//                         child: const Text('Deny',
-//                             style: TextStyle(color: Colors.white)),
-//                       ),
-//                       ElevatedButton(
-//                         onPressed: () => {approveTask(context, task)},
-//                         style: ElevatedButton.styleFrom(
-//                           backgroundColor: Colors.green,
-//                           padding: const EdgeInsets.symmetric(
-//                               horizontal: 20, vertical: 10),
-//                           shape: RoundedRectangleBorder(
-//                             borderRadius: BorderRadius.circular(12),
-//                           ),
-//                         ),
-//                         child: const Text('Accept',
-//                             style: TextStyle(color: Colors.white)),
-//                       ),
-//                     ],
-//                   ),
-//                 ],
-//               )
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: () => showTaskDialog(context, task),
-//       child: Container(
-//         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-//         padding: const EdgeInsets.all(16),
-//         decoration: BoxDecoration(
-//           color: Color(int.parse(
-//               task.color.replaceAll('#', '0xff'))), // Convert hex to color
-//           borderRadius: BorderRadius.circular(12),
-//         ),
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: [
-//             Icon(getIconFromString(task.iconName),
-//                 color: Colors.white, size: 30),
-//             Expanded(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.center,
-//                 children: [
-//                   Text(
-//                     task.name,
-//                     style: const TextStyle(
-//                       fontSize: 20,
-//                       fontWeight: FontWeight.bold,
-//                       color: Colors.white,
-//                     ),
-//                   ),
-//                   const SizedBox(height: 4),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: [
-//                       const Icon(Icons.star, color: Colors.white, size: 18),
-//                       const SizedBox(width: 4),
-//                       Text("XP: ${task.xp}",
-//                           style: const TextStyle(color: Colors.white)),
-//                       const SizedBox(width: 12),
-//                       const Icon(Icons.access_time,
-//                           color: Colors.white, size: 18),
-//                       const SizedBox(width: 4),
-//                       Text(formatDuration(task.durationInMinutes),
-//                           style: const TextStyle(color: Colors.white)),
-//                       const SizedBox(width: 12),
-//                       const Icon(Icons.people, color: Colors.white, size: 18),
-//                       const SizedBox(width: 4),
-//                       Text("${task.peopleApplied}/${task.peopleNeeded}",
-//                           style: const TextStyle(
-//                               fontSize: 18, color: Colors.white)),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
