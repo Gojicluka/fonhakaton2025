@@ -12,12 +12,11 @@ import 'package:supabase/src/supabase_client.dart';
 // todo: make it match the ID-s in database.
 // waiting_delete -> taskovi koji su prihvaceni i nagradjeni, ne vide se nigde, ali se brisu tek kada se obrise glavni task iz kog su nastali,
 // kako ne bi jedan user mogao da radi isti quest vise puta!
-enum TaskStatus { _, DOING, PENDING, ACCEPTED, DENIED, WAITING_DELETE }
+enum TaskStatus { DOING, PENDING, ACCEPTED, DENIED, WAITING_DELETE }
 
 enum Groups { NOGROUP, ADDMORE }
 
 List<String> statusToStringArr = [
-  "",
   "doing",
   "pending",
   "accepted",
@@ -213,17 +212,18 @@ Future<List<TaskWithState>> getTaskWithStateWithStatus(
       taskIds.map((task) => task['task_id'] as int).toList();
 
   print(statusToStringArr[statusId.index]);
-
   print(taskIdsList);
 
   /// mozda dodaj * ??
   final List<Map<String, dynamic>> response = await supabase
       .from('user_task')
-      .select('nickname, state_id,image_evidence,eval_description,tasks()')
+      .select(
+          'nickname, state_id,image_evidence,eval_description,tasks(*)') // wish we could format thiiis (wow) to the format i waaa-aant
       .inFilter('task_id', taskIdsList);
 
-  print(response);
-  return response.map((task) => TaskWithState.fromJson(task)).toList();
+  return response
+      .map((task) => TaskWithState.fromJoinJson(task, task["tasks"]))
+      .toList();
 }
 
 // todo apr8
@@ -234,30 +234,33 @@ Future<List<TaskWithState>> getTaskWithStateToEvaluate(String nickname) async {
 
   final List<int> tasksCreated = await getTasksCreatedBy(nickname);
 
-  /// mozda dodaj * ??
   final List<Map<String, dynamic>> response = await supabase
       .from('user_task')
       .select('nickname, state_id,image_evidence,eval_description,tasks(*)')
       .inFilter('task_id', tasksCreated)
       .eq('state_id', statusToStringArr[statusId.index]);
 
-  return response.map((task) => TaskWithState.fromJson(task)).toList();
+  return response
+      .map((task) => TaskWithState.fromJoinJson(task, task["tasks"]))
+      .toList();
 }
 
 Future<List<TaskWithState>> getTaskWithStateToConfirm(String nickname) async {
   final supabase = SupabaseHelper.supabase;
 
-  /// mozda dodaj * ??
   final List<Map<String, dynamic>> response = await supabase
       .from('user_task')
       .select('nickname, state_id,image_evidence,eval_description,tasks(*)')
       .eq('nickname', nickname)
       .inFilter('state_id', [
     statusToStringArr[TaskStatus.ACCEPTED.index],
-    statusToStringArr[TaskStatus.DENIED.index]
+    statusToStringArr[TaskStatus.DENIED.index],
+    statusToStringArr[TaskStatus.PENDING.index],
   ]);
 
-  return response.map((task) => TaskWithState.fromJson(task)).toList();
+  return response
+      .map((task) => TaskWithState.fromJoinJson(task, task["tasks"]))
+      .toList();
 }
 
 // todo apr8
@@ -268,24 +271,25 @@ Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
     final supabase = SupabaseHelper.supabase;
     final response = await supabase.from('user_task').insert({
       'nickname': nickname,
-      'task_id': taskId
+      'task_id': taskId,
+      'state_id': statusToStringArr[TaskStatus.DOING.index]
     }); // , 'status': TaskStatus.DOING
-    if (response.error != null) {
+    if (response != null && response.error != null) {
       return ReturnMessage(
           success: false,
           statusCode: 500,
           message: "Database error: ${response.error!.message}");
     }
 
-    // update pplDoing by 1.
-    var updateDoing = await updateTaskPeopleDoing(taskId, 1);
+    // // update pplDoing by 1.
+    // var updateDoing = await updateTaskPeopleDoing(taskId, 1);
 
-    if (updateDoing.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
+    // if (updateDoing.error != null) {
+    //   return ReturnMessage(
+    //       success: false,
+    //       statusCode: 500,
+    //       message: "Database error: ${response.error!.message}");
+    // }
 
     return ReturnMessage(
         success: true,
@@ -293,15 +297,26 @@ Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
         message: "User task $taskId , $nickname added successfully");
   } catch (e) {
     return ReturnMessage(
-        success: false, statusCode: 500, message: "Exception: $e");
+        success: false,
+        statusCode: 500,
+        message: "Exception in createUserTask: $e");
   }
 }
 
-Future<dynamic> updateTaskPeopleDoing(int taskId, int amount) async {
-  final supabase = SupabaseHelper.supabase;
-  final updateDoing = await supabase.rpc('increment_ppl_doing',
-      params: {'given_task_id': taskId, 'amount': amount});
-  return updateDoing;
+Future<dynamic> updateTaskPeopleDoing(int taskId, int toValue) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+    final updateDoing = await supabase
+        .from('tasks')
+        .update({'ppl_doing': toValue}) // Use integer value of enum
+        .eq('task_id', taskId); // Ensure both are included
+
+    return updateDoing;
+  } catch (e) {
+    print("updateTaskPeopleDoing $e");
+    return ReturnMessage(
+        success: false, statusCode: 500, message: "Exception: $e");
+  }
 }
 
 Future<dynamic> updateTaskPeopleSubmitted(

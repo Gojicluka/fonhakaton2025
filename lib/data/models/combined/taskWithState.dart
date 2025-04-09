@@ -20,9 +20,9 @@ class TaskWithState {
   // from user_task
 
   final String userDoing;
-  final String evalDescription;
-  final String imageEvidence;
-  final String stateId; // this is string enum in supabase table  .
+  final String? evalDescription;
+  final String? imageEvidence;
+  final String? stateId; // this is string enum in supabase table  .
   TaskWithState({
     required this.taskId,
     required this.name,
@@ -52,6 +52,36 @@ class TaskWithState {
 
   bool isDenied() {
     return this.stateId == "denied";
+  }
+
+  // todo - implement new factory that will take two jsons, one with data from user_task, and another with data from task!!!
+
+  factory TaskWithState.fromJoinJson(
+    Map<String, dynamic> userTask,
+    Map<String, dynamic> tasks,
+  ) {
+    return TaskWithState(
+      taskId: tasks['task_id'],
+      name: tasks['name'],
+      description: tasks['description'],
+      place: tasks['place'],
+      uniId: tasks['uni_id'],
+      xp: tasks['xp'],
+      groupId: tasks['group_id'],
+      urgent: tasks['urgent'],
+      existsForTime: tasks['exists_for_time'],
+      pplNeeded: tasks['ppl_needed'],
+      pplDoing: tasks['ppl_doing'],
+      pplSubmitted: tasks['ppl_submitted'],
+      createdBy: tasks['created_by'],
+      color: tasks['color'],
+      iconName: tasks['icon_name'],
+      durationInMinutes: tasks['duration_in_minutes'],
+      userDoing: userTask['nickname'],
+      evalDescription: userTask['eval_description'],
+      imageEvidence: userTask['image_evidence'],
+      stateId: userTask['state_id'],
+    );
   }
 
   factory TaskWithState.fromJson(Map<String, dynamic> json) {

@@ -107,7 +107,8 @@ class UserConfirmNotifier extends StateNotifier<List<TaskWithState>> {
         .from('user_task')
         .stream(primaryKey: ['task_id', 'nickname']).inFilter('state_id', [
       statusToStringArr[TaskStatus.ACCEPTED.index],
-      statusToStringArr[TaskStatus.DENIED.index]
+      statusToStringArr[TaskStatus.DENIED.index],
+      statusToStringArr[TaskStatus.PENDING.index],
     ]).listen((data) {
       fetchData(); // Refresh task list when a new task is added
     });

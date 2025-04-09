@@ -8,6 +8,11 @@ final taskProvider =
   (ref) => TaskNotifier(),
 );
 
+final takenTaskProvider =
+    StateNotifierProvider<TaskNotifier, List<Map<String, dynamic>>>(
+  (ref) => TaskNotifier(),
+);
+
 class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
   TaskNotifier() : super([]) {
     fetchTasks();

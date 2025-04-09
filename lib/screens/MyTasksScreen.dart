@@ -293,19 +293,19 @@ class _MyTasksState extends State<MyTasks> {
             title: "Oceni",
             backgroundColor: const Color.fromRGBO(187, 222, 251, 1),
             onTap: ShowToApproveOther,
-            notifier: doingTaskProvider,
+            notifier: evalTaskProvider,
           ),
           NewTaskSegment(
-            title: "Na cekanju...",
+            title: "Konacan rezultat:",
             backgroundColor: Colors.green.shade100,
             onTap: ShowMyPending,
-            notifier: evalTaskProvider,
+            notifier: confirmTaskProvider,
           ),
           NewTaskSegment(
             title: "Aktivno",
             backgroundColor: Colors.purple.shade100,
             onTap: ShowMyDoing,
-            notifier: confirmTaskProvider,
+            notifier: doingTaskProvider,
           ),
         ],
       ),
@@ -832,7 +832,7 @@ void ShowMyPending(BuildContext context, TaskWithState task) {
     statusText = "Task failed";
   } else {
     bubbleColor = Colors.grey;
-    statusText = "Task not yet reviewed";
+    statusText = "Task waiting review...";
   }
 
   showDialog(

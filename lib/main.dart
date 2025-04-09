@@ -26,7 +26,7 @@ import 'package:fonhakaton2025/data/models/user.dart';
 void main() async {
   await init_supabase();
 
-  Global.setUser(await getUserByName("luka"));
+  Global.setUser(await getUserByName("irena"));
 
   runApp(ProviderScope(child: MyApp()));
 }
