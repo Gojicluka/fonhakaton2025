@@ -28,9 +28,7 @@ void main() {
 
     print('Fetched tasks: $response');
 
-    for (var task in response) {
-      print('Task name: ${task.name}');
-    }
+    for (var task in response) {}
 
     expect(response, isNotEmpty);
   });
@@ -48,7 +46,8 @@ void main() {
   });
 
   test('Fetch doing tasks for user', () async {
-    final response = await getUserTasksWithStatus(username, TaskStatus.DOING);
+    final response =
+        await getTaskWithStateWithStatus(username, TaskStatus.DOING);
 
     print('Fetched doing tasks: $response');
 

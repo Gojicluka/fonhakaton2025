@@ -12,27 +12,6 @@ import 'package:image_picker/image_picker.dart';
 import "package:fonhakaton2025/data/task_completion/task_completion.dart";
 import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 
-void _acceptTask(BuildContext context, Task task) async {
-  final message = await createUserTask(Global.getUsername(), task.taskId);
-  print(message.message);
-  Navigator.pop(context);
-
-  // Adds the selected task to a list of active tasks
-  //activeTasks.add(task);
-
-  // Increases the amount of people who have accepted the quest
-  // and the player can't accept it again. Perhaps show that the quest has been accepted somewhere.
-  //task.appliedPeople += 1;
-
-  // Pop the context to close the dialog
-//   SupabaseHelper.addUserToTask(taskId: task.id, userId: Global.user!.id);
-//   print("SEFINO");
-//   SupabaseHelper.updateTaskPeopleApplied(
-//       taskId: task.id, peopleApplied: task.peopleApplied + 1);
-//   Navigator.pop(context);
-// }
-}
-
 void sendReport(BuildContext context, Task task) async {
   // ImagePicker _picker = ImagePicker();
   // final XFile? image = await _picker.pickImage(source: ImageSource.camera);
@@ -45,6 +24,33 @@ void sendReport(BuildContext context, Task task) async {
   //   print("no image captured");
   // }
   // Navigator.pop(context);
+}
+
+void _acceptTask(BuildContext context, Task task) async {
+  final message = await createUserTask(Global.getUsername(), task.taskId);
+  // listener se ne azurira lepo zapravo, trebalo bi da se refrehsuje i kad se promeni user_task i kad se promeni tasks
+  // todo !!
+
+  var updateDoing = await updateTaskPeopleDoing(task.taskId, task.pplDoing + 1);
+
+  print("message: ${message.message}");
+  Navigator.pop(context);
+  // setState(() {});
+
+  // Adds the selected task to a list of active tasks
+  //activeTasks.add(task);
+
+  // Increases the amount of people who have accepted the quest
+  // and the player can't accept it again. Perhaps show that the quest has been accepted somewhere.
+  //task.appliedPeople += 1;
+
+  // Pop the context to close the dialog
+  //   SupabaseHelper.addUserToTask(taskId: task.id, userId: Global.user!.id);
+  //   print("SEFINO");
+  //   SupabaseHelper.updateTaskPeopleApplied(
+  //       taskId: task.id, peopleApplied: task.peopleApplied + 1);
+  //   Navigator.pop(context);
+  // }
 }
 
 void approveTask(BuildContext context, Task task) async {
@@ -159,6 +165,12 @@ class _TaskScreenState extends State<TaskScreen> {
     final int remainingMinutes = minutes % 60;
     return "${hours.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')}";
   }
+
+  // @override
+  // void setState(VoidCallback fn) {
+  //   // TODO: implement setState
+  //   super.setState(fn);
+  // }
 
   void showTaskDialog(BuildContext context, Task task) {
     showDialog(

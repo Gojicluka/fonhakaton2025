@@ -26,7 +26,7 @@ import 'package:fonhakaton2025/data/models/user.dart';
 void main() async {
   await init_supabase();
 
-  Global.setUser(await getUserByName("luka"));
+  Global.setUser(await getUserByName("irena"));
 
   runApp(ProviderScope(child: MyApp()));
 }
@@ -94,7 +94,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   fontSize: 18,
                 ),
               ),
-                AnimatedDefaultTextStyle(
+              AnimatedDefaultTextStyle(
                 style: TextStyle(
                   fontSize: xpAnimation ? 18 : 14,
                   color: xpAnimation ? Colors.green : Colors.grey[500],
@@ -167,6 +167,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   final List<Widget> _screens = [
     PublicTaskPage(),
+    // PublicTaskPage(),
     MyTasks(),
     LeaderboardPage(),
     ProfilePage(),
