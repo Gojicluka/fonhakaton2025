@@ -44,12 +44,10 @@ class UserDoingNotifier extends StateNotifier<List<TaskWithState>> {
   void listenForChanges() {
     Supabase.instance.client
         .from('user_task')
-        .stream(primaryKey: ['task_id', 'nickname'])
-        .eq('state_id', statusToStringArr[TaskStatus.DOING.index])
-        .listen((data) {
-          print("fetch data for doing");
-          fetchData(); // Refresh task list when a new task is added
-        });
+        .stream(primaryKey: ['task_id', 'nickname']).listen((data) {
+      print("fetch data for doing");
+      fetchData(); // Refresh task list when a new task is added
+    });
   }
 }
 
@@ -75,11 +73,9 @@ class UserEvaluateNotifier extends StateNotifier<List<TaskWithState>> {
   void listenForChanges() {
     Supabase.instance.client
         .from('user_task')
-        .stream(primaryKey: ['task_id', 'nickname'])
-        .eq('state_id', statusToStringArr[TaskStatus.PENDING.index])
-        .listen((data) {
-          fetchData(); // Refresh task list when a new task is added
-        });
+        .stream(primaryKey: ['task_id', 'nickname']).listen((data) {
+      fetchData(); // Refresh task list when a new task is added
+    });
   }
 }
 
@@ -105,11 +101,7 @@ class UserConfirmNotifier extends StateNotifier<List<TaskWithState>> {
   void listenForChanges() {
     Supabase.instance.client
         .from('user_task')
-        .stream(primaryKey: ['task_id', 'nickname']).inFilter('state_id', [
-      statusToStringArr[TaskStatus.ACCEPTED.index],
-      statusToStringArr[TaskStatus.DENIED.index],
-      statusToStringArr[TaskStatus.PENDING.index],
-    ]).listen((data) {
+        .stream(primaryKey: ['task_id', 'nickname']).listen((data) {
       fetchData(); // Refresh task list when a new task is added
     });
   }

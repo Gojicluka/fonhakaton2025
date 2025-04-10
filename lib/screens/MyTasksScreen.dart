@@ -682,7 +682,7 @@ void ShowToApproveOther(BuildContext context, TaskWithState task) {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                onPressed: () => DenyCompleted(context, task),
+                onPressed: () => denySubmittedTask(context, task),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
@@ -694,7 +694,7 @@ void ShowToApproveOther(BuildContext context, TaskWithState task) {
                     style: TextStyle(color: Colors.white, fontSize: 16)),
               ),
               ElevatedButton(
-                onPressed: () => AcceptCompleted(context, task),
+                onPressed: () => acceptSubmittedTask(context, task),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   shape: RoundedRectangleBorder(
@@ -871,25 +871,31 @@ void ShowMyPending(BuildContext context, TaskWithState task) {
 }
 
 void CancelTask(BuildContext context, TaskWithState task) {
-  // TODO: Send a request to the backend to mark the task as canceled
+  // Send a request to the backend to mark the task as canceled
   // the task is removed from the list of tasks, and the task is refreshed.
   // Example: api.cancelTask(task.id);
+
+  deleteUserTask(Global.getUsername(), task.taskId);
 
   Navigator.pop(context);
 }
 
 void CompleteTask(BuildContext context, TaskWithState task) async {
-  // ImagePicker _picker = ImagePicker();
-  // final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-  // if (image != null) {
-  //   File _image = File(image.path);
+  ImagePicker _picker = ImagePicker();
+  final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+  if (image != null) {
+    File _image = File(image.path);
 
-  //   submitTaskCompletion(
-  //       taskId: task.taskId, userId: Global.user!.id, imageFile: _image);
-  // } else {
-  //   print("no image captured");
-  // }
-  // Navigator.pop(context);
+    // uploaduje sliku na bazu, azurira user_task
+    // todo : implementirati da azurira pplDoing i pplSubmitted, umesto da se to radi ovde!
+    submitUserTask(
+        nickname: Global.getUsername(),
+        taskId: task.taskId,
+        imageEvidence: _image);
+  } else {
+    print("no image captured");
+  }
+  Navigator.pop(context);
 }
 
 Color _parseColor(String colorStr) {
@@ -911,12 +917,34 @@ Widget fetchUserImage(String imageName) {
   );
 }
 
-void DenyCompleted(BuildContext context, TaskWithState task) async {
-  // await denyTaskCompletion(taskId: task.taskId, userId: task.userId);
-  // Navigator.pop(context);
+void denySubmittedTask(BuildContext context, TaskWithState task) async {
+  // With userDoing and task_id change user_task state to denied, and add the description the people grading the task left.
+  // update the number of people who completed the quest! maybe change the ppl count system a bit.
+  // todo: implement a text bubble where the user evaluating can add their comment (not required)
+
+  print("button denySubmittedTask pressed");
+  String evalDescription = "TODO: Make a bubble to leave a description at!";
+  final message = await denyUserTask(
+      taskId: task.taskId,
+      nickname: Global.getUsername(),
+      evalDescription: evalDescription);
+  print(message.message);
+  Navigator.pop(context);
 }
 
-void AcceptCompleted(BuildContext context, TaskWithState task) async {
-  // await approveTaskCompletion(taskId: task.taskId, userId: task.userId);
-  // Navigator.pop(context);
+void acceptSubmittedTask(BuildContext context, TaskWithState task) async {
+  // With userDoing and task_id change user_task state to accepted, and add the description the people grading the task left.
+  // update the number of people who completed the quest! maybe change the ppl count system a bit.
+  // todo: implement a text bubble where the user evaluating can add their comment (not required)
+
+  String evalDescription = "TODO: Make a bubble to leave a description at!";
+  await acceptUserTask(
+      taskId: task.taskId,
+      nickname: Global.getUsername(),
+      evalDescription: evalDescription);
+  Navigator.pop(context);
 }
+
+
+// todo - implement function to confirm the outcome of the task, which will move the task to "waiting_delete" and do other updates accordingly!
+
