@@ -147,6 +147,7 @@ Future<List<Map<String, dynamic>>> getAllAvailableTasks(String nickname) async {
   }
 }
 
+
 /// Daje sve taskove za odredjenu grupu (vraca [] ako grupa ne postoji)
 Future<List<Task>> getAllAvailableTasksFilter(
     String nickname, int groupId) async {
