@@ -135,69 +135,6 @@ import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 //   ),
 // ];
 
-final List<TaskWithUser> toCompleteGlobalFaculty = [
-  TaskWithUser(
-    taskId: 3,
-    creatorId: 201,
-    durationMinutes: 90,
-    xpGain: 100,
-    done: false,
-    studentGroupId: null,
-    universityId: 1,
-    location: "Faculty Library",
-    peopleNeeded: 2,
-    isPublic: true,
-    title: "Organize Books",
-    description: "Help sort and organize the library books.",
-    peopleApplied: 1,
-    color: "#FF5733",
-    iconName: "shield",
-    userId: 0, // Ensure userId is not null
-  ),
-];
-
-final List<TaskWithUser> toCompleteGroup = [
-  TaskWithUser(
-    taskId: 5,
-    creatorId: 203,
-    durationMinutes: 60,
-    xpGain: 80,
-    done: false,
-    studentGroupId: 2,
-    universityId: 1,
-    location: "Soba za medije",
-    peopleNeeded: 1,
-    isPublic: false,
-    title: "Edituj promotivni video",
-    description: "Edituj kratki video za medije.",
-    peopleApplied: 0,
-    color: "#FFD700",
-    iconName: "shield",
-    userId: 0,
-  ),
-];
-
-final List<TaskWithUser> toCompleteMyFaculty = [
-  TaskWithUser(
-    taskId: 7,
-    creatorId: 205,
-    durationMinutes: 30,
-    xpGain: 40,
-    done: false,
-    studentGroupId: null,
-    universityId: 1,
-    location: "fakultetski wc",
-    peopleNeeded: 1,
-    isPublic: true,
-    title: "Ocisti wc",
-    description: "Pomozi nam da ocistimo wc.",
-    peopleApplied: 1,
-    color: "#32CD32",
-    iconName: "star",
-    userId: 0,
-  ),
-];
-
 // class MyTasks extends StatefulWidget {
 //   const MyTasks({super.key});
 
@@ -268,44 +205,51 @@ class MyTasks extends StatefulWidget {
 
 class _MyTasksState extends State<MyTasks> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // return FutureBuilder<List<TaskWithUser>>(
-    //   future: _tasksFuture,
-    //   builder: (context, snapshot) {
-    //     if (snapshot.connectionState == ConnectionState.waiting) {
-    //       return const Center(child: CircularProgressIndicator());
-    //     } else if (snapshot.hasError) {
-    //       return Center(child: Text('Error: ${snapshot.error}'));
-    //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-    //       return const Center(child: Text('No tasks to approve'));
-    //     } else {
-    //       var toApprove = snapshot.data!;
-    return Scaffold(
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+    return DefaultTabController(
+      length: 3, // Number of tabs
+      child: Column(
         children: [
-          NewTaskSegment(
-            title: "Oceni",
-            backgroundColor: const Color.fromRGBO(187, 222, 251, 1),
-            onTap: ShowToApproveOther,
-            notifier: evalTaskProvider,
+          // TabBar
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0),
+            child: TabBar(
+              labelColor: Colors.black,
+              indicatorColor: const Color.fromARGB(255, 0, 0, 0),
+              tabs: [
+                Tab(icon: Icon(Icons.rate_review), text: "Oceni"),
+                Tab(icon: Icon(Icons.check_circle), text: "Rezultat"),
+                Tab(icon: Icon(Icons.play_arrow), text: "Aktivno"),
+              ],
+            ),
           ),
-          NewTaskSegment(
-            title: "Konacan rezultat:",
-            backgroundColor: Colors.green.shade100,
-            onTap: ShowMyPending,
-            notifier: confirmTaskProvider,
-          ),
-          NewTaskSegment(
-            title: "Aktivno",
-            backgroundColor: Colors.purple.shade100,
-            onTap: ShowMyDoing,
-            notifier: doingTaskProvider,
+          // TabBarView
+          Expanded(
+            child: TabBarView(
+              children: [
+                // Tab 1: Oceni
+                NewTaskSegment(
+                  title: "Oceni",
+                  backgroundColor: Colors.transparent, // No background color
+                  onTap: ShowToApproveOther,
+                  notifier: evalTaskProvider,
+                ),
+                // Tab 2: Rezultat
+                NewTaskSegment(
+                  title: "Rezultat",
+                  backgroundColor: Colors.transparent, // No background color
+                  onTap: ShowMyPending,
+                  notifier: confirmTaskProvider,
+                ),
+                // Tab 3: Aktivno
+                NewTaskSegment(
+                  title: "Aktivno",
+                  backgroundColor: Colors.transparent, // No background color
+                  onTap: ShowMyDoing,
+                  notifier: doingTaskProvider,
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -355,33 +299,27 @@ class NewTaskSegment extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+          Align(
+            alignment: Alignment.centerLeft,
+            child:Padding( 
+              padding: const EdgeInsets.only(left:16),
+              child:Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+              ),
+            ),
           ),
           const SizedBox(height: 8),
-          SizedBox(
-            height: 160,
+          Expanded(
             child: ListView.builder(
               shrinkWrap: true,
               physics: const ClampingScrollPhysics(),
               itemCount: items.length,
               itemBuilder: (context, index) {
-                // this next todo!
-                // return isTaskUser
-                //     ? TaskUserWidget(
-                //         user: items[index],
-                //         onTap: () => onTap(context, items[index]),
-                //       )
-                //     : TaskWidget(
-                //         task: items[index],
-                //         onTap: () => onTap(context, items[index]),
-                //       );
-                return NewTaskWidget(
-                    task: items[index],
-                    onTap: () => onTap(context, items[index]));
+              return NewTaskWidget(
+                task: items[index],
+                onTap: () => onTap(context, items[index]));
               },
             ),
           ),
