@@ -83,7 +83,7 @@ Future<int> getUserUniversity(String nickname) async {
 
 /// Vraca sve aktivne globalne taskove koje igrac nije vec prihvatio
 // Future<List<Task>> getAllAvailableTasks(String nickname) async {
-Future<List<Map<String, dynamic>>> getAllAvailableTasks(String nickname) async {
+Future<List<Task>> getAllGroupTasks(String nickname) async {
   final supabase = SupabaseHelper.supabase;
 
   // Fetch task_ids associated with the given nickname - both taken quests and made quests.
@@ -116,8 +116,45 @@ Future<List<Map<String, dynamic>>> getAllAvailableTasks(String nickname) async {
       .inFilter('group_id', userGroupsList);
 
   // return response.map((task) => Task.fromJson(task)).toList();
-  return response;
+  return response.map((task) => Task.fromJson(task)).toList();
 }
+
+Future<List<Task>> getAllGlobalTasks(String nickname) async {
+  final supabase = SupabaseHelper.supabase;
+
+  // Fetch task_ids associated with the given nickname - both taken quests and made quests.
+  List<int> excludedTaskIds = await getUserTaskIds(nickname);
+  List<int> getTasksUserCreated = await getTasksCreatedBy(nickname);
+  int userUniversity = await getUserUniversity(nickname);
+
+  print("excluded task ids $excludedTaskIds");
+  print("user created ids $getTasksUserCreated");
+
+  // fetch user groups as a list
+  final List<Map<String, dynamic>> userGroups = await supabase
+      .from('user_group')
+      .select('group_id')
+      .eq('nickname', nickname);
+
+  final List<int> userGroupsList =
+      userGroups.map((task) => task['group_id'] as int).toList();
+  userGroupsList.add(Groups.NOGROUP.index);
+
+  print("user groups $userGroupsList");
+
+  // Fetch all tasks that are NOT in user_task and match user groups.
+  final List<Map<String, dynamic>> response = await supabase
+      .from('tasks')
+      .select()
+      .not('task_id', 'in', excludedTaskIds)
+      .not('task_id', 'in', getTasksUserCreated)
+      .eq('uni_id', userUniversity)
+      .inFilter('group_id', userGroupsList);
+
+  // return response.map((task) => Task.fromJson(task)).toList();
+  return response.map((task) => Task.fromJson(task)).toList();
+}
+
 
 /// Daje sve taskove za odredjenu grupu (vraca [] ako grupa ne postoji)
 Future<List<Task>> getAllAvailableTasksFilter(

@@ -134,8 +134,7 @@ class TaskListView extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             itemCount: tasks.length,
             itemBuilder: (context, index) {
-              final taskJson = tasks[index] as Map<String, dynamic>;
-              final task = Task.fromJson(taskJson);
+              final task = tasks[index] as Task;
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
