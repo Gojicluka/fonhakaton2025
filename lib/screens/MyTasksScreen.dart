@@ -864,7 +864,7 @@ void denySubmittedTask(BuildContext context, TaskWithState task) async {
   String evalDescription = "TODO: Make a bubble to leave a description at!";
   final message = await denyUserTask(
       taskId: task.taskId,
-      nickname: Global.getUsername(),
+      nickname: task.userDoing,
       evalDescription: evalDescription);
   print(message.message);
   Navigator.pop(context);
