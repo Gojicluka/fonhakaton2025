@@ -45,28 +45,34 @@ final List<Group> groups = [
 ];
 
 
-class ExplorePage extends StatelessWidget {
-  ExplorePage({super.key});
+class GroupsScreen extends StatelessWidget {
+  GroupsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Groups")),
-      body: ListView.builder(
-        itemCount: groups.length,
-        itemBuilder: (context, index) {
-          return GroupTile(
-            group: groups[index],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DetailPage(group: groups[index]),
-                ),
-              );
-            },
-          );
-        },
+      body: Column(
+        children: [
+          // Group List
+          Expanded(
+            child: ListView.builder(
+              itemCount: groups.length,
+              itemBuilder: (context, index) {
+                return GroupTile(
+                  group: groups[index],
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailPage(group: groups[index]),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -120,45 +126,53 @@ class DetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(int.parse(group.color.replaceAll('#', '0xff'))),
-      appBar: AppBar(title: Text(group.name)),
-      body: Center(
-        child: Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            children: [
-              Icon(getIconFromString(group.iconName ?? 'Icons.help_outline'),
-                  size: 80,
-                  color: Color(int.parse(group.color.replaceAll('#', '0xff')))),
-              const SizedBox(height: 16),
-              Text(
-                group.name,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color(int.parse(group.color.replaceAll('#', '0xff'))),
+      body: Column(
+        children: [
+          // Group Details
+          Expanded(
+            child: Center(
+              child: Container(
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Text(
-                    group.description ?? "",
-                    style: TextStyle(
-                      fontSize: 18,
+                child: Column(
+                  children: [
+                    Icon(
+                      getIconFromString(group.iconName ?? 'Icons.help_outline'),
+                      size: 80,
                       color: Color(int.parse(group.color.replaceAll('#', '0xff'))),
                     ),
-                    textAlign: TextAlign.left,
-                  ),
+                    const SizedBox(height: 16),
+                    Text(
+                      group.name,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Color(int.parse(group.color.replaceAll('#', '0xff'))),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Text(
+                          group.description ?? "",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color(int.parse(group.color.replaceAll('#', '0xff'))),
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
