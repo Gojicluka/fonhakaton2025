@@ -2,6 +2,9 @@
 
 Bloquest to-do 10/4/25:
 
+## Api
+ - Testirati api i videti da li radi error handling, posto .error ne postoji u novoj verziji supabasea za flutter
+
 ## newTaskScreen
 - napraviti da se otvara sa parametrom javno/grupa
 - napraviti API za predetermined tasks koji koristi ^^ parametar
@@ -12,7 +15,7 @@ Bloquest to-do 10/4/25:
 
 ## myTasksPage
 - [x] videti zasto evaluacija zadataka (accept/deny) ne radivideti zasto evaluacija zadataka (accept/deny) ne radi
-- implementirati "confirm outcome" zadatka => prenosi zadatak u pending_delete status + dodeljuje XP ako je zadatak uspesno uradjen => i sve druge provere (OPISANE U SISTEM LVL-ACH VVV)
+- [x] implementirati "confirm outcome" zadatka => prenosi zadatak u pending_delete status + dodeljuje XP ako je zadatak uspesno uradjen => i sve druge provere (OPISANE U SISTEM LVL-ACH VVV)
 - redizajnirati da podrzi lukin meni kao za filtere
 - napraviti da koristi boje taska (+ ikonice?)
 

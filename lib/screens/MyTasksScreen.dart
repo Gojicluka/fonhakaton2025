@@ -171,15 +171,25 @@ class _NewTaskWidgetState extends State<NewTaskWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // Determine the border color based on the task's state
+    Color borderColor;
+    if (widget.task.isApproved()) {
+      borderColor = Colors.green; // Green for accepted tasks
+    } else if (widget.task.isDenied()) {
+      borderColor = Colors.red; // Red for denied tasks
+    } else {
+      borderColor = Colors.transparent; // No border for other states
+    }
+
     return GestureDetector(
       onTap: () => widget.onTap(),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Color(int.parse(widget.task.color
-              .replaceAll('#', '0xff'))), // Convert hex to color
+          color: Color(int.parse(widget.task.color.replaceAll('#', '0xff'))), // Convert hex to color
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: borderColor, width: 3), // Add dynamic border
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -458,7 +468,15 @@ void ShowMyPending(BuildContext context, TaskWithState task, WidgetRef ref) {
             )
           else
             TextButton(
-              onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                if (task.isDenied()) {
+                  // Call a different function if the task has been denied
+                  print("Task has been denied. Perform specific action here.");
+                  confirmTaskDenied(context, task);
+                } else {
+                  Navigator.pop(context);
+                }
+                },
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 shape: RoundedRectangleBorder(
@@ -563,12 +581,16 @@ void claimReward(BuildContext context, TaskWithState task, WidgetRef ref) async 
       backgroundColor: Colors.green,
     ),
   );
-
-  // Refresh the confirmTaskProvider
-  ref.read(confirmTaskProvider.notifier).fetchData();
+  // // Refresh the confirmTaskProvider
+  // ref.read(confirmTaskProvider.notifier).fetchData();
 
   Navigator.pop(context); // Close the dialog
 }
 
-// todo - implement function to confirm the outcome of the task, which will move the task to "waiting_delete" and do other updates accordingly!
-
+void confirmTaskDenied(BuildContext context, TaskWithState task) async {
+  final message = await userTaskChangeStateToWaitingDelete(
+    taskId: task.taskId,
+    nickname: Global.getUsername(),
+  );
+  Navigator.pop(context);
+}

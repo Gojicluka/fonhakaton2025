@@ -798,21 +798,44 @@ Future<bool> insertTask(Task task) async {
   return true;
 }
 
+Future<ReturnMessage> userTaskChangeStateToWaitingDelete(
+  {required String nickname, required int taskId}) async {
+  try {
+  final supabase = SupabaseHelper.supabase;
+
+  // Update the task state to "waiting_delete"
+  final response = await supabase.from('user_task').update({
+    'state_id': statusToStringArr[TaskStatus.WAITING_DELETE.index],
+  }).match({
+    'task_id': taskId,
+    'nickname': nickname,
+  });
+
+  return ReturnMessage(
+    success: true,
+    statusCode: 200,
+    message: "Task state changed to 'waiting_delete' successfully",
+  );
+  } catch (e) {
+  print('Error in userTaskChangeStateToWaitingDelete: $e');
+  return ReturnMessage(
+    success: false,
+    statusCode: 500,
+    message: "Exception in userTaskChangeStateToWaitingDelete: $e",
+  );
+  }
+}
+
 Future<ReturnMessage> rewardUserForTask({
   required TaskWithState task,
   required String nickname,
 }) async {
   try {
-    final supabase = SupabaseHelper.supabase;
-
     // Update the task state to "rewarded"
-    final response = await supabase.from('user_task').update({
-      'state_id': statusToStringArr[TaskStatus.WAITING_DELETE.index],
-    }).match({
-      'task_id': task.taskId,
-      'nickname': nickname,
-    }).select();
-
+    final response = await userTaskChangeStateToWaitingDelete(
+      nickname: nickname,
+      taskId: task.taskId,
+    );
 
     // Update user XP
     final xpResponse = await updateUserXP(nickname, task.xp);
