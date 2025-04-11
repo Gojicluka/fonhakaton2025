@@ -544,7 +544,7 @@ void acceptSubmittedTask(BuildContext context, TaskWithState task) async {
   String evalDescription = "TODO: Make a bubble to leave a description at!";
   await acceptUserTask(
       taskId: task.taskId,
-      nickname: Global.getUsername(),
+      nickname: task.userDoing,
       evalDescription: evalDescription);
   Navigator.pop(context);
 }
