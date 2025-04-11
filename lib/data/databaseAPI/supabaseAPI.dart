@@ -708,15 +708,16 @@ Future<ReturnMessage> updateUserXP(String nickname, int amount) async {
 
     final response = await supabase.rpc('increment_user_xp',
         params: {'given_nickname': nickname, 'amount': amount});
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
 
     return ReturnMessage(
         success: true, statusCode: 200, message: "User got XP $amount");
+  }on PostgrestException catch (e) {
+    print("Postgrest error: ${e.message}");
+    return ReturnMessage(
+      success: false,
+      statusCode: 500,
+      message: "Supabase error: ${e.message}",
+    );
   } catch (e) {
     print('Error in upadteUserXP: $e');
     return ReturnMessage(
@@ -871,4 +872,53 @@ Future<List<TaskWithUser>> getAllTaskWithUsers() async {
 /// Inserts a new task into the database
 Future<bool> insertTask(Task task) async {
   return true;
+}
+
+Future<ReturnMessage> rewardUserForTask({
+  required TaskWithState task,
+  required String nickname,
+}) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Update the task state to "rewarded"
+    final response = await supabase.from('user_task').update({
+      'state_id': statusToStringArr[TaskStatus.WAITING_DELETE.index],
+    }).match({
+      'task_id': task.taskId,
+      'nickname': nickname,
+    }).select();
+
+
+    // Update user XP
+    final xpResponse = await updateUserXP(nickname, task.xp);
+
+    // Check if the XP update response contains an error
+    if (!xpResponse.success) {
+      return ReturnMessage(
+        success: false,
+        statusCode: 500,
+        message: "Failed to update user XP: ${xpResponse.message}",
+      );
+    }
+
+    return ReturnMessage(
+      success: true,
+      statusCode: 200,
+      message: "Reward claimed successfully!",
+    );
+  } on PostgrestException catch (e) {
+    print("Postgrest error: ${e.message}");
+    return ReturnMessage(
+      success: false,
+      statusCode: 500,
+      message: "Supabase error: ${e.message}",
+    );
+  } catch (e) {
+    return ReturnMessage(
+      success: false,
+      statusCode: 500,
+      message: "An error occurred: $e",
+    );
+  }
 }
