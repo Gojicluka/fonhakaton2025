@@ -65,6 +65,7 @@ List<Task> tasks = [
 
 class ProfilePage extends StatelessWidget {
   //generic to be changed later
+
   void handleLogout() {
     // Currently, it does nothing
   }

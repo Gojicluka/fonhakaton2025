@@ -6,7 +6,8 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_reveal_animation/circular_reveal_animation.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fonhakaton2025/data/UserNotifier.dart';
+import 'package:fonhakaton2025/data/notifiers/PredeterminedTaskProvider.dart';
+import 'package:fonhakaton2025/data/notifiers/UserNotifier.dart';
 import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:fonhakaton2025/theme/custom_colors_theme.dart';
 import 'package:fonhakaton2025/widgets/CameraWidget.dart';
@@ -26,7 +27,20 @@ import 'package:fonhakaton2025/data/models/user.dart';
 void main() async {
   await init_supabase();
 
+// je l ovo uopste neophodno? imamo vec listener V
   Global.setUser(await getUserByName("irena"));
+  Global.setPredeterminedTasks(await getAllPredeterminedTasksForUser("irena"));
+  await Global.setUserGroups("irena");
+
+  if (Global.user == null) {
+    print("the user is null!");
+    // do something with error :D
+  }
+
+  // init states! these are listeners and providers will provide the information asynchronously!
+
+  // Global.setUserAchievements();
+  // Global.setUserStats();
 
   runApp(ProviderScope(child: MyApp()));
 }
@@ -64,6 +78,15 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
     final xpAnimation = ref.watch(xpAnimationProvider);
+
+    // todo - add listeners for predeterminedTasks, userSkillPoints, userAchievements.
+    // user-skillpoints and user-achievements will listen to only when THIS USER's user_points and user_ach change, BUT WILL RETURN FULL DATA ON ALL POINTS / ALL ACHIEVEMENTS.
+    // implement the model that has -> Achievement + won/not won for the user!!!
+    // implement the model that has Skill[ID] -> skill_name, points, perhaps as an INDEXED ARRAY, to make it SCALABLE AND DYNAMIC!
+
+    Global.predeterminedTasks = ref.watch(predeterminedTaskProvider);
+    // final userAchievements = ref.watch(userAchievementsProvider);
+    // final userStats = ref.watch(userStatsProvider);
 
     // Listen to changes in the userProvider and trigger the animation
     ref.listen<UserModel?>(userProvider, (previous, next) {

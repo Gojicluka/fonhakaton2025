@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fonhakaton2025/data/global.dart';
 import 'package:fonhakaton2025/screens/NewTaskScreen.dart';
 
 class NewTaskChoiceScreen extends StatefulWidget {
@@ -7,10 +8,11 @@ class NewTaskChoiceScreen extends StatefulWidget {
 }
 
 class _NewTaskChoiceScreenState extends State<NewTaskChoiceScreen> {
-  // Hardcoded list of groups the user belongs to
-  final List<String> userGroups = ["Logistika", "Mediji"];
+  // Hardcoded list of groups the user belongs to todo change
+  // final List<String> userGroups = ["Logistika", "Mediji"];
+  final List<Map<String, dynamic>>? userGroups = Global.getUserGroups();
 
-  String? selectedGroup; // Stores the selected group
+  int? selectedGroup; // Stores the selected group
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,10 @@ class _NewTaskChoiceScreenState extends State<NewTaskChoiceScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => NewTaskScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => NewTaskScreen(
+                            group_id:
+                                GroupCode.JAVNO.index)), // group id for JAVNO
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -73,21 +78,21 @@ class _NewTaskChoiceScreenState extends State<NewTaskChoiceScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
+                      child: DropdownButton<int>(
                         value: selectedGroup,
                         hint: Text("Izaberite grupu"),
                         isExpanded: true,
                         icon: Icon(Icons.arrow_drop_down, color: Colors.black),
                         style: TextStyle(fontSize: 16, color: Colors.black),
-                        onChanged: (String? newValue) {
+                        onChanged: (int? newValue) {
                           setState(() {
                             selectedGroup = newValue;
                           });
                         },
-                        items: userGroups.map((String group) {
-                          return DropdownMenuItem<String>(
-                            value: group,
-                            child: Text(group),
+                        items: userGroups?.map((dynamic group) {
+                          return DropdownMenuItem<int>(
+                            value: group['group_id'] as int,
+                            child: Text(group['name']),
                           );
                         }).toList(),
                       ),
@@ -102,7 +107,8 @@ class _NewTaskChoiceScreenState extends State<NewTaskChoiceScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => NewTaskScreen()),
+                                  builder: (context) =>
+                                      NewTaskScreen(group_id: selectedGroup)),
                             );
                           }
                         : null,

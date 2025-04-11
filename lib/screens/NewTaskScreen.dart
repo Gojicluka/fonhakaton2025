@@ -7,7 +7,9 @@ import 'package:fonhakaton2025/utils/IconConverter.dart';
 import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 
 class NewTaskScreen extends StatefulWidget {
-  const NewTaskScreen({super.key});
+  final int? group_id;
+
+  const NewTaskScreen({super.key, required this.group_id});
 
   @override
   _NewTaskScreenState createState() => _NewTaskScreenState();
@@ -29,12 +31,12 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   final TextEditingController _hoursController = TextEditingController();
   final TextEditingController _minutesController = TextEditingController();
 
-  Task? _selectedPredefinedTask;
+  // Task? _selectedPredefinedTask;
+  Map<String, dynamic>? _selectedPredefinedTask;
   Color _selectedColor = Colors.blue;
   bool _showAdditionalOptions = false;
 
-  final List<Task> predefinedTasks = [
-  ];
+  final List<Task> predefinedTasks = [];
 
   void _pickColor() {
     showDialog(
@@ -64,17 +66,18 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     );
   }
 
-  void _setTaskFields(Task task) {
+  void _setTaskFields(Map<String, dynamic> task) {
     setState(() {
-      _titleController.text = task.name;
-      _xpController.text = task.xp.toString();
+      _titleController.text = task['name'];
+      _xpController.text = task['xp']
+          .toString(); // todo check for err? return " " by default or smth
       // _durationController.text =
       //     (task.durationMinutes ~/ 60).toString(); // Convert to hours
 
-      _hoursController.text = (task.durationInMinutes ~/ 60).toString();
-      _minutesController.text = (task.durationInMinutes % 60).toString();
-      _peopleController.text = task.pplNeeded.toString();
-      _locationController.text = task.place;
+      _hoursController.text = (task['durationInMinutes'] ~/ 60).toString();
+      _minutesController.text = (task['durationInMinutes'] % 60).toString();
+      _peopleController.text = task['pplNeeded'].toString();
+      _locationController.text = task['place'];
     });
   }
 
@@ -114,19 +117,22 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         taskId: 0, // This should be handled by the backend
         name: _titleController.text,
         description: _descriptionController.text,
-        place: _locationController.text.isEmpty ? "ETF" : _locationController.text,
+        place:
+            _locationController.text.isEmpty ? "ETF" : _locationController.text,
         uniId: 1, // Should be set with actual university ID
         xp: int.parse(_xpController.text),
         groupId: 0, // Optional group ID
         urgent: false, // Set according to your needs
         existsForTime: 0, // Placeholder, adjust as needed
         pplNeeded: _peopleController.text.isEmpty
-        ? 1
-        : int.parse(_peopleController.text),
+            ? 1
+            : int.parse(_peopleController.text),
         pplDoing: 0, // Initially 0
         pplSubmitted: 0, // Initially 0
-        createdBy: Global.user!.nickname, // This should be set with actual user ID
-        color: '#${_selectedColor.value.toRadixString(16).substring(2)}', // Convert Color to hex string
+        createdBy:
+            Global.user!.nickname, // This should be set with actual user ID
+        color:
+            '#${_selectedColor.value.toRadixString(16).substring(2)}', // Convert Color to hex string
         iconName: iconToString(iconData),
         durationInMinutes: duration,
       );
@@ -203,12 +209,14 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                       const Text("Selektujte iz predefinisanih zadataka: ",
                           style: TextStyle(fontSize: 18)),
                       const SizedBox(height: 10),
-                      DropdownButtonFormField<Task>(
+                      DropdownButtonFormField<Map<String, dynamic>>(
                         value: _selectedPredefinedTask,
-                        items: predefinedTasks
+                        items: Global.getPredeterminedTasks()!
+                            .where((task) =>
+                                task['for_group'] as int == widget.group_id)
                             .map((task) => DropdownMenuItem(
                                   value: task,
-                                  child: Text(task.name),
+                                  child: Text(task['name']),
                                 ))
                             .toList(),
                         onChanged: (value) {

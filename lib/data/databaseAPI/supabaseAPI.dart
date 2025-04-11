@@ -52,6 +52,45 @@ class ReturnMessage {
 
 // helper functions
 
+// todo apr10
+
+Future<List<Map<String, dynamic>>> getUserGroupsWithNames(
+    String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+    List<int> userGroups = await getUserGroups(nickname);
+
+    final getUserGroupsWithNames = await supabase
+        .from('groups')
+        .select('group_id, name')
+        .inFilter('group_id', userGroups);
+
+    return getUserGroupsWithNames;
+  } catch (e) {
+    print('Error in getUserGroupsWithNames: $e');
+    return [];
+  }
+}
+
+Future<List<int>> getUserGroups(String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+    final userGroups = await supabase
+        .from('user_group')
+        .select('group_id')
+        .eq('nickname', nickname);
+
+    final List<int> userGroupsList =
+        userGroups.map((task) => task['group_id'] as int).toList();
+    userGroupsList.add(Groups.NOGROUP.index);
+
+    return userGroupsList;
+  } catch (e) {
+    print('Error in getUserGroups: $e');
+    return [];
+  }
+}
+
 Future<List<int>> getTasksCreatedBy(String nickname) async {
   try {
     final supabase = SupabaseHelper.supabase;
@@ -119,14 +158,7 @@ Future<List<Map<String, dynamic>>> getAllAvailableTasks(String nickname) async {
     print("user created ids $getTasksUserCreated");
 
     // fetch user groups as a list
-    final List<Map<String, dynamic>> userGroups = await supabase
-        .from('user_group')
-        .select('group_id')
-        .eq('nickname', nickname);
-
-    final List<int> userGroupsList =
-        userGroups.map((task) => task['group_id'] as int).toList();
-    userGroupsList.add(Groups.NOGROUP.index);
+    final List<int> userGroupsList = await getUserGroups(nickname);
 
     print("user groups $userGroupsList");
 
@@ -690,36 +722,62 @@ Future<ReturnMessage> updateUserXP(String nickname, int amount) async {
 
 /////////////// Predetermined tasks !!!
 
-// getPredeterminedForGroup
-Future<List<TaskPredetermined>> getPredeterminedForGroup(
-    String nickname, int groupId) async {
+Future<List<Map<String, dynamic>>> getAllPredeterminedTasksForUser(
+    String nickname) async {
   try {
+    // supa
     final supabase = SupabaseHelper.supabase;
 
-    // check if the user is in the group from which they're asking for tasks
-    // final List<Map<String, dynamic>> userGroups = await supabase
-    //     .from('user_group')
-    //     .select('group_id')
-    //     .eq('nickname', nickname)
-    //     .eq('group_id', groupId);
+    // get list user groups and add group 0
+    List<int> userGroups = await getUserGroups(nickname);
 
-    // // HOW TO CHECK IF THIS WILL NOT BREAK ??? todo
-    // if (userGroups.isEmpty) {
-    //   return [];
-    // }
-
-    // fetch predetermined tasks for group
+    // get all predetermined tasks with group ids:
     final List<Map<String, dynamic>> response = await supabase
         .from('tasks_predetermined')
         .select()
-        .eq("group_id", groupId);
+        .inFilter("can_use", userGroups);
 
-    return response.map((task) => TaskPredetermined.fromJson(task)).toList();
+    print("Response from getAllPredeterminedTasks for $nickname : ");
+    print("$response");
+
+    return response;
+    // return response.map((task) => TaskPredetermined.fromJson(task)).toList();
   } catch (e) {
-    print('Error in getPredeterminedForGroup: $e');
+    print('Error in getAllPredeterminedTasksForUser: $e');
     return [];
   }
 }
+
+// getPredeterminedForGroup - OUTDATED
+// Future<List<TaskPredetermined>> getPredeterminedForGroup(
+//     String nickname, int groupId) async {
+//   try {
+//     final supabase = SupabaseHelper.supabase;
+
+//     // check if the user is in the group from which they're asking for tasks
+//     // final List<Map<String, dynamic>> userGroups = await supabase
+//     //     .from('user_group')
+//     //     .select('group_id')
+//     //     .eq('nickname', nickname)
+//     //     .eq('group_id', groupId);
+
+//     // // HOW TO CHECK IF THIS WILL NOT BREAK ??? todo
+//     // if (userGroups.isEmpty) {
+//     //   return [];
+//     // }
+
+//     // fetch predetermined tasks for group
+//     final List<Map<String, dynamic>> response = await supabase
+//         .from('tasks_predetermined')
+//         .select()
+//         .eq("can_use", groupId);
+
+//     return response.map((task) => TaskPredetermined.fromJson(task)).toList();
+//   } catch (e) {
+//     print('Error in getPredeterminedForGroup: $e');
+//     return [];
+//   }
+// }
 
 // createDeterminedTask - these tasks can't be changed at all, and contibute towards achievements.
 // todo - mozda staviti da je pplNeeded fleksibilno, da se specificira pri pravljenju svakog taska ovog tipa?
