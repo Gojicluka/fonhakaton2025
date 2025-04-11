@@ -50,29 +50,53 @@ class GroupsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          // Group List
-          Expanded(
-            child: ListView.builder(
-              itemCount: groups.length,
-              itemBuilder: (context, index) {
-                return GroupTile(
-                  group: groups[index],
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailPage(group: groups[index]),
-                      ),
-                    );
-                  },
-                );
-              },
+    return DefaultTabController(
+      length: 2, // Number of tabs
+      child: Scaffold(
+        body: Column(
+          children: [
+            // TabBar
+            const TabBar(
+              labelColor: Colors.black,
+              indicatorColor: Colors.blue,
+              tabs: [
+                Tab(icon: Icon(Icons.group_add), text: 'Join'), // "Join" tab
+                Tab(icon: Icon(Icons.groups), text: 'My Groups'), // "My Groups" tab
+              ],
             ),
-          ),
-        ],
+            // TabBarView
+            Expanded(
+              child: TabBarView(
+                children: [
+                  // First Tab: Join
+                  GroupListView(
+                    groups: groups, // Pass the list of groups
+                    onTap: (group) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailPage(group: group),
+                        ),
+                      );
+                    },
+                  ),
+                  // Second Tab: My Groups
+                  MyGroupsView(
+                    groups: groups, // Replace with the user's groups
+                    onTap: (group) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailPage(group: group),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -174,6 +198,46 @@ class DetailPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class GroupListView extends StatelessWidget {
+  final List<Group> groups;
+  final void Function(Group) onTap;
+
+  const GroupListView({super.key, required this.groups, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: groups.length,
+      itemBuilder: (context, index) {
+        return GroupTile(
+          group: groups[index],
+          onTap: () => onTap(groups[index]),
+        );
+      },
+    );
+  }
+}
+
+class MyGroupsView extends StatelessWidget {
+  final List<Group> groups; // Replace with the user's groups
+  final void Function(Group) onTap;
+
+  const MyGroupsView({super.key, required this.groups, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: groups.length,
+      itemBuilder: (context, index) {
+        return GroupTile(
+          group: groups[index],
+          onTap: () => onTap(groups[index]),
+        );
+      },
     );
   }
 }
