@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fonhakaton2025/data/models/Group.dart';
 import 'package:fonhakaton2025/utils/IconConverter.dart';
+import 'package:fonhakaton2025/screens/Groups/GroupDetails.dart';
+import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
+import 'package:fonhakaton2025/data/global.dart';
 
 final List<Group> groups = [
   Group(
@@ -69,27 +72,53 @@ class GroupsScreen extends StatelessWidget {
               child: TabBarView(
                 children: [
                   // First Tab: Join
-                  GroupListView(
-                    groups: groups, // Pass the list of groups
-                    onTap: (group) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailPage(group: group),
-                        ),
-                      );
+                  FutureBuilder<List<Group>>(
+                    future: getAllGroupsExceptUserGroups(Global.getUsername()), // Replace with the actual user nickname
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text("Error: ${snapshot.error}"));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Center(child: Text("No groups available to join."));
+                      } else {
+                        return GroupListView(
+                          groups: snapshot.data!,
+                          onTap: (group) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GroupDetails(group: group),
+                              ),
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
                   // Second Tab: My Groups
-                  MyGroupsView(
-                    groups: groups, // Replace with the user's groups
-                    onTap: (group) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailPage(group: group),
-                        ),
-                      );
+                  FutureBuilder<List<Group>>(
+                    future: getAllUserGroups("john_doe"), // Replace with the actual user nickname
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text("Error: ${snapshot.error}"));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Center(child: Text("You are not part of any groups."));
+                      } else {
+                        return MyGroupsView(
+                          groups: snapshot.data!,
+                          onTap: (group) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GroupDetails(group: group),
+                              ),
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
                 ],

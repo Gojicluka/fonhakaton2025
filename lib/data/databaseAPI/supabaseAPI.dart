@@ -9,6 +9,8 @@ import 'package:fonhakaton2025/data/supabase_helper.dart';
 import 'package:supabase/src/supabase_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart' as path;
+import 'package:fonhakaton2025/data/models/Group.dart';
+import 'package:fonhakaton2025/data/models/UserGroup.dart';
 
 //////// STRUCTURES
 
@@ -862,3 +864,60 @@ Future<ReturnMessage> rewardUserForTask({
     );
   }
 }
+
+Future<List<Group>> getAllUserGroups(String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Fetch all group IDs the user is a part of
+    final List<Map<String, dynamic>> userGroups = await supabase
+        .from('user_group')
+        .select('group_id')
+        .eq('nickname', nickname);
+
+    // Extract group IDs
+    final List<int> groupIds =
+        userGroups.map((group) => group['group_id'] as int).toList();
+
+    // Fetch group details for the group IDs
+    final List<Map<String, dynamic>> response = await supabase
+        .from('groups')
+        .select()
+        .inFilter('group_id', groupIds); // Use inFilter instead of in_
+
+    // Map the response to a list of Group objects
+    return response.map((group) => Group.fromJson(group)).toList();
+  } catch (e) {
+    print('Error in getAllUserGroups: $e');
+    return [];
+  }
+}
+
+Future<List<Group>> getAllGroupsExceptUserGroups(String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Fetch all group IDs the user is a part of
+    final List<Map<String, dynamic>> userGroups = await supabase
+        .from('user_group')
+        .select('group_id')
+        .eq('nickname', nickname);
+
+    // Extract group IDs
+    final List<int> groupIds =
+        userGroups.map((group) => group['group_id'] as int).toList();
+
+    // Fetch all groups excluding the ones the user is a part of
+    final List<Map<String, dynamic>> response = await supabase
+        .from('groups')
+        .select()
+        .not('group_id', 'in', groupIds);
+
+    // Map the response to a list of Group objects
+    return response.map((group) => Group.fromJson(group)).toList();
+  } catch (e) {
+    print('Error in getAllGroupsExceptUserGroups: $e');
+    return [];
+  }
+}
+

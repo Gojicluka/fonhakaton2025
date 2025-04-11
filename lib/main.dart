@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     Icons.menu_book, // PublicTaskPage (Book icon)
     Icons.checklist, // MyTasks (Checklist icon, representing tasks)
     Icons.emoji_events, // LeaderboardPage (Trophy icon)
-    Icons.person, // ProfilePage (Person icon)
+    Icons.groups, // ProfilePage (Person icon)
   ];
 
   final List<Widget> _screens = [
