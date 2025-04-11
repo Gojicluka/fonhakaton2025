@@ -353,12 +353,6 @@ Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
     }); // , 'status': TaskStatus.DOING
 
     await updateTaskPeopleDoing(taskId, 1);
-    // if (response == null || response.error != null) {
-    //   return ReturnMessage(
-    //       success: false,
-    //       statusCode: 500,
-    //       message: "Database error: ${response.error!.message}");
-    // }
     return ReturnMessage(
         success: true,
         statusCode: 200,
@@ -446,13 +440,6 @@ Future<ReturnMessage> acceptUserTask(
     // await updateTaskPeopleSubmitted(taskId, -1);
     // people completed todo???
 
-    // if (response.error != null) {
-    //   return ReturnMessage(
-    //       success: false,
-    //       statusCode: 500,
-    //       message: "Database error: ${response.error!.message}");
-    // }
-
     return ReturnMessage(
         success: true,
         statusCode: 200,
@@ -485,13 +472,6 @@ Future<ReturnMessage> denyUserTask(
 
     await updateTaskPeopleSubmitted(taskId, -1);
     // people completed todo???
-
-    // if (response.error != null) {
-    //   return ReturnMessage(
-    //       success: false,
-    //       statusCode: 500,
-    //       message: "Database error: ${response.error!.message}");
-    // }
 
     return ReturnMessage(
         success: true,
@@ -534,13 +514,6 @@ Future<ReturnMessage> submitUserTask(
 
     await updateTaskPeopleDoing(taskId, -1);
     await updateTaskPeopleSubmitted(taskId, 1);
-
-    // if (response.error != null) {
-    //   return ReturnMessage(
-    //       success: false,
-    //       statusCode: 500,
-    //       message: "Database error: ${response.error!.message}");
-    // }
 
     return ReturnMessage(
         success: true,
@@ -606,25 +579,12 @@ Future<ReturnMessage> UpdateUserTaskStatus(
       'nickname': nickname
     }); // Ensure both are included
 
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
-
     if (newStatusId == TaskStatus.PENDING) {
       final response = await updateTaskPeopleSubmitted(taskId, 1);
-      if (response.error != null) {
-        print("nooo");
-      }
     }
     if (newStatusId == TaskStatus.DENIED ||
         newStatusId == TaskStatus.ACCEPTED) {
       final response = await updateTaskPeopleSubmitted(taskId, -1);
-      if (response.error != null) {
-        print("nooo");
-      }
     }
 
     return ReturnMessage(
@@ -657,13 +617,6 @@ Future<ReturnMessage> deleteUserTask(String nickname, int taskId) async {
 
     // make it so that one person less is doing the task.
     var updateDoing = await updateTaskPeopleDoing(taskId, -1);
-
-    if (updateDoing.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
 
     return ReturnMessage(
         success: true,
@@ -711,14 +664,7 @@ Future<ReturnMessage> updateUserXP(String nickname, int amount) async {
 
     return ReturnMessage(
         success: true, statusCode: 200, message: "User got XP $amount");
-  }on PostgrestException catch (e) {
-    print("Postgrest error: ${e.message}");
-    return ReturnMessage(
-      success: false,
-      statusCode: 500,
-      message: "Supabase error: ${e.message}",
-    );
-  } catch (e) {
+  }catch (e) {
     print('Error in upadteUserXP: $e');
     return ReturnMessage(
         success: false, statusCode: 500, message: "Exception: $e");
@@ -780,14 +726,6 @@ Future<ReturnMessage> createDeterminedTask(TaskPredetermined task) async {
       'ppl_submitted': task.pplSubmitted,
     });
 
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
-    ;
-
     return ReturnMessage(
         success: true,
         statusCode: 200,
@@ -809,12 +747,6 @@ Future<ReturnMessage> createDeterminedExisting(
     final response = await supabase
         .from('predetermined_existing')
         .insert({'task_id': taskId, 'pred_id': predId});
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
 
     return ReturnMessage(
         success: true,
@@ -838,14 +770,6 @@ Future<ReturnMessage> deleteDeterminedExisting(
         .delete()
         .match(
             {'task_id': taskId, 'pred_id': predId}); // Ensure both are included
-
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
-
     // todo - maybe include some logic for stats/achievements ?
 
     return ReturnMessage(
@@ -906,13 +830,6 @@ Future<ReturnMessage> rewardUserForTask({
       success: true,
       statusCode: 200,
       message: "Reward claimed successfully!",
-    );
-  } on PostgrestException catch (e) {
-    print("Postgrest error: ${e.message}");
-    return ReturnMessage(
-      success: false,
-      statusCode: 500,
-      message: "Supabase error: ${e.message}",
     );
   } catch (e) {
     return ReturnMessage(
