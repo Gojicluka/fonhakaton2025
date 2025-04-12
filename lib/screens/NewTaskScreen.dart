@@ -25,13 +25,9 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   final TextEditingController _peopleController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-
-  // dodato
-
   final TextEditingController _hoursController = TextEditingController();
   final TextEditingController _minutesController = TextEditingController();
 
-  // Task? _selectedPredefinedTask;
   Map<String, dynamic> noitem = {"name": "none", "selected": false};
   Color _selectedColor = Colors.blue;
   bool _showAdditionalOptions = false;
@@ -45,17 +41,26 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   void initState() {
     super.initState();
 
-    // form list of tasks
-    predefinedTasksList.add(noitem);
-    predefinedTasksList.addAll(Global.getPredeterminedTasks()!
-        .where((task) => task['for_group'] as int == widget.group_id));
-    for (var i = 0; i < predefinedTasksList.length; i++) {
-      dropdownList.add(DropdownMenuItem(
-          value: i, child: Text(predefinedTasksList[i]['name'])));
-    }
+    // Fetch predetermined tasks when the widget loads
+    _fetchPredeterminedTasks();
+  }
 
-    // update logic
-    _selectedPredefinedTask = 0; // index of first element of list
+  Future<void> _fetchPredeterminedTasks() async {
+    try {
+      final tasks = await getAllPredeterminedTasksForUser(Global.getUsername());
+      setState(() {
+        predefinedTasksList.add(noitem); // Add "none" as the first option
+        predefinedTasksList.addAll(tasks.where((task) =>
+            task['for_group'] as int == widget.group_id)); // Filter by group_id
+        for (var i = 0; i < predefinedTasksList.length; i++) {
+          dropdownList.add(DropdownMenuItem(
+              value: i, child: Text(predefinedTasksList[i]['name'])));
+        }
+        _selectedPredefinedTask = 0; // Default to the first item
+      });
+    } catch (e) {
+      print('Error fetching predetermined tasks: $e');
+    }
   }
 
   void selectPredefined(int idx) {
@@ -64,7 +69,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       resetControllerValues();
       return;
     }
-    _isPredefinedSelected = true; // todo check out of bounds??
+    _isPredefinedSelected = true;
     _selectedPredefinedTask = idx;
     setControllerPredefValues();
   }
@@ -340,7 +345,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                         ],
                       ),
 
-                      // Duration & XP Gain
                       // Duration & XP Gain
                       Row(
                         children: [
