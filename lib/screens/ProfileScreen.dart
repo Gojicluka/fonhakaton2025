@@ -23,7 +23,7 @@ List<Task> tasks = [
     createdBy: "Admin",
     color: "#FF5733",
     iconName: "cleaning_services",
-    durationInMinutes: 120,
+    timeForPlayer: 120,
   ),
   Task(
     taskId: 2,
@@ -41,7 +41,7 @@ List<Task> tasks = [
     createdBy: "Admin",
     color: "#4CAF50",
     iconName: "park",
-    durationInMinutes: 180,
+    timeForPlayer: 180,
   ),
   Task(
     taskId: 3,
@@ -59,12 +59,13 @@ List<Task> tasks = [
     createdBy: "EventManager",
     color: "#2196F3",
     iconName: "event",
-    durationInMinutes: 240,
+    timeForPlayer: 240,
   ),
 ];
 
 class ProfileScreen extends StatelessWidget {
   //generic to be changed later
+
   void handleLogout() {
     // Currently, it does nothing
   }

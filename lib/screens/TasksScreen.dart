@@ -4,7 +4,7 @@ import 'package:fonhakaton2025/data/PendingTaskNotifier.dart';
 import 'package:fonhakaton2025/data/global.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
-import 'package:fonhakaton2025/data/TaskNotifier.dart';
+import 'package:fonhakaton2025/data/notifiers/TaskNotifier.dart';
 import 'package:fonhakaton2025/utils/IconConverter.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -381,7 +381,7 @@ class _TaskScreenState extends State<TaskScreen> {
                       const Icon(Icons.access_time,
                           color: Colors.white, size: 18),
                       const SizedBox(width: 4),
-                      Text(formatDuration(widget.task.durationInMinutes),
+                      Text(formatDuration(widget.task.timeForPlayer),
                           style: const TextStyle(color: Colors.white)),
                       const SizedBox(width: 12),
                       const Icon(Icons.people, color: Colors.white, size: 18),

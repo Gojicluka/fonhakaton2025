@@ -6,8 +6,8 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_reveal_animation/circular_reveal_animation.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fonhakaton2025/data/UserNotifier.dart';
-import 'package:fonhakaton2025/screens/Groups/GroupsScreen.dart';
+import 'package:fonhakaton2025/data/notifiers/PredeterminedTaskProvider.dart';
+import 'package:fonhakaton2025/data/notifiers/UserNotifier.dart';
 import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:fonhakaton2025/theme/custom_colors_theme.dart';
 import 'package:fonhakaton2025/widgets/CameraWidget.dart';
@@ -28,7 +28,20 @@ import 'package:fonhakaton2025/screens/Groups/GroupsScreen.dart';
 void main() async {
   await init_supabase();
 
+// je l ovo uopste neophodno? imamo vec listener V
   Global.setUser(await getUserByName("irena"));
+  Global.setPredeterminedTasks(await getAllPredeterminedTasksForUser("irena"));
+  await Global.setUserGroups("irena");
+
+  if (Global.user == null) {
+    print("the user is null!");
+    // do something with error :D
+  }
+
+  // init states! these are listeners and providers will provide the information asynchronously!
+
+  // Global.setUserAchievements();
+  // Global.setUserStats();
 
   runApp(ProviderScope(child: MyApp()));
 }

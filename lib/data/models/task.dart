@@ -14,7 +14,7 @@ class Task {
   final String createdBy;
   final String color;
   final String iconName;
-  final int durationInMinutes;
+  final int timeForPlayer;
 
   Task({
     required this.taskId,
@@ -32,7 +32,7 @@ class Task {
     required this.createdBy,
     required this.color,
     required this.iconName,
-    required this.durationInMinutes,
+    required this.timeForPlayer,
   });
 
   factory Task.fromJson(Map<String, dynamic> json) => Task(
@@ -51,7 +51,7 @@ class Task {
         createdBy: json['created_by'],
         color: json['color'],
         iconName: json['icon_name'],
-        durationInMinutes: json['duration_in_minutes'],
+        timeForPlayer: json['time_for_player'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -70,6 +70,6 @@ class Task {
         'created_by': createdBy,
         'color': color,
         'icon_name': iconName,
-        'duration_in_minutes': durationInMinutes,
+        'time_for_player': timeForPlayer,
       };
 }

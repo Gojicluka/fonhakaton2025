@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fonhakaton2025/data/UserNotifier.dart';
+import 'package:fonhakaton2025/data/notifiers/UserNotifier.dart';
 import 'package:fonhakaton2025/data/global.dart';
 import 'package:fonhakaton2025/data/supabase_helper.dart';
 import 'package:fonhakaton2025/main.dart';
@@ -40,8 +40,7 @@ class _LoginPageState extends ConsumerState<LoginScreen> {
       try {
         // For demo purposes, you might want to use a mock login
         // In a real app, you would use Supabase authentication here
-        final user =
-            await getUserByName(_usernameController.text);
+        final user = await getUserByName(_usernameController.text);
 
         if (user != null) {
           // In a real app, you would verify the password here

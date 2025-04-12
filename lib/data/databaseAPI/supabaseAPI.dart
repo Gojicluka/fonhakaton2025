@@ -45,6 +45,45 @@ class ReturnMessage {
 
 // helper functions
 
+// todo apr10
+
+Future<List<Map<String, dynamic>>> getUserGroupsWithNames(
+    String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+    List<int> userGroups = await getUserGroups(nickname);
+
+    final getUserGroupsWithNames = await supabase
+        .from('groups')
+        .select('group_id, name')
+        .inFilter('group_id', userGroups);
+
+    return getUserGroupsWithNames;
+  } catch (e) {
+    print('Error in getUserGroupsWithNames: $e');
+    return [];
+  }
+}
+
+Future<List<int>> getUserGroups(String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+    final userGroups = await supabase
+        .from('user_group')
+        .select('group_id')
+        .eq('nickname', nickname);
+
+    final List<int> userGroupsList =
+        userGroups.map((task) => task['group_id'] as int).toList();
+    userGroupsList.add(Groups.NOGROUP.index);
+
+    return userGroupsList;
+  } catch (e) {
+    print('Error in getUserGroups: $e');
+    return [];
+  }
+}
+
 Future<List<int>> getTasksCreatedBy(String nickname) async {
   try {
     final supabase = SupabaseHelper.supabase;
@@ -112,14 +151,7 @@ Future<List<Task>> getAllGroupTasks(String nickname) async {
     print("user created ids $getTasksUserCreated");
 
     // fetch user groups as a list
-    final List<Map<String, dynamic>> userGroups = await supabase
-        .from('user_group')
-        .select('group_id')
-        .eq('nickname', nickname);
-
-    final List<int> userGroupsList =
-        userGroups.map((task) => task['group_id'] as int).toList();
-    userGroupsList.add(Groups.NOGROUP.index);
+    final List<int> userGroupsList = await getUserGroups(nickname);
 
     print("user groups $userGroupsList");
 
@@ -152,14 +184,7 @@ Future<List<Task>> getAllGlobalTasks(String nickname) async {
   print("user created ids $getTasksUserCreated");
 
   // fetch user groups as a list
-  final List<Map<String, dynamic>> userGroups = await supabase
-      .from('user_group')
-      .select('group_id')
-      .eq('nickname', nickname);
-
-  final List<int> userGroupsList =
-      userGroups.map((task) => task['group_id'] as int).toList();
-  userGroupsList.add(Groups.NOGROUP.index);
+  final List<int> userGroupsList = await getUserGroups(nickname);
 
   print("user groups $userGroupsList");
 
@@ -216,37 +241,44 @@ Future<List<Task>> getAllAvailableTasksFilter(
 }
 
 /// stvara ulaz u tabelu task_user, sa statusom "doing"
-Future<ReturnMessage> createTask(Task task) async {
+Future<int> createTask(Task task) async {
   try {
     final supabase = SupabaseHelper.supabase;
 
-    final response = await supabase.from('tasks').insert({
-      'task_id': task.taskId,
-      'name': task.name,
-      'description': task.description,
-      'place': task.place,
-      'uni_id': task.uniId,
-      'xp': task.xp,
-      'group_id': task.groupId,
-      'urgent': task.urgent,
-      'exists_for_time': task.existsForTime,
-      'ppl_needed': task.pplNeeded,
-      'ppl_doing': task.pplDoing,
-      'ppl_submitted': task.pplSubmitted,
-      'created_by': task.createdBy,
-      'color': task.color,
-      'icon_name': task.iconName,
-      'duration_in_minutes': task.durationInMinutes,
-    });
+    final response = await supabase
+        .from('tasks')
+        .insert({
+          // 'task_id': 0, // test value!
+          'name': task.name,
+          'description': task.description,
+          'place': task.place,
+          'uni_id': task.uniId,
+          'xp': task.xp,
+          'group_id': task.groupId,
+          'urgent': task.urgent,
+          'exists_for_time': task.existsForTime,
+          'ppl_needed': task.pplNeeded,
+          'ppl_doing': task.pplDoing,
+          'ppl_submitted': task.pplSubmitted,
+          'created_by': task.createdBy,
+          'color': task.color,
+          'icon_name': task.iconName,
+          'time_for_player': task.timeForPlayer,
+        })
+        .select('task_id')
+        .maybeSingle();
 
-    return ReturnMessage(
-        success: true,
-        statusCode: 200,
-        message: "Task '${task.name}' created successfully");
+    // 1. postgrest map ne moze u List<Map<String, dynamic>> da se kastuje.
+    // 2.
+
+    if (response != null) {
+      return response['task_id'];
+    } else {
+      return -1;
+    }
   } catch (e) {
     print('Error in createTask: $e');
-    return ReturnMessage(
-        success: false, statusCode: 500, message: "Exception: $e");
+    return -1;
   }
 }
 
@@ -666,41 +698,67 @@ Future<ReturnMessage> updateUserXP(String nickname, int amount) async {
 
 /////////////// Predetermined tasks !!!
 
-// getPredeterminedForGroup
-Future<List<TaskPredetermined>> getPredeterminedForGroup(
-    String nickname, int groupId) async {
+Future<List<Map<String, dynamic>>> getAllPredeterminedTasksForUser(
+    String nickname) async {
   try {
+    // supa
     final supabase = SupabaseHelper.supabase;
 
-    // check if the user is in the group from which they're asking for tasks
-    // final List<Map<String, dynamic>> userGroups = await supabase
-    //     .from('user_group')
-    //     .select('group_id')
-    //     .eq('nickname', nickname)
-    //     .eq('group_id', groupId);
+    // get list user groups and add group 0
+    List<int> userGroups = await getUserGroups(nickname);
 
-    // // HOW TO CHECK IF THIS WILL NOT BREAK ??? todo
-    // if (userGroups.isEmpty) {
-    //   return [];
-    // }
-
-    // fetch predetermined tasks for group
+    // get all predetermined tasks with group ids:
     final List<Map<String, dynamic>> response = await supabase
         .from('tasks_predetermined')
         .select()
-        .eq("group_id", groupId);
+        .inFilter("can_use", userGroups);
 
-    return response.map((task) => TaskPredetermined.fromJson(task)).toList();
+    print("Response from getAllPredeterminedTasks for $nickname : ");
+    print("$response");
+
+    return response;
+    // return response.map((task) => TaskPredetermined.fromJson(task)).toList();
   } catch (e) {
-    print('Error in getPredeterminedForGroup: $e');
+    print('Error in getAllPredeterminedTasksForUser: $e');
     return [];
   }
 }
 
+// getPredeterminedForGroup - OUTDATED
+// Future<List<TaskPredetermined>> getPredeterminedForGroup(
+//     String nickname, int groupId) async {
+//   try {
+//     final supabase = SupabaseHelper.supabase;
+
+//     // check if the user is in the group from which they're asking for tasks
+//     // final List<Map<String, dynamic>> userGroups = await supabase
+//     //     .from('user_group')
+//     //     .select('group_id')
+//     //     .eq('nickname', nickname)
+//     //     .eq('group_id', groupId);
+
+//     // // HOW TO CHECK IF THIS WILL NOT BREAK ??? todo
+//     // if (userGroups.isEmpty) {
+//     //   return [];
+//     // }
+
+//     // fetch predetermined tasks for group
+//     final List<Map<String, dynamic>> response = await supabase
+//         .from('tasks_predetermined')
+//         .select()
+//         .eq("can_use", groupId);
+
+//     return response.map((task) => TaskPredetermined.fromJson(task)).toList();
+//   } catch (e) {
+//     print('Error in getPredeterminedForGroup: $e');
+//     return [];
+//   }
+// }
+
 // createDeterminedTask - these tasks can't be changed at all, and contibute towards achievements.
 // todo - mozda staviti da je pplNeeded fleksibilno, da se specificira pri pravljenju svakog taska ovog tipa?
 // todo - dodati posebne poene (stats)
-Future<ReturnMessage> createDeterminedTask(TaskPredetermined task) async {
+Future<ReturnMessage> createPredefinedTask(TaskPredetermined task) async {
   try {
     final supabase = SupabaseHelper.supabase;
 
@@ -732,7 +790,7 @@ Future<ReturnMessage> createDeterminedTask(TaskPredetermined task) async {
 
 // createDeterminedExisting
 
-Future<ReturnMessage> createDeterminedExisting(
+Future<ReturnMessage> createPredeterminedExisting(
     String nickname, int taskId, int predId) async {
   try {
     final supabase = SupabaseHelper.supabase;
@@ -746,7 +804,7 @@ Future<ReturnMessage> createDeterminedExisting(
         statusCode: 200,
         message: "User task $taskId , $nickname added successfully");
   } catch (e) {
-    print('Error in createDeterminedExisting: $e');
+    print('Error in createPredeterminedExisting: $e');
     return ReturnMessage(
         success: false, statusCode: 500, message: "Exception: $e");
   }
