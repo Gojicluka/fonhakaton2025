@@ -17,20 +17,10 @@ import 'package:fonhakaton2025/data/models/UserGroup.dart';
 // todo: make it match the ID-s in database.
 // waiting_delete -> taskovi koji su prihvaceni i nagradjeni, ne vide se nigde, ali se brisu tek kada se obrise glavni task iz kog su nastali,
 // kako ne bi jedan user mogao da radi isti quest vise puta!
-enum TaskStatus { DOING, PENDING, ACCEPTED, DENIED, WAITING_DELETE }
-
 enum Groups { NOGROUP, ADDMORE }
 
 // bucket names for storage
 final String TASKCOMPLETIONS_BUCKET_NAME = "taskcompletions";
-
-List<String> statusToStringArr = [
-  "doing",
-  "pending",
-  "accepted",
-  "denied",
-  "waiting_delete"
-];
 
 class ReturnMessage {
   final bool success;
@@ -666,7 +656,7 @@ Future<ReturnMessage> updateUserXP(String nickname, int amount) async {
 
     return ReturnMessage(
         success: true, statusCode: 200, message: "User got XP $amount");
-  }catch (e) {
+  } catch (e) {
     print('Error in upadteUserXP: $e');
     return ReturnMessage(
         success: false, statusCode: 500, message: "Exception: $e");
@@ -801,30 +791,30 @@ Future<bool> insertTask(Task task) async {
 }
 
 Future<ReturnMessage> userTaskChangeStateToWaitingDelete(
-  {required String nickname, required int taskId}) async {
+    {required String nickname, required int taskId}) async {
   try {
-  final supabase = SupabaseHelper.supabase;
+    final supabase = SupabaseHelper.supabase;
 
-  // Update the task state to "waiting_delete"
-  final response = await supabase.from('user_task').update({
-    'state_id': statusToStringArr[TaskStatus.WAITING_DELETE.index],
-  }).match({
-    'task_id': taskId,
-    'nickname': nickname,
-  });
+    // Update the task state to "waiting_delete"
+    final response = await supabase.from('user_task').update({
+      'state_id': statusToStringArr[TaskStatus.WAITING_DELETE.index],
+    }).match({
+      'task_id': taskId,
+      'nickname': nickname,
+    });
 
-  return ReturnMessage(
-    success: true,
-    statusCode: 200,
-    message: "Task state changed to 'waiting_delete' successfully",
-  );
+    return ReturnMessage(
+      success: true,
+      statusCode: 200,
+      message: "Task state changed to 'waiting_delete' successfully",
+    );
   } catch (e) {
-  print('Error in userTaskChangeStateToWaitingDelete: $e');
-  return ReturnMessage(
-    success: false,
-    statusCode: 500,
-    message: "Exception in userTaskChangeStateToWaitingDelete: $e",
-  );
+    print('Error in userTaskChangeStateToWaitingDelete: $e');
+    return ReturnMessage(
+      success: false,
+      statusCode: 500,
+      message: "Exception in userTaskChangeStateToWaitingDelete: $e",
+    );
   }
 }
 
@@ -908,10 +898,8 @@ Future<List<Group>> getAllGroupsExceptUserGroups(String nickname) async {
         userGroups.map((group) => group['group_id'] as int).toList();
 
     // Fetch all groups excluding the ones the user is a part of
-    final List<Map<String, dynamic>> response = await supabase
-        .from('groups')
-        .select()
-        .not('group_id', 'in', groupIds);
+    final List<Map<String, dynamic>> response =
+        await supabase.from('groups').select().not('group_id', 'in', groupIds);
 
     // Map the response to a list of Group objects
     return response.map((group) => Group.fromJson(group)).toList();
@@ -921,3 +909,91 @@ Future<List<Group>> getAllGroupsExceptUserGroups(String nickname) async {
   }
 }
 
+Future<List<UserModel>> getTopPlayersByXP(int universityId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Query the database to get the top 7 players by XP for the given university_id
+    final List<Map<String, dynamic>> response = await supabase
+        .from('users') // Assuming the table is named 'users'
+        .select(
+            'nickname, xp, image') // Select all fields required for UserModel
+        .eq('uni_id', universityId) // Filter by university_id
+        .order('xp', ascending: false) // Order by XP in descending order
+        .limit(7); // Limit the results to the top 7
+
+    // Print the response for debugging purposes
+    // Map the response to a list of UserModel objects
+    return response.map((data) => UserModel.fromJson(data)).toList();
+  } catch (e) {
+    print('Error in getTopPlayersByXP: $e');
+    return [];
+  }
+}
+
+Future<List<UserModel>> getGroupMembers(int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Query the database to get all members of the group
+    final List<Map<String, dynamic>> response = await supabase
+        .from('user_group') // Assuming the table is named 'user_group'
+        .select('nickname, users(xp, image)') // Join with the 'users' table
+        .eq('group_id', groupId);
+
+    // Map the response to a list of UserModel objects
+    return response.map((data) {
+      final user = data['users'];
+      return UserModel(
+        nickname: data['nickname'],
+        xp: user['xp'] ?? 0,
+        image: user['image'],
+      );
+    }).toList();
+  } catch (e) {
+    print('Error in getGroupMembers: $e');
+    return [];
+  }
+}
+
+Future<List<UserModel>> getGroupJoinRequests(int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Query the database to get all join requests for the group
+    final List<Map<String, dynamic>> response = await supabase
+        .from('join_requests') // Assuming the table is named 'join_requests'
+        .select('nickname, users(xp, image)') // Join with the 'users' table
+        .eq('group_id', groupId);
+
+    // Map the response to a list of UserModel objects
+    return response.map((data) {
+      final user = data['users'];
+      return UserModel(
+        nickname: data['nickname'],
+        xp: user['xp'] ?? 0,
+        image: user['image'],
+      );
+    }).toList();
+  } catch (e) {
+    print('Error in getGroupJoinRequests: $e');
+    return [];
+  }
+}
+
+Future<bool> kickMemberFromGroup(String nickname, int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Delete the user from the user_group table
+    final response = await supabase
+        .from('user_group')
+        .delete()
+        .match({'nickname': nickname, 'group_id': groupId});
+
+    return true;
+  } catch (e) {
+    print('Error in kickMemberFromGroup: $e');
+    return false;
+  }
+}

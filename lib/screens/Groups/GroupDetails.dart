@@ -1,28 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:fonhakaton2025/data/models/Group.dart';
+import 'package:fonhakaton2025/data/models/user.dart';
+import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 
-class GroupDetails extends StatelessWidget {
+class GroupDetails extends StatefulWidget {
   final Group group;
 
   const GroupDetails({super.key, required this.group});
 
   @override
+  _GroupDetailsState createState() => _GroupDetailsState();
+}
+
+class _GroupDetailsState extends State<GroupDetails> {
+  late Future<List<UserModel>> _membersFuture;
+  late Future<List<UserModel>> _joinRequestsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _membersFuture = getGroupMembers(widget.group.groupId);
+    _joinRequestsFuture = getGroupJoinRequests(widget.group.groupId);
+  }
+
+  void _kickMember(String nickname) async {
+    final success = await kickMemberFromGroup(nickname, widget.group.groupId);
+    if (success) {
+      setState(() {
+        _membersFuture =
+            getGroupMembers(widget.group.groupId); // Refresh members
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$nickname has been removed from the group')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to remove member')),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Mock data for members and join requests
-    final List<String> members = [
-      "Alice",
-      "Bob",
-      "Charlie",
-      "Diana",
-      "Eve",
-    ];
-
-    final List<String> joinRequests = [
-      "Frank",
-      "Grace",
-      "Hank",
-    ];
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -32,16 +51,17 @@ class GroupDetails extends StatelessWidget {
           },
         ),
         elevation: 0, // Remove shadow for a clean look
-        backgroundColor: Colors.transparent, // Make the AppBar background transparent
+        backgroundColor:
+            Colors.transparent, // Make the AppBar background transparent
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Group Name and Member Count
+            // Group Name and Description
             Text(
-              group.name,
+              widget.group.name,
               style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -49,15 +69,57 @@ class GroupDetails extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              "Members: ${members.length}",
+              widget.group.description ?? "",
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 16,
                 color: Colors.grey,
               ),
             ),
+            const SizedBox(height: 8),
+
+            // Member Count
+            FutureBuilder<List<UserModel>>(
+              future: _membersFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Text(
+                    "Loading members...",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text(
+                    "Error: ${snapshot.error}",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.red,
+                    ),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Text(
+                    "No members found",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  );
+                }
+
+                final memberCount = snapshot.data!.length;
+                return Text(
+                  "Members: $memberCount",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                  ),
+                );
+              },
+            ),
             const SizedBox(height: 16),
 
-            // Scrollable List of Members
+            // Group Members
             const Text(
               "Members",
               style: TextStyle(
@@ -67,19 +129,40 @@ class GroupDetails extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: ListView.builder(
-                itemCount: members.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: const Icon(Icons.person),
-                    title: Text(members[index]),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.remove_circle, color: Colors.red),
-                      onPressed: () {
-                        // Mock API call to kick the member
-                        print("Kicked ${members[index]}");
-                      },
-                    ),
+              child: FutureBuilder<List<UserModel>>(
+                future: _membersFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No members found'));
+                  }
+
+                  final members = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: members.length,
+                    itemBuilder: (context, index) {
+                      final member = members[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: member.image != null
+                              ? NetworkImage(member.image!)
+                              : const AssetImage('assets/default_avatar.png')
+                                  as ImageProvider,
+                        ),
+                        title: Text(member.nickname),
+                        subtitle: Text('XP: ${member.xp}'),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.remove_circle,
+                              color: Colors.red),
+                          onPressed: () {
+                            _kickMember(member.nickname); // Kick member
+                          },
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -87,7 +170,7 @@ class GroupDetails extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Scrollable List of Join Requests
+            // Join Requests
             const Text(
               "Join Requests",
               style: TextStyle(
@@ -97,31 +180,53 @@ class GroupDetails extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: ListView.builder(
-                itemCount: joinRequests.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: const Icon(Icons.person_add),
-                    title: Text(joinRequests[index]),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.check, color: Colors.green),
-                          onPressed: () {
-                            // Mock API call to accept the join request
-                            print("Accepted ${joinRequests[index]}");
-                          },
+              child: FutureBuilder<List<UserModel>>(
+                future: _joinRequestsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No join requests found'));
+                  }
+
+                  final joinRequests = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: joinRequests.length,
+                    itemBuilder: (context, index) {
+                      final request = joinRequests[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: request.image != null
+                              ? NetworkImage(request.image!)
+                              : const AssetImage('assets/default_avatar.png')
+                                  as ImageProvider,
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.close, color: Colors.red),
-                          onPressed: () {
-                            // Mock API call to deny the join request
-                            print("Denied ${joinRequests[index]}");
-                          },
+                        title: Text(request.nickname),
+                        subtitle: Text('XP: ${request.xp}'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon:
+                                  const Icon(Icons.check, color: Colors.green),
+                              onPressed: () {
+                                // Mock API call to accept the join request
+                                print("Accepted ${request.nickname}");
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close, color: Colors.red),
+                              onPressed: () {
+                                // Mock API call to deny the join request
+                                print("Denied ${request.nickname}");
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   );
                 },
               ),
@@ -132,6 +237,3 @@ class GroupDetails extends StatelessWidget {
     );
   }
 }
-
-
-
