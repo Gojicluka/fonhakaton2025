@@ -11,7 +11,6 @@ import 'package:fonhakaton2025/data/notifiers/UserNotifier.dart';
 import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:fonhakaton2025/theme/custom_colors_theme.dart';
 import 'package:fonhakaton2025/widgets/CameraWidget.dart';
-import 'package:fonhakaton2025/screens/GroupDetailsScreen.dart';
 import 'package:fonhakaton2025/screens/MyTasksScreen.dart';
 import 'package:fonhakaton2025/screens/NewTaskScreen.dart';
 import 'package:fonhakaton2025/screens/TasksScreen.dart';
@@ -23,6 +22,8 @@ import 'package:fonhakaton2025/screens/LoginScreen.dart';
 import 'package:fonhakaton2025/screens/ProfileScreen.dart';
 import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 import 'package:fonhakaton2025/data/models/user.dart';
+import 'package:fonhakaton2025/widgets/Appbar.dart';
+import 'package:fonhakaton2025/screens/Groups/GroupsScreen.dart';
 
 void main() async {
   await init_supabase();
@@ -45,105 +46,6 @@ void main() async {
   runApp(ProviderScope(child: MyApp()));
 }
 
-final xpAnimationProvider =
-    StateNotifierProvider<XpAnimationNotifier, bool>((ref) {
-  return XpAnimationNotifier();
-});
-
-class XpAnimationNotifier extends StateNotifier<bool> {
-  int? _previousXp;
-
-  XpAnimationNotifier() : super(false);
-
-  void checkAndAnimateXp(int? currentXp) {
-    if (_previousXp != null && currentXp != null && currentXp != _previousXp) {
-      state = true; // Trigger animation
-      Future.delayed(Duration(milliseconds: 500), () {
-        state = false; // Reset animation state
-      });
-    }
-    _previousXp = currentXp;
-  }
-}
-
-class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  @override
-  final Size preferredSize;
-
-  CustomAppBar({Key? key})
-      : preferredSize = Size.fromHeight(kToolbarHeight),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
-    final xpAnimation = ref.watch(xpAnimationProvider);
-
-    // todo - add listeners for predeterminedTasks, userSkillPoints, userAchievements.
-    // user-skillpoints and user-achievements will listen to only when THIS USER's user_points and user_ach change, BUT WILL RETURN FULL DATA ON ALL POINTS / ALL ACHIEVEMENTS.
-    // implement the model that has -> Achievement + won/not won for the user!!!
-    // implement the model that has Skill[ID] -> skill_name, points, perhaps as an INDEXED ARRAY, to make it SCALABLE AND DYNAMIC!
-
-    Global.predeterminedTasks = ref.watch(predeterminedTaskProvider);
-    // final userAchievements = ref.watch(userAchievementsProvider);
-    // final userStats = ref.watch(userStatsProvider);
-
-    // Listen to changes in the userProvider and trigger the animation
-    ref.listen<UserModel?>(userProvider, (previous, next) {
-      if (previous?.xp != next?.xp) {
-        ref.read(xpAnimationProvider.notifier).checkAndAnimateXp(next?.xp);
-      }
-    });
-
-    return AppBar(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CircleAvatar(
-            backgroundImage:
-                user?.image != null ? NetworkImage(user!.image!) : null,
-            backgroundColor: Colors.grey[300],
-            child: user?.image == null
-                ? Icon(Icons.person, color: Colors.grey[700])
-                : null,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                user?.nickname ?? 'Guest',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-              AnimatedDefaultTextStyle(
-                style: TextStyle(
-                  fontSize: xpAnimation ? 18 : 14,
-                  color: xpAnimation ? Colors.green : Colors.grey[500],
-                  fontWeight: xpAnimation ? FontWeight.bold : FontWeight.normal,
-                ),
-                duration: Duration(milliseconds: 200),
-                child: Text(
-                  'XP: ${user?.xp ?? 0}',
-                ),
-              ),
-            ],
-          ),
-          IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ExplorePage()),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class MyApp extends StatelessWidget {
   @override
@@ -185,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     Icons.menu_book, // PublicTaskPage (Book icon)
     Icons.checklist, // MyTasks (Checklist icon, representing tasks)
     Icons.emoji_events, // LeaderboardPage (Trophy icon)
-    Icons.person, // ProfilePage (Person icon)
+    Icons.groups, // ProfilePage (Person icon)
   ];
 
   final List<Widget> _screens = [
@@ -193,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     // PublicTaskPage(),
     MyTasks(),
     LeaderboardPage(),
-    ProfilePage(),
+    GroupsScreen(),
     NewTaskChoiceScreen(), // Add this
   ];
 
@@ -261,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     final colors = Theme.of(context).extension<CustomColorsTheme>()!;
     return Scaffold(
       extendBody: true,
-      appBar: _bottomNavIndex == 3 ? null : CustomAppBar(),
+      appBar:  CustomAppBar(),
       body: NotificationListener<ScrollNotification>(
         onNotification: onScrollNotification,
         child: _screens[_bottomNavIndex],

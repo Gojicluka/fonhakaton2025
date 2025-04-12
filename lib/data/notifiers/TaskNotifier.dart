@@ -2,18 +2,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 import 'package:fonhakaton2025/data/global.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:fonhakaton2025/data/models/task.dart';
 
 final taskProvider =
-    StateNotifierProvider<TaskNotifier, List<Map<String, dynamic>>>(
+    StateNotifierProvider<TaskNotifier, List<Task>>(
   (ref) => TaskNotifier(),
 );
 
 final groupTaskProvider =
-    StateNotifierProvider<GroupTaskNotifier, List<Map<String, dynamic>>>(
+    StateNotifierProvider<GroupTaskNotifier, List<Task>>(
   (ref) => GroupTaskNotifier(),
 );
 
-class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
+class TaskNotifier extends StateNotifier<List<Task>> {
   TaskNotifier() : super([]) {
     fetchTasks();
     listenForNewTasks();
@@ -26,7 +27,7 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
   /// Fetch all undone tasks from Supabase excluding ones the user has applied to
   Future<void> fetchTasks() async {
-    final response = await getAllAvailableTasks(Global.getUsername());
+    final response = await getAllGlobalTasks(Global.getUsername());
     state = response;
   }
 
@@ -43,7 +44,7 @@ class TaskNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 class GroupTaskNotifier extends TaskNotifier {
   @override
   Future<void> fetchTasks() async {
-    // final response = await getAllAvailableTasksFilter(Global.getUsername(), 0);
-    // state = response;
+    final response = await getAllGroupTasks(Global.getUsername());
+    state = response;
   }
 }

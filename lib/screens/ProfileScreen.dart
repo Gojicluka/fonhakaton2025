@@ -63,7 +63,7 @@ List<Task> tasks = [
   ),
 ];
 
-class ProfilePage extends StatelessWidget {
+class ProfileScreen extends StatelessWidget {
   //generic to be changed later
 
   void handleLogout() {

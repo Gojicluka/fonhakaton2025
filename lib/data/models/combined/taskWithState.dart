@@ -1,3 +1,13 @@
+enum TaskStatus { DOING, PENDING, ACCEPTED, DENIED, WAITING_DELETE }
+
+List<String> statusToStringArr = [
+  "doing",
+  "pending",
+  "accepted",
+  "denied",
+  "waiting_delete"
+];
+
 class TaskWithState {
   // from tasks
   final int taskId;

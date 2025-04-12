@@ -1,39 +1,53 @@
 class UserModel {
   final String nickname;
-  final String password;
-  final bool verified;
+  final String? password;
+  final bool? verified;
   final int xp;
-  final int lvl;
-  final int numTasksCreate;
+  final int? lvl;
+  final int? numTasksCreate;
   final String? image;
-  final String index;
-  final int uniId;
-  final int trustLevel;
+  final String? index;
+  final int? uniId;
+  final int? trustLevel;
 
   UserModel({
     required this.nickname,
-    required this.password,
-    required this.verified,
+    this.password,
+    this.verified,
     required this.xp,
-    required this.lvl,
-    required this.numTasksCreate,
+    this.lvl,
+    this.numTasksCreate,
     this.image,
-    required this.index,
-    required this.uniId,
-    required this.trustLevel,
+    this.index,
+    this.uniId,
+    this.trustLevel,
+  });
+
+  // New constructor with optional fields
+  UserModel.optional({
+    this.nickname = '',
+    this.password,
+    this.verified,
+    this.xp = 0,
+    this.lvl,
+    this.numTasksCreate,
+    this.image,
+    this.index,
+    this.uniId,
+    this.trustLevel,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-        nickname: json['nickname'],
-        password: json['password'],
-        verified: json['verified'],
-        xp: json['xp'],
-        lvl: json['lvl'],
-        numTasksCreate: json['num_tasks_create'],
-        image: json['image'],
-        index: json['index'],
-        uniId: json['uni_id'],
-        trustLevel: json['trust_level'],
+        nickname: json['nickname'], // Default to empty string if null
+        password: json['password'] ?? '', // Optional field
+        verified: json['verified'] ?? false, // Optional field
+        xp: json['xp'] ?? 0, // Default to 0 if null
+        lvl: json['lvl'] ?? 0, // Optional field
+        numTasksCreate: json['num_tasks_create'] ?? 0, // Optional field
+        image: json['image'] ?? '', // Optional field
+        index: json['index'] ?? '', // Optional field
+        uniId: json['uni_id'] ?? 0, // Optional field
+        trustLevel: json['trust_level'] ?? 0, // Optional field
       );
 
   Map<String, dynamic> toJson() => {

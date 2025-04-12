@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
+import 'package:fonhakaton2025/data/models/user.dart';
+import 'package:fonhakaton2025/data/global.dart';
 
-class Player {
-  final String name;
-  final String imageUrl;
-  final int points;
+class LeaderboardPage extends StatefulWidget {
+  const LeaderboardPage({super.key});
 
-  Player({required this.name, required this.imageUrl, required this.points});
+  @override
+  _LeaderboardPageState createState() => _LeaderboardPageState();
 }
 
-class LeaderboardPage extends StatelessWidget {
-  final List<Player> players = [
-    Player(name: "cana", imageUrl: "https://picsum.photos/250", points: 1500),
-    Player(name: "kekss", imageUrl: "https://picsum.photos/251", points: 1400),
-    Player(name: "irkee", imageUrl: "https://picsum.photos/252", points: 1300),
-    Player(
-        name: "miksa99", imageUrl: "https://picsum.photos/253", points: 1100),
-    Player(name: "paki", imageUrl: "https://picsum.photos/254", points: 1000),
-    Player(name: "marko3", imageUrl: "https://picsum.photos/255", points: 900),
-    Player(name: "cira", imageUrl: "https://picsum.photos/256", points: 800),
-  ];
+class _LeaderboardPageState extends State<LeaderboardPage> {
+  late Future<List<UserModel>> _playersFuture;
 
-  LeaderboardPage({super.key});
+  @override
+  void initState() {
+    super.initState();
+    _playersFuture = getTopPlayersByXP(Global.user!.uniId ?? 0);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,38 +31,51 @@ class LeaderboardPage extends StatelessWidget {
               color: Color.fromARGB(255, 0, 0, 0)),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 255, 255,
-            255), // const Color.fromARGB(255, 78, 125, 234), // todo change
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
       ),
-      body: Container(
-        color: Color.fromARGB(255, 255, 255, 255), // Light wood brown color
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            // Top 3 Players Podium
-            _buildPodium(),
+      body: FutureBuilder<List<UserModel>>(
+        future: _playersFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('Trenutno nema igraca'));
+          }
 
-            const SizedBox(height: 20),
+          final players = snapshot.data!;
+          return Container(
+            color: const Color.fromARGB(255, 255, 255, 255),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                // Top 3 Players Podium
+                _buildPodium(players),
 
-            // Remaining Players List
-            Expanded(
-              child: ListView.builder(
-                itemCount: players.length - 3,
-                itemBuilder: (context, index) {
-                  final player = players[index + 3];
-                  return _buildPlayerTile(index + 4, player);
-                },
-              ),
+                const SizedBox(height: 20),
+
+                // Remaining Players List
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: players.length - 3,
+                    itemBuilder: (context, index) {
+                      final player = players[index + 3];
+                      return _buildPlayerTile(index + 4, player);
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
   // Podium Design for Top 3
-  Widget _buildPodium() {
+  Widget _buildPodium(List<UserModel> players) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -80,15 +90,17 @@ class LeaderboardPage extends StatelessWidget {
   }
 
   Widget _buildPodiumPlayer(
-      Player player, int rank, double height, Color color) {
+      UserModel player, int rank, double height, Color color) {
     return Column(
       children: [
         CircleAvatar(
           radius: 35,
-          backgroundImage: NetworkImage(player.imageUrl),
+          backgroundImage: player.image != null
+              ? NetworkImage(player.image!)
+              : const AssetImage('assets/default_avatar.png') as ImageProvider,
         ),
         const SizedBox(height: 8),
-        Text(player.name,
+        Text(player.nickname,
             style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -115,7 +127,7 @@ class LeaderboardPage extends StatelessWidget {
   }
 
   // Regular List Item for Players Ranked 4th and Below
-  Widget _buildPlayerTile(int rank, Player player) {
+  Widget _buildPlayerTile(int rank, UserModel player) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(12),
@@ -132,7 +144,6 @@ class LeaderboardPage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // For players ranked 4th and below, just display the rank as a number
           Text(
             "#$rank",
             style: const TextStyle(
@@ -143,12 +154,15 @@ class LeaderboardPage extends StatelessWidget {
           const SizedBox(width: 12),
           CircleAvatar(
             radius: 25,
-            backgroundImage: NetworkImage(player.imageUrl),
+            backgroundImage: player.image != null
+                ? NetworkImage(player.image!)
+                : const AssetImage('assets/default_avatar.png')
+                    as ImageProvider,
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              player.name,
+              player.nickname,
               style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
@@ -156,7 +170,7 @@ class LeaderboardPage extends StatelessWidget {
             ),
           ),
           Text(
-            "${player.points} xp",
+            "${player.xp} xp",
             style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
