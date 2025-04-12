@@ -11,6 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart' as path;
 import 'package:fonhakaton2025/data/models/Group.dart';
 import 'package:fonhakaton2025/data/models/UserGroup.dart';
+import 'package:fonhakaton2025/data/models/GroupJoinRequest.dart';
 
 //////// STRUCTURES
 
@@ -956,31 +957,6 @@ Future<List<UserModel>> getGroupMembers(int groupId) async {
   }
 }
 
-Future<List<UserModel>> getGroupJoinRequests(int groupId) async {
-  try {
-    final supabase = SupabaseHelper.supabase;
-
-    // Query the database to get all join requests for the group
-    final List<Map<String, dynamic>> response = await supabase
-        .from('join_requests') // Assuming the table is named 'join_requests'
-        .select('nickname, users(xp, image)') // Join with the 'users' table
-        .eq('group_id', groupId);
-
-    // Map the response to a list of UserModel objects
-    return response.map((data) {
-      final user = data['users'];
-      return UserModel(
-        nickname: data['nickname'],
-        xp: user['xp'] ?? 0,
-        image: user['image'],
-      );
-    }).toList();
-  } catch (e) {
-    print('Error in getGroupJoinRequests: $e');
-    return [];
-  }
-}
-
 Future<bool> kickMemberFromGroup(String nickname, int groupId) async {
   try {
     final supabase = SupabaseHelper.supabase;
@@ -994,6 +970,125 @@ Future<bool> kickMemberFromGroup(String nickname, int groupId) async {
     return true;
   } catch (e) {
     print('Error in kickMemberFromGroup: $e');
+    return false;
+  }
+}
+
+Future<bool> acceptJoinRequest(String nickname, int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Add the user to the user_group table
+    final response = await supabase.from('user_group').insert({
+      'nickname': nickname,
+      'group_id': groupId,
+      'role': 'user', // Default role for new members
+    });
+
+    if (response.error != null) {
+      print('Error in acceptJoinRequest: ${response.error!.message}');
+      return false;
+    }
+
+    // Remove the join request from the group_join_request table
+    await supabase
+        .from('group_join_request')
+        .delete()
+        .match({'nickname': nickname, 'group_id': groupId});
+
+    return true;
+  } catch (e) {
+    print('Error in acceptJoinRequest: $e');
+    return false;
+  }
+}
+
+Future<bool> denyJoinRequest(String nickname, int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Remove the join request from the group_join_request table
+    final response = await supabase
+        .from('group_join_request')
+        .delete()
+        .match({'nickname': nickname, 'group_id': groupId});
+
+    if (response.error != null) {
+      print('Error in denyJoinRequest: ${response.error!.message}');
+      return false;
+    }
+
+    return true;
+  } catch (e) {
+    print('Error in denyJoinRequest: $e');
+    return false;
+  }
+}
+
+Future<List<GroupJoinRequest>> getGroupJoinRequests(int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Query the database to get all join requests for the group
+    final List<Map<String, dynamic>> response = await supabase
+        .from(
+            'group_join_request') // Assuming the table is named 'group_join_request'
+        .select('nickname, group_id') // Select the required fields
+        .eq('group_id', groupId); // Filter by group_id
+
+    // Map the response to a list of GroupJoinRequest objects
+    return response.map((data) => GroupJoinRequest.fromJson(data)).toList();
+  } catch (e) {
+    print('Error in getGroupJoinRequests: $e');
+    return [];
+  }
+}
+
+Future<List<UserModel>> getUsersGroupJoinRequests(int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Query the database to get all join requests for the group and join with the users table
+    final List<Map<String, dynamic>> response = await supabase
+        .from(
+            'group_join_request') // Assuming the table is named 'group_join_request'
+        .select('nickname, users(xp, image)') // Join with the 'users' table
+        .eq('group_id', groupId); // Filter by group_id
+
+    // Map the response to a list of UserModel objects
+    return response.map((data) {
+      final user = data['users'];
+      return UserModel(
+        nickname: data['nickname'],
+        xp: user['xp'] ?? 0,
+        image: user['image'],
+      );
+    }).toList();
+  } catch (e) {
+    print('Error in getUsersGroupJoinRequests: $e');
+    return [];
+  }
+}
+
+Future<bool> joinGroup(String nickname, int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Insert the user into the user_group table
+    final response = await supabase.from('user_group').insert({
+      'nickname': nickname,
+      'group_id': groupId,
+      'role': 'user', // Default role for new members
+    });
+
+    if (response.error != null) {
+      print('Error in joinGroup: ${response.error!.message}');
+      return false;
+    }
+
+    return true;
+  } catch (e) {
+    print('Error in joinGroup: $e');
     return false;
   }
 }

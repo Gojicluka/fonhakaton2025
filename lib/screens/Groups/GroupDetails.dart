@@ -20,7 +20,7 @@ class _GroupDetailsState extends State<GroupDetails> {
   void initState() {
     super.initState();
     _membersFuture = getGroupMembers(widget.group.groupId);
-    _joinRequestsFuture = getGroupJoinRequests(widget.group.groupId);
+    _joinRequestsFuture = getUsersGroupJoinRequests(widget.group.groupId);
   }
 
   void _kickMember(String nickname) async {
@@ -36,6 +36,42 @@ class _GroupDetailsState extends State<GroupDetails> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to remove member')),
+      );
+    }
+  }
+
+  void _acceptJoinRequest(String nickname) async {
+    final success = await acceptJoinRequest(nickname, widget.group.groupId);
+    if (success) {
+      setState(() {
+        _joinRequestsFuture = getUsersGroupJoinRequests(
+            widget.group.groupId); // Refresh join requests
+        _membersFuture =
+            getGroupMembers(widget.group.groupId); // Refresh members
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$nickname has been added to the group')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to accept join request')),
+      );
+    }
+  }
+
+  void _denyJoinRequest(String nickname) async {
+    final success = await denyJoinRequest(nickname, widget.group.groupId);
+    if (success) {
+      setState(() {
+        _joinRequestsFuture = getUsersGroupJoinRequests(
+            widget.group.groupId); // Refresh join requests
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$nickname\'s join request has been denied')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to deny join request')),
       );
     }
   }
@@ -212,15 +248,15 @@ class _GroupDetailsState extends State<GroupDetails> {
                               icon:
                                   const Icon(Icons.check, color: Colors.green),
                               onPressed: () {
-                                // Mock API call to accept the join request
-                                print("Accepted ${request.nickname}");
+                                _acceptJoinRequest(
+                                    request.nickname); // Accept join request
                               },
                             ),
                             IconButton(
                               icon: const Icon(Icons.close, color: Colors.red),
                               onPressed: () {
-                                // Mock API call to deny the join request
-                                print("Denied ${request.nickname}");
+                                _denyJoinRequest(
+                                    request.nickname); // Deny join request
                               },
                             ),
                           ],
