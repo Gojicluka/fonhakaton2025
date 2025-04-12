@@ -121,18 +121,21 @@ class TaskListView extends ConsumerWidget {
           padding: const EdgeInsets.all(16.0),
           child: Align(
             alignment: Alignment.centerLeft, // Aligns the title to the left
-            child: Text(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 0),
+              child: Text(
               title,
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
+              ),
+            ),
             ),
           ),
-        ),
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
             itemCount: tasks.length,
             itemBuilder: (context, index) {
               final task = tasks[index] as Task;
@@ -341,7 +344,7 @@ class _TaskScreenState extends State<TaskScreen> {
     return GestureDetector(
       onTap: () => showTaskDialog(context, widget.task),
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Color(int.parse(widget.task.color

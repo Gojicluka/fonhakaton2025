@@ -9,26 +9,19 @@ import 'package:fonhakaton2025/data/supabase_helper.dart';
 import 'package:supabase/src/supabase_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart' as path;
+import 'package:fonhakaton2025/data/models/Group.dart';
+import 'package:fonhakaton2025/data/models/UserGroup.dart';
+import 'package:fonhakaton2025/data/models/GroupJoinRequest.dart';
 
 //////// STRUCTURES
 
 // todo: make it match the ID-s in database.
 // waiting_delete -> taskovi koji su prihvaceni i nagradjeni, ne vide se nigde, ali se brisu tek kada se obrise glavni task iz kog su nastali,
 // kako ne bi jedan user mogao da radi isti quest vise puta!
-enum TaskStatus { DOING, PENDING, ACCEPTED, DENIED, WAITING_DELETE }
-
 enum Groups { NOGROUP, ADDMORE }
 
 // bucket names for storage
 final String TASKCOMPLETIONS_BUCKET_NAME = "taskcompletions";
-
-List<String> statusToStringArr = [
-  "doing",
-  "pending",
-  "accepted",
-  "denied",
-  "waiting_delete"
-];
 
 class ReturnMessage {
   final bool success;
@@ -106,7 +99,7 @@ Future<int> getUserUniversity(String nickname) async {
 
 /// Vraca sve aktivne globalne taskove koje igrac nije vec prihvatio
 // Future<List<Task>> getAllAvailableTasks(String nickname) async {
-Future<List<Map<String, dynamic>>> getAllAvailableTasks(String nickname) async {
+Future<List<Task>> getAllGroupTasks(String nickname) async {
   try {
     final supabase = SupabaseHelper.supabase;
 
@@ -140,13 +133,48 @@ Future<List<Map<String, dynamic>>> getAllAvailableTasks(String nickname) async {
         .inFilter('group_id', userGroupsList);
 
     // return response.map((task) => Task.fromJson(task)).toList();
-    return response;
+    return response.map((task) => Task.fromJson(task)).toList();
   } catch (e) {
     print('Error in getAllAvailableTasks: $e');
     return [];
   }
 }
 
+Future<List<Task>> getAllGlobalTasks(String nickname) async {
+  final supabase = SupabaseHelper.supabase;
+
+  // Fetch task_ids associated with the given nickname - both taken quests and made quests.
+  List<int> excludedTaskIds = await getUserTaskIds(nickname);
+  List<int> getTasksUserCreated = await getTasksCreatedBy(nickname);
+  int userUniversity = await getUserUniversity(nickname);
+
+  print("excluded task ids $excludedTaskIds");
+  print("user created ids $getTasksUserCreated");
+
+  // fetch user groups as a list
+  final List<Map<String, dynamic>> userGroups = await supabase
+      .from('user_group')
+      .select('group_id')
+      .eq('nickname', nickname);
+
+  final List<int> userGroupsList =
+      userGroups.map((task) => task['group_id'] as int).toList();
+  userGroupsList.add(Groups.NOGROUP.index);
+
+  print("user groups $userGroupsList");
+
+  // Fetch all tasks that are NOT in user_task and match user groups.
+  final List<Map<String, dynamic>> response = await supabase
+      .from('tasks')
+      .select()
+      .not('task_id', 'in', excludedTaskIds)
+      .not('task_id', 'in', getTasksUserCreated)
+      .eq('uni_id', userUniversity)
+      .inFilter('group_id', userGroupsList);
+
+  // return response.map((task) => Task.fromJson(task)).toList();
+  return response.map((task) => Task.fromJson(task)).toList();
+}
 
 /// Daje sve taskove za odredjenu grupu (vraca [] ako grupa ne postoji)
 Future<List<Task>> getAllAvailableTasksFilter(
@@ -318,12 +346,6 @@ Future<ReturnMessage> createUserTask(String nickname, int taskId) async {
     }); // , 'status': TaskStatus.DOING
 
     await updateTaskPeopleDoing(taskId, 1);
-    // if (response == null || response.error != null) {
-    //   return ReturnMessage(
-    //       success: false,
-    //       statusCode: 500,
-    //       message: "Database error: ${response.error!.message}");
-    // }
     return ReturnMessage(
         success: true,
         statusCode: 200,
@@ -411,13 +433,6 @@ Future<ReturnMessage> acceptUserTask(
     // await updateTaskPeopleSubmitted(taskId, -1);
     // people completed todo???
 
-    // if (response.error != null) {
-    //   return ReturnMessage(
-    //       success: false,
-    //       statusCode: 500,
-    //       message: "Database error: ${response.error!.message}");
-    // }
-
     return ReturnMessage(
         success: true,
         statusCode: 200,
@@ -450,13 +465,6 @@ Future<ReturnMessage> denyUserTask(
 
     await updateTaskPeopleSubmitted(taskId, -1);
     // people completed todo???
-
-    // if (response.error != null) {
-    //   return ReturnMessage(
-    //       success: false,
-    //       statusCode: 500,
-    //       message: "Database error: ${response.error!.message}");
-    // }
 
     return ReturnMessage(
         success: true,
@@ -499,13 +507,6 @@ Future<ReturnMessage> submitUserTask(
 
     await updateTaskPeopleDoing(taskId, -1);
     await updateTaskPeopleSubmitted(taskId, 1);
-
-    // if (response.error != null) {
-    //   return ReturnMessage(
-    //       success: false,
-    //       statusCode: 500,
-    //       message: "Database error: ${response.error!.message}");
-    // }
 
     return ReturnMessage(
         success: true,
@@ -571,25 +572,12 @@ Future<ReturnMessage> UpdateUserTaskStatus(
       'nickname': nickname
     }); // Ensure both are included
 
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
-
     if (newStatusId == TaskStatus.PENDING) {
       final response = await updateTaskPeopleSubmitted(taskId, 1);
-      if (response.error != null) {
-        print("nooo");
-      }
     }
     if (newStatusId == TaskStatus.DENIED ||
         newStatusId == TaskStatus.ACCEPTED) {
       final response = await updateTaskPeopleSubmitted(taskId, -1);
-      if (response.error != null) {
-        print("nooo");
-      }
     }
 
     return ReturnMessage(
@@ -622,13 +610,6 @@ Future<ReturnMessage> deleteUserTask(String nickname, int taskId) async {
 
     // make it so that one person less is doing the task.
     var updateDoing = await updateTaskPeopleDoing(taskId, -1);
-
-    if (updateDoing.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
 
     return ReturnMessage(
         success: true,
@@ -673,12 +654,6 @@ Future<ReturnMessage> updateUserXP(String nickname, int amount) async {
 
     final response = await supabase.rpc('increment_user_xp',
         params: {'given_nickname': nickname, 'amount': amount});
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
 
     return ReturnMessage(
         success: true, statusCode: 200, message: "User got XP $amount");
@@ -744,14 +719,6 @@ Future<ReturnMessage> createDeterminedTask(TaskPredetermined task) async {
       'ppl_submitted': task.pplSubmitted,
     });
 
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
-    ;
-
     return ReturnMessage(
         success: true,
         statusCode: 200,
@@ -773,12 +740,6 @@ Future<ReturnMessage> createDeterminedExisting(
     final response = await supabase
         .from('predetermined_existing')
         .insert({'task_id': taskId, 'pred_id': predId});
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
 
     return ReturnMessage(
         success: true,
@@ -802,14 +763,6 @@ Future<ReturnMessage> deleteDeterminedExisting(
         .delete()
         .match(
             {'task_id': taskId, 'pred_id': predId}); // Ensure both are included
-
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
-
     // todo - maybe include some logic for stats/achievements ?
 
     return ReturnMessage(
@@ -836,4 +789,306 @@ Future<List<TaskWithUser>> getAllTaskWithUsers() async {
 /// Inserts a new task into the database
 Future<bool> insertTask(Task task) async {
   return true;
+}
+
+Future<ReturnMessage> userTaskChangeStateToWaitingDelete(
+    {required String nickname, required int taskId}) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Update the task state to "waiting_delete"
+    final response = await supabase.from('user_task').update({
+      'state_id': statusToStringArr[TaskStatus.WAITING_DELETE.index],
+    }).match({
+      'task_id': taskId,
+      'nickname': nickname,
+    });
+
+    return ReturnMessage(
+      success: true,
+      statusCode: 200,
+      message: "Task state changed to 'waiting_delete' successfully",
+    );
+  } catch (e) {
+    print('Error in userTaskChangeStateToWaitingDelete: $e');
+    return ReturnMessage(
+      success: false,
+      statusCode: 500,
+      message: "Exception in userTaskChangeStateToWaitingDelete: $e",
+    );
+  }
+}
+
+Future<ReturnMessage> rewardUserForTask({
+  required TaskWithState task,
+  required String nickname,
+}) async {
+  try {
+    // Update the task state to "rewarded"
+    final response = await userTaskChangeStateToWaitingDelete(
+      nickname: nickname,
+      taskId: task.taskId,
+    );
+
+    // Update user XP
+    final xpResponse = await updateUserXP(nickname, task.xp);
+
+    // Check if the XP update response contains an error
+    if (!xpResponse.success) {
+      return ReturnMessage(
+        success: false,
+        statusCode: 500,
+        message: "Failed to update user XP: ${xpResponse.message}",
+      );
+    }
+
+    return ReturnMessage(
+      success: true,
+      statusCode: 200,
+      message: "Reward claimed successfully!",
+    );
+  } catch (e) {
+    return ReturnMessage(
+      success: false,
+      statusCode: 500,
+      message: "An error occurred: $e",
+    );
+  }
+}
+
+Future<List<Group>> getAllUserGroups(String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Fetch all group IDs the user is a part of
+    final List<Map<String, dynamic>> userGroups = await supabase
+        .from('user_group')
+        .select('group_id')
+        .eq('nickname', nickname);
+
+    // Extract group IDs
+    final List<int> groupIds =
+        userGroups.map((group) => group['group_id'] as int).toList();
+
+    // Fetch group details for the group IDs
+    final List<Map<String, dynamic>> response = await supabase
+        .from('groups')
+        .select()
+        .inFilter('group_id', groupIds); // Use inFilter instead of in_
+
+    // Map the response to a list of Group objects
+    return response.map((group) => Group.fromJson(group)).toList();
+  } catch (e) {
+    print('Error in getAllUserGroups: $e');
+    return [];
+  }
+}
+
+Future<List<Group>> getAllGroupsExceptUserGroups(String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Fetch all group IDs the user is a part of
+    final List<Map<String, dynamic>> userGroups = await supabase
+        .from('user_group')
+        .select('group_id')
+        .eq('nickname', nickname);
+
+    // Extract group IDs
+    final List<int> groupIds =
+        userGroups.map((group) => group['group_id'] as int).toList();
+
+    // Fetch all groups excluding the ones the user is a part of
+    final List<Map<String, dynamic>> response =
+        await supabase.from('groups').select().not('group_id', 'in', groupIds);
+
+    // Map the response to a list of Group objects
+    return response.map((group) => Group.fromJson(group)).toList();
+  } catch (e) {
+    print('Error in getAllGroupsExceptUserGroups: $e');
+    return [];
+  }
+}
+
+Future<List<UserModel>> getTopPlayersByXP(int universityId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Query the database to get the top 7 players by XP for the given university_id
+    final List<Map<String, dynamic>> response = await supabase
+        .from('users') // Assuming the table is named 'users'
+        .select(
+            'nickname, xp, image') // Select all fields required for UserModel
+        .eq('uni_id', universityId) // Filter by university_id
+        .order('xp', ascending: false) // Order by XP in descending order
+        .limit(7); // Limit the results to the top 7
+
+    // Print the response for debugging purposes
+    // Map the response to a list of UserModel objects
+    return response.map((data) => UserModel.fromJson(data)).toList();
+  } catch (e) {
+    print('Error in getTopPlayersByXP: $e');
+    return [];
+  }
+}
+
+Future<List<UserModel>> getGroupMembers(int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Query the database to get all members of the group
+    final List<Map<String, dynamic>> response = await supabase
+        .from('user_group') // Assuming the table is named 'user_group'
+        .select('nickname, users(xp, image)') // Join with the 'users' table
+        .eq('group_id', groupId);
+
+    // Map the response to a list of UserModel objects
+    return response.map((data) {
+      final user = data['users'];
+      return UserModel(
+        nickname: data['nickname'],
+        xp: user['xp'] ?? 0,
+        image: user['image'],
+      );
+    }).toList();
+  } catch (e) {
+    print('Error in getGroupMembers: $e');
+    return [];
+  }
+}
+
+Future<bool> kickMemberFromGroup(String nickname, int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Delete the user from the user_group table
+    final response = await supabase
+        .from('user_group')
+        .delete()
+        .match({'nickname': nickname, 'group_id': groupId});
+
+    return true;
+  } catch (e) {
+    print('Error in kickMemberFromGroup: $e');
+    return false;
+  }
+}
+
+Future<bool> acceptJoinRequest(String nickname, int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Add the user to the user_group table
+    final response = await supabase.from('user_group').insert({
+      'nickname': nickname,
+      'group_id': groupId,
+      'role': 'user', // Default role for new members
+    });
+
+    if (response.error != null) {
+      print('Error in acceptJoinRequest: ${response.error!.message}');
+      return false;
+    }
+
+    // Remove the join request from the group_join_request table
+    await supabase
+        .from('group_join_request')
+        .delete()
+        .match({'nickname': nickname, 'group_id': groupId});
+
+    return true;
+  } catch (e) {
+    print('Error in acceptJoinRequest: $e');
+    return false;
+  }
+}
+
+Future<bool> denyJoinRequest(String nickname, int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Remove the join request from the group_join_request table
+    final response = await supabase
+        .from('group_join_request')
+        .delete()
+        .match({'nickname': nickname, 'group_id': groupId});
+
+    if (response.error != null) {
+      print('Error in denyJoinRequest: ${response.error!.message}');
+      return false;
+    }
+
+    return true;
+  } catch (e) {
+    print('Error in denyJoinRequest: $e');
+    return false;
+  }
+}
+
+Future<List<GroupJoinRequest>> getGroupJoinRequests(int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Query the database to get all join requests for the group
+    final List<Map<String, dynamic>> response = await supabase
+        .from(
+            'group_join_request') // Assuming the table is named 'group_join_request'
+        .select('nickname, group_id') // Select the required fields
+        .eq('group_id', groupId); // Filter by group_id
+
+    // Map the response to a list of GroupJoinRequest objects
+    return response.map((data) => GroupJoinRequest.fromJson(data)).toList();
+  } catch (e) {
+    print('Error in getGroupJoinRequests: $e');
+    return [];
+  }
+}
+
+Future<List<UserModel>> getUsersGroupJoinRequests(int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Query the database to get all join requests for the group and join with the users table
+    final List<Map<String, dynamic>> response = await supabase
+        .from(
+            'group_join_request') // Assuming the table is named 'group_join_request'
+        .select('nickname, users(xp, image)') // Join with the 'users' table
+        .eq('group_id', groupId); // Filter by group_id
+
+    // Map the response to a list of UserModel objects
+    return response.map((data) {
+      final user = data['users'];
+      return UserModel(
+        nickname: data['nickname'],
+        xp: user['xp'] ?? 0,
+        image: user['image'],
+      );
+    }).toList();
+  } catch (e) {
+    print('Error in getUsersGroupJoinRequests: $e');
+    return [];
+  }
+}
+
+Future<bool> joinGroup(String nickname, int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Insert the user into the user_group table
+    final response = await supabase.from('user_group').insert({
+      'nickname': nickname,
+      'group_id': groupId,
+      'role': 'user', // Default role for new members
+    });
+
+    if (response.error != null) {
+      print('Error in joinGroup: ${response.error!.message}');
+      return false;
+    }
+
+    return true;
+  } catch (e) {
+    print('Error in joinGroup: $e');
+    return false;
+  }
 }

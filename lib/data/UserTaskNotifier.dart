@@ -6,10 +6,6 @@ import 'package:fonhakaton2025/data/global.dart';
 import 'package:fonhakaton2025/data/models/combined/taskWithState.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final doingTaskProvider =
-    StateNotifierProvider<UserDoingNotifier, List<TaskWithState>>(
-  (ref) => UserDoingNotifier(),
-);
 
 final evalTaskProvider =
     StateNotifierProvider<UserEvaluateNotifier, List<TaskWithState>>(
@@ -19,6 +15,11 @@ final evalTaskProvider =
 final confirmTaskProvider =
     StateNotifierProvider<UserConfirmNotifier, List<TaskWithState>>(
   (ref) => UserConfirmNotifier(),
+);
+
+final doingTaskProvider =
+    StateNotifierProvider<UserDoingNotifier, List<TaskWithState>>(
+  (ref) => UserDoingNotifier(),
 );
 
 class UserDoingNotifier extends StateNotifier<List<TaskWithState>> {
