@@ -219,37 +219,44 @@ Future<List<Task>> getAllAvailableTasksFilter(
 }
 
 /// stvara ulaz u tabelu task_user, sa statusom "doing"
-Future<ReturnMessage> createTask(Task task) async {
+Future<int> createTask(Task task) async {
   try {
     final supabase = SupabaseHelper.supabase;
 
-    final response = await supabase.from('tasks').insert({
-      'task_id': task.taskId,
-      'name': task.name,
-      'description': task.description,
-      'place': task.place,
-      'uni_id': task.uniId,
-      'xp': task.xp,
-      'group_id': task.groupId,
-      'urgent': task.urgent,
-      'exists_for_time': task.existsForTime,
-      'ppl_needed': task.pplNeeded,
-      'ppl_doing': task.pplDoing,
-      'ppl_submitted': task.pplSubmitted,
-      'created_by': task.createdBy,
-      'color': task.color,
-      'icon_name': task.iconName,
-      'duration_in_minutes': task.durationInMinutes,
-    });
+    final response = await supabase
+        .from('tasks')
+        .insert({
+          // 'task_id': 0, // test value!
+          'name': task.name,
+          'description': task.description,
+          'place': task.place,
+          'uni_id': task.uniId,
+          'xp': task.xp,
+          'group_id': task.groupId,
+          'urgent': task.urgent,
+          'exists_for_time': task.existsForTime,
+          'ppl_needed': task.pplNeeded,
+          'ppl_doing': task.pplDoing,
+          'ppl_submitted': task.pplSubmitted,
+          'created_by': task.createdBy,
+          'color': task.color,
+          'icon_name': task.iconName,
+          'time_for_player': task.timeForPlayer,
+        })
+        .select('task_id')
+        .maybeSingle();
 
-    return ReturnMessage(
-        success: true,
-        statusCode: 200,
-        message: "Task '${task.name}' created successfully");
+    // 1. postgrest map ne moze u List<Map<String, dynamic>> da se kastuje.
+    // 2.
+
+    if (response != null) {
+      return response['task_id'];
+    } else {
+      return -1;
+    }
   } catch (e) {
     print('Error in createTask: $e');
-    return ReturnMessage(
-        success: false, statusCode: 500, message: "Exception: $e");
+    return -1;
   }
 }
 
@@ -782,7 +789,7 @@ Future<List<Map<String, dynamic>>> getAllPredeterminedTasksForUser(
 // createDeterminedTask - these tasks can't be changed at all, and contibute towards achievements.
 // todo - mozda staviti da je pplNeeded fleksibilno, da se specificira pri pravljenju svakog taska ovog tipa?
 // todo - dodati posebne poene (stats)
-Future<ReturnMessage> createDeterminedTask(TaskPredetermined task) async {
+Future<ReturnMessage> createPredefinedTask(TaskPredetermined task) async {
   try {
     final supabase = SupabaseHelper.supabase;
 
@@ -822,7 +829,7 @@ Future<ReturnMessage> createDeterminedTask(TaskPredetermined task) async {
 
 // createDeterminedExisting
 
-Future<ReturnMessage> createDeterminedExisting(
+Future<ReturnMessage> createPredeterminedExisting(
     String nickname, int taskId, int predId) async {
   try {
     final supabase = SupabaseHelper.supabase;
@@ -830,19 +837,21 @@ Future<ReturnMessage> createDeterminedExisting(
     final response = await supabase
         .from('predetermined_existing')
         .insert({'task_id': taskId, 'pred_id': predId});
-    if (response.error != null) {
-      return ReturnMessage(
-          success: false,
-          statusCode: 500,
-          message: "Database error: ${response.error!.message}");
-    }
+    // if (response.error != null) {
+    //   return ReturnMessage(
+    //       success: false,
+    //       statusCode: 500,
+    //       message: "Database error: ${response.error!.message}");
+    // }
+
+    print("createPredeterminedExisting added task");
 
     return ReturnMessage(
         success: true,
         statusCode: 200,
         message: "User task $taskId , $nickname added successfully");
   } catch (e) {
-    print('Error in createDeterminedExisting: $e');
+    print('Error in createPredeterminedExisting: $e');
     return ReturnMessage(
         success: false, statusCode: 500, message: "Exception: $e");
   }

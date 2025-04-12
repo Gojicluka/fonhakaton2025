@@ -379,7 +379,7 @@ class _TaskScreenState extends State<TaskScreen> {
                       const Icon(Icons.access_time,
                           color: Colors.white, size: 18),
                       const SizedBox(width: 4),
-                      Text(formatDuration(widget.task.durationInMinutes),
+                      Text(formatDuration(widget.task.timeForPlayer),
                           style: const TextStyle(color: Colors.white)),
                       const SizedBox(width: 12),
                       const Icon(Icons.people, color: Colors.white, size: 18),

@@ -12,7 +12,7 @@ class _NewTaskChoiceScreenState extends State<NewTaskChoiceScreen> {
   // final List<String> userGroups = ["Logistika", "Mediji"];
   final List<Map<String, dynamic>>? userGroups = Global.getUserGroups();
 
-  int? selectedGroup; // Stores the selected group
+  int selectedGroup = GroupCode.JAVNO.index; // Stores the selected group
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +86,9 @@ class _NewTaskChoiceScreenState extends State<NewTaskChoiceScreen> {
                         style: TextStyle(fontSize: 16, color: Colors.black),
                         onChanged: (int? newValue) {
                           setState(() {
-                            selectedGroup = newValue;
+                            if (newValue != null) {
+                              selectedGroup = newValue;
+                            }
                           });
                         },
                         items: userGroups?.map((dynamic group) {
@@ -102,7 +104,7 @@ class _NewTaskChoiceScreenState extends State<NewTaskChoiceScreen> {
 
                   // Third row - "Pogledaj" Button
                   ElevatedButton(
-                    onPressed: selectedGroup != null
+                    onPressed: selectedGroup != GroupCode.JAVNO.index
                         ? () {
                             Navigator.push(
                               context,
