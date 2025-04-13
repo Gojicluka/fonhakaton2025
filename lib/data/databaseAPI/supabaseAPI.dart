@@ -724,36 +724,39 @@ Future<List<Map<String, dynamic>>> getAllPredeterminedTasksForUser(
   }
 }
 
-// getPredeterminedForGroup - OUTDATED
-// Future<List<TaskPredetermined>> getPredeterminedForGroup(
-//     String nickname, int groupId) async {
-//   try {
-//     final supabase = SupabaseHelper.supabase;
+// getPredeterminedForGroup
+Future<List<Map<String, dynamic>>> getPredeterminedForGroup(
+    String nickname, int groupId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
 
-//     // check if the user is in the group from which they're asking for tasks
-//     // final List<Map<String, dynamic>> userGroups = await supabase
-//     //     .from('user_group')
-//     //     .select('group_id')
-//     //     .eq('nickname', nickname)
-//     //     .eq('group_id', groupId);
+    // check if the user is in the group from which they're asking for tasks
+    final List<Map<String, dynamic>> userGroups = await supabase
+        .from('user_group')
+        .select('group_id')
+        .eq('nickname', nickname)
+        .eq('group_id', groupId);
 
-//     // // HOW TO CHECK IF THIS WILL NOT BREAK ??? todo
-//     // if (userGroups.isEmpty) {
-//     //   return [];
-//     // }
+    // HOW TO CHECK IF THIS WILL NOT BREAK ??? todo
+    if (userGroups.isEmpty) {
+      return [];
+    }
 
-//     // fetch predetermined tasks for group
-//     final List<Map<String, dynamic>> response = await supabase
-//         .from('tasks_predetermined')
-//         .select()
-//         .eq("can_use", groupId);
+    // fetch predetermined tasks for group
+    final List<Map<String, dynamic>> response = await supabase
+        .from('tasks_predetermined')
+        .select()
+        .eq("can_use", groupId);
 
-//     return response.map((task) => TaskPredetermined.fromJson(task)).toList();
-//   } catch (e) {
-//     print('Error in getPredeterminedForGroup: $e');
-//     return [];
-//   }
-// }
+    print("Response from getPredeterminedForGroup for $nickname : ");
+    print("$response");
+
+    return response;
+  } catch (e) {
+    print('Error in getPredeterminedForGroup: $e');
+    return [];
+  }
+}
 
 // createDeterminedTask - these tasks can't be changed at all, and contibute towards achievements.
 // todo - mozda staviti da je pplNeeded fleksibilno, da se specificira pri pravljenju svakog taska ovog tipa?

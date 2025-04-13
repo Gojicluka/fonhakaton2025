@@ -47,17 +47,25 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 
   Future<void> _fetchPredeterminedTasks() async {
     try {
-      final tasks = await getAllPredeterminedTasksForUser(Global.getUsername());
+      predefinedTasksList.add({"name": "none", "selected": false});
+      predefinedTasksList.addAll(await getPredeterminedForGroup(
+          Global.getUsername(), widget.group_id));
       setState(() {
-        predefinedTasksList.add(noitem); // Add "none" as the first option
-        predefinedTasksList.addAll(tasks.where((task) =>
-            task['for_group'] as int == widget.group_id)); // Filter by group_id
         for (var i = 0; i < predefinedTasksList.length; i++) {
           dropdownList.add(DropdownMenuItem(
               value: i, child: Text(predefinedTasksList[i]['name'])));
         }
         _selectedPredefinedTask = 0; // Default to the first item
       });
+
+      // predefinedTasksList.add(noitem); // Add "none" as the first option
+      // predefinedTasksList.addAll(tasks.where((task) =>
+      //     task['for_group'] as int == widget.group_id)); // Filter by group_id
+      // for (var i = 0; i < predefinedTasksList.length; i++) {
+      //   dropdownList.add(DropdownMenuItem(
+      //       value: i, child: Text(predefinedTasksList[i]['name'])));
+      // }
+      // _selectedPredefinedTask = 0; // Default to the first item
     } catch (e) {
       print('Error fetching predetermined tasks: $e');
     }
