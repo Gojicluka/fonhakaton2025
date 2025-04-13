@@ -7,6 +7,7 @@ import 'package:fonhakaton2025/main.dart';
 import 'package:fonhakaton2025/theme/app_theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
+import 'package:fonhakaton2025/screens/RegistrationScreen.dart'; // Import the RegistrationScreen
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -38,24 +39,31 @@ class _LoginPageState extends ConsumerState<LoginScreen> {
       });
 
       try {
-        // For demo purposes, you might want to use a mock login
-        // In a real app, you would use Supabase authentication here
-        final user = await getUserByName(_usernameController.text);
+        final success =
+            await logIn(_usernameController.text, _passwordController.text);
 
-        if (user != null) {
-          // In a real app, you would verify the password here
-          Global.setUser(user);
+        if (success) {
+          // Fetch user profile
+          final user = await fetchUserProfile(_usernameController.text);
 
-          // Navigate to the main page
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyHomePage(title: 'BloQuest'),
-            ),
-          );
+          if (user != null) {
+            Global.setUser(user);
+
+            // Navigate to the main page
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MyHomePage(title: 'BloQuest'),
+              ),
+            );
+          } else {
+            setState(() {
+              _errorMessage = 'Failed to fetch user profile';
+            });
+          }
         } else {
           setState(() {
-            _errorMessage = 'Invalid username or password';
+            _errorMessage = 'Invalid email or password';
           });
         }
       } catch (e) {
@@ -245,12 +253,12 @@ class _LoginPageState extends ConsumerState<LoginScreen> {
                                   ),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      // TODO: Navigate to Register page
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                              'Registration functionality coming soon!'),
+                                      // Navigate to the RegistrationScreen
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RegistrationScreen(),
                                         ),
                                       );
                                     },

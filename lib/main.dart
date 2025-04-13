@@ -46,7 +46,6 @@ void main() async {
   runApp(ProviderScope(child: MyApp()));
 }
 
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -56,8 +55,8 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.get(),
       darkTheme:
           AppTheme.get(), // Or remove this line since there's no dark theme
-      //home: LoginScreen(), // Start with the login page instead of MyHomePage
-      home: MyHomePage(title: "BloQuest"),
+      home: LoginScreen(), // Start with the login page instead of MyHomePage
+      //home: MyHomePage(title: "BloQuest"),
     );
   }
 }
@@ -163,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     final colors = Theme.of(context).extension<CustomColorsTheme>()!;
     return Scaffold(
       extendBody: true,
-      appBar:  CustomAppBar(),
+      appBar: CustomAppBar(),
       body: NotificationListener<ScrollNotification>(
         onNotification: onScrollNotification,
         child: _screens[_bottomNavIndex],

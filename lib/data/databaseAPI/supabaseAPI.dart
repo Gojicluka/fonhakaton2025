@@ -12,6 +12,7 @@ import 'package:path/path.dart' as path;
 import 'package:fonhakaton2025/data/models/Group.dart';
 import 'package:fonhakaton2025/data/models/UserGroup.dart';
 import 'package:fonhakaton2025/data/models/GroupJoinRequest.dart';
+import 'package:fonhakaton2025/data/models/University.dart';
 
 //////// STRUCTURES
 
@@ -1148,5 +1149,85 @@ Future<bool> joinGroup(String nickname, int groupId) async {
   } catch (e) {
     print('Error in joinGroup: $e');
     return false;
+  }
+}
+
+Future<bool> signUp(String email, String password, String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Sign up the user with email and password
+    final response =
+        await supabase.auth.signUp(email: email, password: password);
+
+    // Insert additional profile data into the `users` table
+    await supabase.from('users').insert({
+      'nickname': nickname,
+      'xp': 0,
+      'trust_level': 0,
+      'uni_id': null,
+    });
+
+    return true;
+  } catch (e) {
+    print('Error in signUp: $e');
+    return false;
+  }
+}
+
+Future<bool> logIn(String email, String password) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Log in using the updated method
+    final response = await supabase.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+
+    // Optionally, check if session or user is returned
+    if (response.user != null && response.session != null) {
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    print('Error in logIn: $e');
+    return false;
+  }
+}
+
+Future<UserModel?> fetchUserProfile(String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Fetch user profile from the `users` table
+    final response = await supabase
+        .from('users')
+        .select('*')
+        .eq('nickname', nickname)
+        .maybeSingle();
+
+    if (response == null) return null;
+    return UserModel.fromJson(response);
+  } catch (e) {
+    print('Error in fetchUserProfile: $e');
+    return null;
+  }
+}
+
+Future<List<University>> getAllUniversities() async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Fetch all universities from the database
+    final List<Map<String, dynamic>> response = await supabase
+        .from('universities') // Assuming the table is named 'universities'
+        .select();
+
+    return response.map((data) => University.fromJson(data)).toList();
+  } catch (e) {
+    print('Error in getAllUniversities: $e');
+    return [];
   }
 }
