@@ -442,72 +442,68 @@ class AchievementIcons extends StatelessWidget {
 class ProfileAchievements extends StatelessWidget {
   const ProfileAchievements({super.key});
 
-  Future<List<StatPoint>> _getStatPointsForUser() async {
-    return await getUserStats(Global.getUsername());
-  }
-
   Future<List<AchWithUser>> _getAchievementsWithUser() async {
     return await getAchievementsWithUser(Global.getUsername());
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: allAchievements.map((achievement) {
-          return _buildAchievementCard(
-            context,
-            achievement.name,
-            achievement.description,
-            achievement.icon,
-            achievement.color,
-            achievement.dateAchieved ?? DateTime.now(),
+    return FutureBuilder<List<AchWithUser>>(
+      future: _getAchievementsWithUser(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No achievements found.'));
+        } else {
+          final achievements = snapshot.data!;
+          return SingleChildScrollView(
+            child: Column(
+              children: achievements.map((achievement) {
+                return _buildAchievementCard(
+                  context,
+                  achievement.name,
+                  achievement.desc,
+                  achievement.linkImage,
+                );
+              }).toList(),
+            ),
           );
-        }).toList(),
-      ),
+        }
+      },
     );
   }
 
   Widget _buildAchievementCard(BuildContext context, String title,
-      String description, IconData icon, Color color, DateTime date) {
+      String? description, String? imageUrl) {
     return Card(
-      color: color,
       margin: const EdgeInsets.all(10),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12.0),
-        child: Stack(
-          children: [
-            ListTile(
-              leading: Icon(icon, color: Colors.white, size: 36),
-              title: Text(
-                title,
-                style: GoogleFonts.lato(
-                  fontSize: 18,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Padding(
-                // Added subtitle for description
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  description,
-                  style: GoogleFonts.lato(
-                    fontSize: 14,
-                    color: Colors.white70,
-                  ),
-                ),
+        child: ListTile(
+          leading: imageUrl != null
+              ? Image.network(imageUrl,
+                  width: 50, height: 50, fit: BoxFit.cover)
+              : const Icon(Icons.image_not_supported, size: 50),
+          title: Text(
+            title,
+            style: GoogleFonts.lato(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              description ?? "",
+              style: GoogleFonts.lato(
+                fontSize: 14,
+                color: Colors.black54,
               ),
             ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: Text(
-                DateFormat('yyyy-MM-dd').format(date),
-                style: GoogleFonts.lato(fontSize: 12, color: Colors.white70),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

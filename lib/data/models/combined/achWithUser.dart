@@ -24,14 +24,14 @@ class AchWithUser {
   factory AchWithUser.fromUserAchJson(Map<String, dynamic> json) {
     return AchWithUser(
       // nickname: json['nickname'],
-      achId: json['ach_id'],
-      name: json['name'],
-      desc: json['desc'],
+      achId: json['achievements']['ach_id'],
+      name: json['achievements']['name'],
+      desc: json['achievements']['desc'],
       // statId: json['stat_id'],
       // pointAmount: json['point_amount'],
-      linkImage: json['link_image'],
+      linkImage: json['achievements']['link_image'],
       earned: true,
-      claimedAward: json['claimed_award'],
+      claimedAward: json['claim_award'],
     );
   }
 

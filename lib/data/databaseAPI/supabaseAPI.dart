@@ -1168,12 +1168,14 @@ Future<List<AchWithUser>> getAchievementsWithUser(String nickname) async {
 
     // Query the database to get all stat points for user joined with point name
     final List<Map<String, dynamic>> response = await supabase
-        .from('achievements')
-        .select('*, user_achievement(claim_award)')
+        .from('user_achievement')
+        .select('claim_award, achievements(*)')
         .eq('nickname', nickname);
 
     List<AchWithUser> userWonAch =
         response.map((data) => AchWithUser.fromUserAchJson(data)).toList();
+
+    print(" get achievements of user : $response");
 
     // Extract only the achId fields from userWonAch
     List<int> wonAchIds = userWonAch.map((ach) => ach.achId).toList();
@@ -1182,6 +1184,8 @@ Future<List<AchWithUser>> getAchievementsWithUser(String nickname) async {
         .from('achievements')
         .select()
         .not('ach_id', 'in', wonAchIds); // Use the list of achId fields
+
+    print(" get all achievements not user : $userNotWonAch");
 
     userWonAch.addAll(userNotWonAch
         .map((data) => AchWithUser.fromAchNotWonJson(data))
