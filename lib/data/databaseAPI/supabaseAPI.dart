@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:fonhakaton2025/data/models/TasksPredetermined.dart';
+import 'package:fonhakaton2025/data/models/combined/achWithUser.dart';
 import 'package:fonhakaton2025/data/models/combined/taskWithUser.dart';
+import 'package:fonhakaton2025/data/models/statPoint.dart';
 import 'package:fonhakaton2025/data/models/task.dart';
 import 'package:fonhakaton2025/data/models/combined/taskWithState.dart';
 import 'package:fonhakaton2025/data/models/user.dart';
@@ -1153,3 +1155,165 @@ Future<bool> joinGroup(String nickname, int groupId) async {
     return false;
   }
 }
+
+/// achievements apr 13
+
+Future<List<AchWithUser>> getAchievementsWithUser(String nickname) async {
+  // get all achievements, if they arent in ach_user set their win and claimed to false, else read claimed from user_ach
+  // how to write this query?
+
+  // for given user fetch all stat points and return them as a list of StatPoint objects
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Query the database to get all stat points for user joined with point name
+    final List<Map<String, dynamic>> response = await supabase
+        .from('achievements')
+        .select('*, user_achievement(claim_award)')
+        .eq('nickname', nickname);
+
+    List<AchWithUser> userWonAch =
+        response.map((data) => AchWithUser.fromUserAchJson(data)).toList();
+
+    // Extract only the achId fields from userWonAch
+    List<int> wonAchIds = userWonAch.map((ach) => ach.achId).toList();
+
+    final List<Map<String, dynamic>> userNotWonAch = await supabase
+        .from('achievements')
+        .select()
+        .not('ach_id', 'in', wonAchIds); // Use the list of achId fields
+
+    userWonAch.addAll(userNotWonAch
+        .map((data) => AchWithUser.fromAchNotWonJson(data))
+        .toList());
+
+    return userWonAch;
+    // Map the response to a list of UserModel objects
+  } catch (e) {
+    print('Error in getAchievementsWithUser: $e');
+    return [];
+  }
+}
+
+void checkEarnedAchievements() async {
+  // for the just updated skill point (or level?) from user
+  // check if it matches any achievement criteria
+  // and if the achievement is not already won
+  // insert it into user_ach table, with "not_claimed".
+}
+
+Future<AchWithUser?> updateUserAchEarn(String nickname, int achId) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    final response = await supabase
+        .from('user_achievements')
+        .insert({
+          // 'task_id': 0, // test value!
+          'nickname': nickname,
+          'ach_id': achId,
+        })
+        .select('achievement(*)')
+        .maybeSingle();
+
+    print("response from updateUserAchEarn $response");
+
+    if (response != null) {
+      return AchWithUser.fromAchNotWonJson(response);
+    } else {
+      print("updateUserAchEarn returned null");
+    }
+  } catch (e) {
+    print('Error in createTask: $e');
+    return null;
+  }
+}
+
+Future<ReturnMessage> updateClaimAchievement(
+    {required String nickname, required int achId, required int amount}) async {
+  // set user_ach to "claimed
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Then create the task-user relationship
+    final response = await supabase.from('user_achievements').update({
+      'claim_award': true,
+    }) // Use integer value of enum
+        .match({
+      'nickname': nickname,
+      'ach_id': achId
+    }); // Ensure both are included
+
+    return ReturnMessage(
+        success: true,
+        statusCode: 200,
+        message: "updateClaimAchievement submitted successfully");
+  } catch (e) {
+    print("Error in updateClaimAchievement: $e");
+    return ReturnMessage(
+        success: false,
+        statusCode: 500,
+        message: "Exception in updateClaimAchievement: $e");
+  }
+}
+
+/// skill points apr13
+
+Future<List<StatPoint>> getUserStats(String nickname) async {
+  // for given user fetch all stat points and return them as a list of StatPoint objects
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Query the database to get all stat points for user joined with point name
+    final List<Map<String, dynamic>> response = await supabase
+        .from('user_stats')
+        .select('*, stat_points(name)')
+        .eq('nickname', nickname);
+
+    // Map the response to a list of UserModel objects
+    return response.map((data) => StatPoint.fromJson(data)).toList();
+  } catch (e) {
+    print('Error in getUserStats: $e');
+    return [];
+  }
+}
+
+Future<ReturnMessage> updateStatPoint(
+    {required String nickname,
+    required int statId,
+    required int amount}) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // Then create the task-user relationship
+    final response = await supabase.from('user_stats').update({
+      'amount': amount,
+    }) // Use integer value of enum
+        .match({
+      'nickname': nickname,
+      'stat_id': statId
+    }); // Ensure both are included
+
+    return ReturnMessage(
+        success: true,
+        statusCode: 200,
+        message: "updateStatPoint submitted successfully");
+  } catch (e) {
+    print("Error in updateStatPoint: $e");
+    return ReturnMessage(
+        success: false,
+        statusCode: 500,
+        message: "Exception in updateStatPoint: $e");
+  }
+}
+
+
+
+
+// implementirati sad da koriste nickname svi, pa posle menjati kako radi API i tabele i FK-eve. 
+// todo:
+// 1. init user_ach i user_stats da koriste nickname
+// 2. napraviti ove API pozive gore ^^^
+// 3. napraviti funkcije koje dohvataju te podatke
+// 4. iskoristiti ih u futurebuilderu ili tako nesto??
+

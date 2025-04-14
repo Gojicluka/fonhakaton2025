@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fonhakaton2025/data/databaseAPI/supabaseAPI.dart';
 import 'package:fonhakaton2025/data/global.dart';
+import 'package:fonhakaton2025/data/models/combined/achWithUser.dart';
+import 'package:fonhakaton2025/data/models/statPoint.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart'; // Import fl_chart package
@@ -253,7 +256,7 @@ class ProfileScreen extends StatelessWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text('Završeni kvestovi'),
+                            title: Text('Skill poeni'),
                             content: Container(
                               width: double.maxFinite,
                               child: ProfileTasks(),
@@ -438,6 +441,14 @@ class AchievementIcons extends StatelessWidget {
 
 class ProfileAchievements extends StatelessWidget {
   const ProfileAchievements({super.key});
+
+  Future<List<StatPoint>> _getStatPointsForUser() async {
+    return await getUserStats(Global.getUsername());
+  }
+
+  Future<List<AchWithUser>> _getAchievementsWithUser() async {
+    return await getAchievementsWithUser(Global.getUsername());
+  }
 
   @override
   Widget build(BuildContext context) {
