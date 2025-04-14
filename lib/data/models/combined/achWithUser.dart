@@ -26,7 +26,7 @@ class AchWithUser {
       // nickname: json['nickname'],
       achId: json['achievements']['ach_id'],
       name: json['achievements']['name'],
-      desc: json['achievements']['desc'],
+      desc: json['achievements']['description'],
       // statId: json['stat_id'],
       // pointAmount: json['point_amount'],
       linkImage: json['achievements']['link_image'],
@@ -40,7 +40,7 @@ class AchWithUser {
       // nickname: "", //mozda nam ne treba
       achId: json['ach_id'],
       name: json['name'],
-      desc: json['desc'],
+      desc: json['description'],
       // statId: json['stat_id'],
       // pointAmount: json['point_amount'],
       linkImage: json['link_image'],

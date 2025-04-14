@@ -277,7 +277,7 @@ class ProfileScreen extends StatelessWidget {
                       padding:
                           EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                     ),
-                    child: Text('Kvest'),
+                    child: Text('Stat poeni'),
                   ),
                 ],
               ),
@@ -462,12 +462,7 @@ class ProfileAchievements extends StatelessWidget {
           return SingleChildScrollView(
             child: Column(
               children: achievements.map((achievement) {
-                return _buildAchievementCard(
-                  context,
-                  achievement.name,
-                  achievement.desc,
-                  achievement.linkImage,
-                );
+                return _buildAchievementCard(context, achievement);
               }).toList(),
             ),
           );
@@ -476,31 +471,52 @@ class ProfileAchievements extends StatelessWidget {
     );
   }
 
-  Widget _buildAchievementCard(BuildContext context, String title,
-      String? description, String? imageUrl) {
+  Widget _buildAchievementCard(BuildContext context, AchWithUser achievement) {
+    final isEarned = achievement.earned;
+    final isClaimed = achievement.claimedAward;
+    final borderColor = isEarned
+        ? (isClaimed ? Colors.amber : Colors.grey)
+        : Colors.transparent;
+
     return Card(
       margin: const EdgeInsets.all(10),
+      color: isEarned ? Colors.white : Colors.grey[300],
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: borderColor, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
         child: ListTile(
-          leading: imageUrl != null
-              ? Image.network(imageUrl,
-                  width: 50, height: 50, fit: BoxFit.cover)
-              : const Icon(Icons.image_not_supported, size: 50),
+          leading: ColorFiltered(
+            colorFilter: ColorFilter.mode(
+              isEarned ? Colors.transparent : Colors.grey,
+              BlendMode.saturation,
+            ),
+            child: achievement.linkImage != null
+                ? Image.network(
+                    achievement.linkImage!,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  )
+                : const Icon(Icons.image_not_supported, size: 50),
+          ),
           title: Text(
-            title,
+            achievement.name,
             style: GoogleFonts.lato(
               fontSize: 18,
               fontWeight: FontWeight.bold,
+              color: isEarned ? Colors.black : Colors.black54,
             ),
           ),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Text(
-              description ?? "",
+              achievement.desc ?? "",
               style: GoogleFonts.lato(
                 fontSize: 14,
-                color: Colors.black54,
+                color: isEarned ? Colors.black87 : Colors.black54,
               ),
             ),
           ),
@@ -513,37 +529,48 @@ class ProfileAchievements extends StatelessWidget {
 class ProfileTasks extends StatelessWidget {
   const ProfileTasks({super.key});
 
+  Future<List<StatPoint>> _getUserStats() async {
+    return await getUserStats(Global.getUsername());
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: tasks.map((task) {
-          return _buildTaskCard(context, task, DateTime.now());
-        }).toList(),
-      ),
+    return FutureBuilder<List<StatPoint>>(
+      future: _getUserStats(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No stats found.'));
+        } else {
+          final stats = snapshot.data!;
+          return SingleChildScrollView(
+            child: Column(
+              children: stats.map((stat) {
+                return _buildStatRow(stat);
+              }).toList(),
+            ),
+          );
+        }
+      },
     );
   }
 
-  Widget _buildTaskCard(BuildContext context, Task task, DateTime date) {
-    return Card(
-      color: Colors.accents[tasks.indexOf(task) % Colors.accents.length],
-      margin: const EdgeInsets.all(10),
-      child: Stack(
-        // Use Stack to overlay the date
+  Widget _buildStatRow(StatPoint stat) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ListTile(
-            leading: const Icon(Icons.check, color: Colors.white),
-            title:
-                Text(task.name, style: GoogleFonts.lato(color: Colors.white)),
+          Text(
+            stat.statName,
+            style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          Positioned(
-            // Position the date at the top right
-            top: 8,
-            right: 8,
-            child: Text(
-              DateFormat('MMM dd, yyyy').format(date), // Format the date
-              style: GoogleFonts.lato(color: Colors.white, fontSize: 12),
-            ),
+          Text(
+            '${stat.amount} points',
+            style: GoogleFonts.lato(fontSize: 16, color: Colors.grey[700]),
           ),
         ],
       ),

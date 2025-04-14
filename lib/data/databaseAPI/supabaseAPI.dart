@@ -1270,8 +1270,8 @@ Future<List<StatPoint>> getUserStats(String nickname) async {
 
     // Query the database to get all stat points for user joined with point name
     final List<Map<String, dynamic>> response = await supabase
-        .from('user_stats')
-        .select('*, stat_points(name)')
+        .from('user_stat')
+        .select('amount,stat_id,stat_points(stat_name)')
         .eq('nickname', nickname);
 
     // Map the response to a list of UserModel objects
