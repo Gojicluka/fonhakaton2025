@@ -1199,11 +1199,37 @@ Future<List<AchWithUser>> getAchievementsWithUser(String nickname) async {
   }
 }
 
-void checkEarnedAchievements() async {
-  // for the just updated skill point (or level?) from user
-  // check if it matches any achievement criteria
-  // and if the achievement is not already won
-  // insert it into user_ach table, with "not_claimed".
+Future<AchWithUser?> checkEarnedAchievements(
+    String nickname, int statId, int amount) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
+
+    // check if you've unlocked a new achievement
+    final response = await supabase
+        .from('achievements')
+        .select()
+        .match({'stat_id': statId, 'amount': amount}).maybeSingle();
+
+    if (response == null) return null;
+
+    // check if you alreayd have this achievement
+    final alreadyWon = await supabase
+        .from('user_achievements')
+        .select()
+        .match({'ach_id': response['ach_id']}).maybeSingle();
+
+    if (alreadyWon == null) return null;
+
+    final ach = await updateUserAchEarn(nickname, response['ach_id']);
+
+    print(" checkEarnedAchievements : $ach");
+
+    return ach;
+    // Map the response to a list of UserModel objects
+  } catch (e) {
+    print('Error in checkEarnedAchievements: $e');
+    return null;
+  }
 }
 
 Future<AchWithUser?> updateUserAchEarn(String nickname, int achId) async {
@@ -1213,7 +1239,6 @@ Future<AchWithUser?> updateUserAchEarn(String nickname, int achId) async {
     final response = await supabase
         .from('user_achievements')
         .insert({
-          // 'task_id': 0, // test value!
           'nickname': nickname,
           'ach_id': achId,
         })
@@ -1311,13 +1336,56 @@ Future<ReturnMessage> updateStatPoint(
   }
 }
 
+// levels apr14
 
+// returns the new level of the user and updates the user xp
+// returns the remaining XP from leveling up!
+Future<int?> checkLevelUp(String nickname) async {
+  try {
+    final supabase = SupabaseHelper.supabase;
 
+    // fetch user current level and xp
+    final user = await supabase
+        .from('users')
+        .select('lvl, xp')
+        .eq('nickname', nickname)
+        .maybeSingle();
 
-// implementirati sad da koriste nickname svi, pa posle menjati kako radi API i tabele i FK-eve. 
-// todo:
-// 1. init user_ach i user_stats da koriste nickname
-// 2. napraviti ove API pozive gore ^^^
-// 3. napraviti funkcije koje dohvataju te podatke
-// 4. iskoristiti ih u futurebuilderu ili tako nesto??
+    if (user == null) return null;
+
+    // fetch how many xp is needed for level up
+    final level = await supabase
+        .from('levels')
+        .select('level_id,xp_for_next')
+        .eq('level_id', user['lvl'])
+        .maybeSingle();
+
+    if (level == null) return null;
+
+    int xp_for_next = level['xp_for_next'];
+    int player_xp = user['xp'];
+    // int newlevel = user['lvl'];
+
+    // if is able to level up, return the XP amount remaining!
+    if (player_xp >= xp_for_next) {
+      player_xp -= xp_for_next;
+      return player_xp;
+    }
+
+    return null;
+
+    // implement level up logic, and return int of the new level, or null if nothing
+
+    // todo check if username exists???
+  } catch (e) {
+    print('Error in checkLevelUp: $e');
+    return -1;
+  }
+}
+
+// spojiti logiku lvl up - achievements - stats:
+// taskComplete -> check level up, check achievement, check stat point 
+  // za svaki od ovih se poziva funkcija iz myTasksScreen, jer oni vracaju da li se nesto promenilo, i ako se promenilo
+  // hocu da se to odrazi u pop up prozoru, uz zvucni signal!
+
 
